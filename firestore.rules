@@ -1,0 +1,291 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net (Default-Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function getUserDoc(uid) {
+      return exists(/databases/$(database)/documents/users/$(uid))
+        ? get(/databases/$(database)/documents/users/$(uid)).data
+        : get(/databases/$(database)/documents/users/$(request.auth.token.email)).data;
+    }
+
+    function isRegisteredUser(uid) {
+      return exists(/databases/$(database)/documents/users/$(uid)) ||
+             (request.auth.token.email != null && exists(/databases/$(database)/documents/users/$(request.auth.token.email)));
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email != null && (
+          request.auth.token.email == 'zeeeshanhaidar967@gmail.com' ||
+          request.auth.token.email.matches('(?i)^zeeeshanhaidar967@gmail\\.com$')
+        )
+      );
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        isBootstrappedAdmin() ||
+        (isRegisteredUser(request.auth.uid) && 
+         'role' in getUserDoc(request.auth.uid) &&
+         getUserDoc(request.auth.uid).role == 'admin' && 
+         (!('status' in getUserDoc(request.auth.uid)) || getUserDoc(request.auth.uid).status == 'active'))
+      );
+    }
+
+    function isManager() {
+      return isSignedIn() && (
+        isRegisteredUser(request.auth.uid) && 
+        'role' in getUserDoc(request.auth.uid) &&
+        getUserDoc(request.auth.uid).role == 'manager' && 
+        (!('status' in getUserDoc(request.auth.uid)) || getUserDoc(request.auth.uid).status == 'active')
+      );
+    }
+
+    function isManagerOrAdmin() {
+      return isAdmin() || isManager();
+    }
+
+    function isViewer() {
+      return isSignedIn() && (
+        isRegisteredUser(request.auth.uid) && 
+        'role' in getUserDoc(request.auth.uid) &&
+        (getUserDoc(request.auth.uid).role in ['viewer', 'staff', 'stock_viewer']) && 
+        (!('status' in getUserDoc(request.auth.uid)) || getUserDoc(request.auth.uid).status == 'active')
+      );
+    }
+
+    function isActiveUser() {
+      return isAdmin() || isManager() || isViewer();
+    }
+
+    // Validation Helpers
+    function isValidUser(data) {
+      return (('uid' in data && data.uid is string) || ('userId' in data && data.userId is string)) &&
+             (('displayName' in data && data.displayName is string) || ('name' in data && data.name is string)) &&
+             data.email is string && data.email.size() > 0 && data.email.size() <= 256 &&
+             data.role in ['admin', 'viewer', 'staff', 'manager', 'stock_viewer'];
+    }
+
+    function isValidProduct(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 256 &&
+             data.category is string && data.category.size() <= 128 &&
+             data.unit is string && data.unit.size() <= 32 &&
+             data.currentStock is number;
+    }
+
+    function isValidCustomer(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 256 &&
+             data.phone is string && data.phone.size() <= 64 &&
+             data.totalPurchases is number &&
+             data.totalPaid is number &&
+             data.outstandingBalance is number;
+    }
+
+    function isValidSale(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.billNumber is string && data.billNumber.size() <= 64 &&
+             data.customerId is string && data.customerId.size() <= 128 &&
+             data.customerName is string && data.customerName.size() <= 256 &&
+             data.totalBill is number && data.totalBill >= 0 &&
+             data.amountPaid is number && data.amountPaid >= 0 &&
+             data.balanceDue is number && data.balanceDue >= 0 &&
+             data.paymentMethod is string && data.paymentMethod.size() <= 64;
+    }
+
+    function isValidPayment(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.customerId is string && data.customerId.size() <= 128 &&
+             data.customerName is string && data.customerName.size() <= 256 &&
+             data.amount is number && data.amount > 0 &&
+             data.paymentMethod is string && data.paymentMethod.size() <= 64;
+    }
+
+    function isValidSaleReturn(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.saleId is string && data.saleId.size() <= 128 &&
+             data.billNumber is string && data.billNumber.size() <= 64 &&
+             data.customerId is string && data.customerId.size() <= 128 &&
+             data.totalReturnValue is number && data.totalReturnValue >= 0;
+    }
+
+    function isValidStockMovement(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.productId is string && data.productId.size() <= 128 &&
+             data.productName is string && data.productName.size() <= 256 &&
+             data.type is string && data.type.size() <= 32 &&
+             data.quantity is number;
+    }
+
+    function isValidSettings(data) {
+      return data.shopName is string && data.shopName.size() <= 256 &&
+             data.ownerName is string && data.ownerName.size() <= 256;
+    }
+
+    // Connection testing doc (permits health-check on app startup)
+    match /test/{docId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Users Collection (RBAC Master)
+    match /users/{userId} {
+      allow get: if isSignedIn() && (
+        request.auth.uid == userId ||
+        (request.auth.token.email != null && request.auth.token.email == userId) ||
+        isManagerOrAdmin()
+      );
+      allow list: if isManagerOrAdmin();
+
+      // Create: Admin can create any user.
+      // Bootstrapped admin can create their own profile as admin.
+      // Self-registering users can ONLY create their own profile as viewer (or stock_viewer).
+      allow create: if isSignedIn() && isValidId(userId) && isValidUser(incoming()) && (
+        isAdmin() ||
+        (request.auth.uid == userId && isBootstrappedAdmin() && incoming().role == 'admin') ||
+        (request.auth.uid == userId && incoming().role in ['viewer', 'stock_viewer'])
+      );
+
+      // Update: Admin can update role, status, or details.
+      // Protection: Configured admin email cannot be demoted from admin.
+      // Normal users can only update their own profile and CANNOT modify their role.
+      allow update: if isSignedIn() && isValidId(userId) && isValidUser(incoming()) && (
+        (isAdmin() && (
+          !('email' in existing()) ||
+          existing().email != 'zeeeshanhaidar967@gmail.com' ||
+          incoming().role == 'admin'
+        )) ||
+        (request.auth.uid == userId && 
+         incoming().role == existing().role)
+      );
+
+      // Delete: Only Admin can delete a user (and cannot delete the bootstrapped admin)
+      allow delete: if isAdmin() && (
+        !exists(/databases/$(database)/documents/users/$(userId)) ||
+        !('email' in getUserDoc(userId)) ||
+        getUserDoc(userId).email != 'zeeeshanhaidar967@gmail.com'
+      );
+    }
+
+    // Products (Inventory - shared across all devices)
+    // Admin / Manager: Full CRUD
+    // Signed-in users: Read-only (get, list)
+    match /products/{productId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isManagerOrAdmin() && isValidId(productId) && isValidProduct(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Customers (Restricted to Management)
+    match /customers/{customerId} {
+      allow get, list: if isManagerOrAdmin();
+      allow create, update: if isManagerOrAdmin() && isValidId(customerId) && isValidCustomer(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Sales (Restricted to Management)
+    match /sales/{saleId} {
+      allow get, list: if isManagerOrAdmin();
+      allow create, update: if isManagerOrAdmin() && isValidId(saleId) && isValidSale(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Payments (Restricted to Management)
+    match /payments/{paymentId} {
+      allow get, list: if isManagerOrAdmin();
+      allow create, update: if isManagerOrAdmin() && isValidId(paymentId) && isValidPayment(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Returns (Restricted to Management)
+    match /returns/{returnId} {
+      allow get, list: if isManagerOrAdmin();
+      allow create, update: if isManagerOrAdmin() && isValidId(returnId) && isValidSaleReturn(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Stock Movements / Audit (Restricted to Management)
+    match /stock_movements/{movementId} {
+      allow get, list: if isManagerOrAdmin();
+      allow create: if isManagerOrAdmin() && isValidId(movementId) && isValidStockMovement(incoming());
+      allow update, delete: if isAdmin();
+    }
+
+    // Settings (Shop info)
+    match /settings/{docId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isManagerOrAdmin() && isValidSettings(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Backwards Compatibility for /shops/{shopId} paths if requested
+    match /shops/{shopId} {
+      allow get: if isManagerOrAdmin();
+
+      match /products/{productId} {
+        allow get, list: if isSignedIn();
+        allow create, update: if isManagerOrAdmin() && isValidId(productId) && isValidProduct(incoming());
+        allow delete: if isAdmin();
+      }
+
+      match /customers/{customerId} {
+        allow get, list: if isManagerOrAdmin();
+        allow create, update: if isManagerOrAdmin() && isValidId(customerId) && isValidCustomer(incoming());
+        allow delete: if isAdmin();
+      }
+
+      match /sales/{saleId} {
+        allow get, list: if isManagerOrAdmin();
+        allow create, update: if isManagerOrAdmin() && isValidId(saleId) && isValidSale(incoming());
+        allow delete: if isAdmin();
+      }
+
+      match /payments/{paymentId} {
+        allow get, list: if isManagerOrAdmin();
+        allow create, update: if isManagerOrAdmin() && isValidId(paymentId) && isValidPayment(incoming());
+        allow delete: if isAdmin();
+      }
+
+      match /returns/{returnId} {
+        allow get, list: if isManagerOrAdmin();
+        allow create, update: if isManagerOrAdmin() && isValidId(returnId) && isValidSaleReturn(incoming());
+        allow delete: if isAdmin();
+      }
+
+      match /stock_movements/{movementId} {
+        allow get, list: if isManagerOrAdmin();
+        allow create: if isManagerOrAdmin() && isValidId(movementId) && isValidStockMovement(incoming());
+        allow update, delete: if isAdmin();
+      }
+
+      match /settings/{docId} {
+        allow get, list: if isSignedIn();
+        allow create, update: if isManagerOrAdmin() && isValidSettings(incoming());
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}
