@@ -57,12 +57,13 @@ export const StockInModal: React.FC<StockInModalProps> = ({
 
   const selectedProduct = products.find((p) => p.id === selectedProductId);
 
-  // Sync purchase price input with current product purchase price
+  // Sync purchase price input with current product purchase price when selected product changes
   useEffect(() => {
-    if (selectedProduct) {
-      setPurchasePrice(String(selectedProduct.purchasePrice));
+    const prod = products.find((p) => p.id === selectedProductId);
+    if (prod) {
+      setPurchasePrice(String(prod.purchasePrice));
     }
-  }, [selectedProductId, selectedProduct]);
+  }, [selectedProductId]);
 
   if (!isOpen) return null;
 

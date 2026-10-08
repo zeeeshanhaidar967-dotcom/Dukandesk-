@@ -91,7 +91,8 @@ export interface SaleReturnItem {
 export interface SaleReturnEntity {
   id: string; // e.g. "RET-001"
   saleId: string;
-  billNumber: string;
+  billNumber: string; // Original Sale Bill Number e.g. "BILL-261008-428"
+  returnBillNumber?: string; // Dedicated Return Bill Number e.g. "RET-261008-001"
   customerId: string;
   customerName: string;
   customerPhone?: string;

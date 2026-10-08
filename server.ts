@@ -113,29 +113,46 @@ Return pure valid JSON matching this schema:
 }
 `;
 
-    // Call Gemini 2.5 Flash for vision extraction
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [
-        {
-          role: 'user',
-          parts: [
+    // Call Gemini 3.8 Flash for vision extraction with retry on transient spikes
+    let response: any = null;
+    let lastError: any = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        response = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: [
             {
-              inlineData: {
-                mimeType,
-                data: base64Data,
-              },
-            },
-            {
-              text: promptText,
+              role: 'user',
+              parts: [
+                {
+                  inlineData: {
+                    mimeType,
+                    data: base64Data,
+                  },
+                },
+                {
+                  text: promptText,
+                },
+              ],
             },
           ],
-        },
-      ],
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+        if (response) break;
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`Gemini call attempt ${attempt} failed:`, err?.message || err);
+        if (attempt < 3) {
+          await new Promise((r) => setTimeout(r, attempt * 1000));
+        }
+      }
+    }
+
+    if (!response) {
+      throw lastError || new Error('Failed after 3 attempts.');
+    }
 
     const responseText = response.text || '{}';
     let parsedResult;

@@ -40,6 +40,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (productToEdit) {
       setName(productToEdit.name);
       setPhotoUrl(productToEdit.photoUrl || '');
@@ -69,7 +71,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setMinStockLevel('10');
     }
     setError('');
-  }, [productToEdit, isOpen, existingCategories, existingSuppliers]);
+  }, [productToEdit, isOpen]);
 
   if (!isOpen) return null;
 

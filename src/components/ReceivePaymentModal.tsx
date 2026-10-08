@@ -49,12 +49,15 @@ export const ReceivePaymentModal: React.FC<ReceivePaymentModalProps> = ({
 
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
 
-  // Auto-fill full outstanding balance when customer is picked if input is empty
+  // Auto-fill full outstanding balance when customer is selected
   useEffect(() => {
-    if (selectedCustomer && selectedCustomer.outstandingBalance > 0) {
-      setAmountInput(String(selectedCustomer.outstandingBalance));
+    const cust = customers.find((c) => c.id === selectedCustomerId);
+    if (cust && cust.outstandingBalance > 0) {
+      setAmountInput(String(cust.outstandingBalance));
+    } else {
+      setAmountInput('');
     }
-  }, [selectedCustomerId, selectedCustomer]);
+  }, [selectedCustomerId]);
 
   if (!isOpen) return null;
 

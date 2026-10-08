@@ -1076,6 +1076,9 @@ class RoomDatabaseManager {
 
     const now = new Date().toISOString();
     const returnId = `RET-${Date.now().toString(36).toUpperCase()}`;
+    const dateFormatted = now.slice(2, 10).replace(/-/g, '');
+    const returnCountToday = ((this.state.returns || []).filter((r) => r.createdAt && r.createdAt.slice(0, 10) === now.slice(0, 10)).length) + 1;
+    const returnBillNumber = `RET-${dateFormatted}-${String(returnCountToday).padStart(3, '0')}`;
     let totalReturnValue = 0;
     const returnItemsSummary: SaleReturnItem[] = [];
     const stockMovementsToLog: StockMovementEntity[] = [];
@@ -1139,8 +1142,8 @@ class RoomDatabaseManager {
           quantity: req.returnQuantity,
           previousStock,
           newStock,
-          reference: `Bill #${sale.billNumber}`,
-          notes: `Return: ${req.returnQuantity} ${saleItem.unit} returned by ${customer.name}`,
+          reference: `Return Bill #${returnBillNumber}`,
+          notes: `Returned against original Bill #${sale.billNumber}: ${req.returnQuantity} ${saleItem.unit} returned by ${customer.name}`,
           createdAt: now,
         });
       }
@@ -1196,6 +1199,7 @@ class RoomDatabaseManager {
       id: returnId,
       saleId: sale.id,
       billNumber: sale.billNumber,
+      returnBillNumber,
       customerId: customer.id,
       customerName: customer.name,
       customerPhone: customer.phone,

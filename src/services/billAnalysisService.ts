@@ -1,4 +1,4 @@
-import { ProductEntity, CustomerEntity } from '../types/database';
+import { ProductEntity, CustomerEntity, SaleEntity } from '../types/database';
 
 export type MatchConfidence = 'EXACT' | 'CONFIDENT' | 'UNCERTAIN' | 'NONE';
 
@@ -459,3 +459,181 @@ export function generateDemoBillImage(): string {
 
   return `data:image/svg+xml;base64,${utf8ToBase64(svg)}`;
 }
+
+export interface MatchedSaleCandidate {
+  sale: SaleEntity;
+  score: number;
+  matchReasons: string[];
+  eligibleItemsCount: number;
+  totalRemainingQty: number;
+  isFullyReturned: boolean;
+}
+
+export interface MatchedSaleResult {
+  status: 'EXACT_MATCH' | 'MULTIPLE_MATCHES' | 'NO_MATCH';
+  bestMatch: MatchedSaleCandidate | null;
+  candidates: MatchedSaleCandidate[];
+  summaryMessage: string;
+}
+
+/**
+ * Matches an extracted bill from a photo against existing sales in DukanDesk
+ * Priority hierarchy:
+ * 1. Exact original bill number match
+ * 2. Partial / normalized bill number match
+ * 3. Customer name/phone match
+ * 4. Line item / product similarity match
+ * 5. Date and total bill amount correlation
+ */
+export function matchBillPhotoToSales(
+  extractedBill: ProposedBillData,
+  sales: SaleEntity[],
+  customers: CustomerEntity[]
+): MatchedSaleResult {
+  if (!sales || sales.length === 0) {
+    return {
+      status: 'NO_MATCH',
+      bestMatch: null,
+      candidates: [],
+      summaryMessage: 'No past sales records exist in the shop database.',
+    };
+  }
+
+  const cleanAlphanumeric = (str?: string) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  const candidates: MatchedSaleCandidate[] = [];
+
+  const extBillClean = cleanAlphanumeric(extractedBill.billNumber);
+  const extCustClean = cleanAlphanumeric(extractedBill.detectedCustomerName);
+  const extPhoneClean = (extractedBill.detectedCustomerPhone || '').replace(/\D/g, '');
+
+  for (const sale of sales) {
+    let score = 0;
+    const matchReasons: string[] = [];
+    const saleBillClean = cleanAlphanumeric(sale.billNumber);
+    const saleCustClean = cleanAlphanumeric(sale.customerName);
+    const salePhoneClean = (sale.customerPhone || '').replace(/\D/g, '');
+
+    // 1. Bill number matching
+    if (extBillClean && saleBillClean) {
+      if (extBillClean === saleBillClean) {
+        score += 100;
+        matchReasons.push(`Exact Bill Number match (#${sale.billNumber})`);
+      } else if (saleBillClean.includes(extBillClean) || extBillClean.includes(saleBillClean)) {
+        score += 75;
+        matchReasons.push(`Bill Number partial match (#${sale.billNumber})`);
+      }
+    }
+
+    // 2. Customer Name matching
+    if (extractedBill.detectedCustomerName && sale.customerName) {
+      const nameSim = calculateSimilarity(extractedBill.detectedCustomerName, sale.customerName);
+      if (nameSim >= 0.8 || (extCustClean && saleCustClean && extCustClean === saleCustClean)) {
+        score += 40;
+        matchReasons.push(`Customer name match (${sale.customerName})`);
+      } else if (nameSim >= 0.5) {
+        score += 20;
+        matchReasons.push(`Customer name similar (${sale.customerName})`);
+      }
+    }
+
+    // 3. Customer Phone matching
+    if (extPhoneClean.length >= 6 && salePhoneClean.length >= 6) {
+      if (extPhoneClean === salePhoneClean || salePhoneClean.includes(extPhoneClean) || extPhoneClean.includes(salePhoneClean)) {
+        score += 40;
+        matchReasons.push(`Customer mobile match (${sale.customerPhone})`);
+      }
+    }
+
+    // 4. Products / Line Items matching
+    let matchedItemsCount = 0;
+    if (extractedBill.items && extractedBill.items.length > 0) {
+      for (const extractedItem of extractedBill.items) {
+        const found = sale.items.find((si: any) => {
+          if (extractedItem.matchedProductId && si.productId === extractedItem.matchedProductId) return true;
+          return calculateSimilarity(si.productName, extractedItem.detectedName) >= 0.55;
+        });
+        if (found) {
+          matchedItemsCount++;
+        }
+      }
+      if (matchedItemsCount > 0) {
+        score += Math.min(40, matchedItemsCount * 15);
+        matchReasons.push(`${matchedItemsCount} product item(s) matched on bill`);
+      }
+    }
+
+    // 5. Total Bill Amount match
+    if (extractedBill.totalAmount > 0 && sale.totalBill > 0) {
+      const diff = Math.abs(sale.totalBill - extractedBill.totalAmount);
+      if (diff <= 2) {
+        score += 25;
+        matchReasons.push(`Bill total amount matches (₹${sale.totalBill})`);
+      } else if (diff / sale.totalBill <= 0.05) {
+        score += 15;
+        matchReasons.push(`Bill total amount approximately matches (₹${sale.totalBill})`);
+      }
+    }
+
+    // 6. Bill Date match
+    if (extractedBill.date && sale.createdAt) {
+      const saleDate = sale.createdAt.slice(0, 10);
+      if (saleDate === extractedBill.date) {
+        score += 15;
+        matchReasons.push(`Bill date matches (${saleDate})`);
+      }
+    }
+
+    // Compute remaining returnable eligibility
+    const totalRemainingQty = sale.items.reduce(
+      (sum: number, item: any) => sum + Math.max(0, item.quantity - (item.returnedQuantity || 0)),
+      0
+    );
+    const eligibleItemsCount = sale.items.filter(
+      (item: any) => Math.max(0, item.quantity - (item.returnedQuantity || 0)) > 0
+    ).length;
+    const isFullyReturned = totalRemainingQty <= 0;
+
+    if (score >= 35) {
+      candidates.push({
+        sale,
+        score,
+        matchReasons,
+        eligibleItemsCount,
+        totalRemainingQty,
+        isFullyReturned,
+      });
+    }
+  }
+
+  // Sort descending by score
+  candidates.sort((a, b) => b.score - a.score);
+
+  if (candidates.length === 0) {
+    return {
+      status: 'NO_MATCH',
+      bestMatch: null,
+      candidates: [],
+      summaryMessage: 'Original bill could not be matched with any sales in database.',
+    };
+  }
+
+  // If top candidate has strong score (>=70) and is clearly superior or only candidate
+  const top = candidates[0];
+  if (top.score >= 70 && (candidates.length === 1 || top.score >= (candidates[1].score + 25))) {
+    return {
+      status: 'EXACT_MATCH',
+      bestMatch: top,
+      candidates,
+      summaryMessage: `Matched Original Bill #${top.sale.billNumber} (${top.sale.customerName})`,
+    };
+  }
+
+  return {
+    status: 'MULTIPLE_MATCHES',
+    bestMatch: top,
+    candidates,
+    summaryMessage: `Found ${candidates.length} possible matching bills. Please select the correct bill.`,
+  };
+}
+
