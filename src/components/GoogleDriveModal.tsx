@@ -31,6 +31,8 @@ import {
   getCurrentlyAuthenticatedUser,
   hasStoredSessionInStorage,
   getAccessToken,
+  getValidDriveAccessToken,
+  hasStoredDriveToken,
   setAccessTokenInMemory,
   refreshGoogleDriveToken,
   isDriveTokenValid,
@@ -71,7 +73,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   onUpdateSettings,
   onRefreshDbState,
 }) => {
-  // Direct Google Drive OAuth token from localStorage (strictly null if missing or expired)
+  // Google Drive OAuth token (populated if stored token exists and valid, or silently refreshed)
   const [driveToken, setDriveToken] = useState<string | null>(() => {
     if (typeof window !== 'undefined' && isDriveTokenValid()) {
       return localStorage.getItem('drive_access_token');
@@ -79,21 +81,19 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
     return null;
   });
 
-  // Auth state: only populated if drive_access_token is present in storage and valid
+  // Auth state: populated if active user or persisted session exists
   const [currentUser, setCurrentUser] = useState<User | GoogleAuthUser | null>(() => {
-    if (!isDriveTokenValid()) return null; // Disconnected by default if token is missing or expired
     const existing = getCurrentlyAuthenticatedUser();
     if (existing) return existing;
     if (auth.currentUser) return auth.currentUser;
-    return {
-      uid: 'google-session',
-      email: null,
-      displayName: 'Google Account',
-      photoURL: null,
-    };
+    return null;
   });
 
-  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(false);
+  // Track silent authentication/renewal check on open
+  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return hasStoredDriveToken() || hasStoredSessionInStorage();
+  });
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [authError, setAuthError] = useState<string>('');
   const [scopeError, setScopeError] = useState<boolean>(false);
@@ -129,65 +129,68 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
     counts: BackupSummaryInfo;
   } | null>(null);
 
-  // Synchronize Google Drive token and load backups strictly when a valid token exists on open
+  // Synchronize Google Drive token and load backups using getValidDriveAccessToken()
   useEffect(() => {
     if (!isOpen) return;
 
-    if (!isDriveTokenValid()) {
-      // Disconnected: do NOT trigger popup, do NOT call Drive API
-      clearAuthToken();
-      setDriveToken(null);
-      setCurrentUser(null);
-      setIsCheckingAuth(false);
-      setBackups([]);
-      setBackupFolder(null);
-      setScopeError(false);
-      return;
-    }
+    let isCancelled = false;
+    setIsCheckingAuth(true);
 
-    const token = typeof window !== 'undefined' ? localStorage.getItem('drive_access_token') : null;
-    if (token) {
-      setDriveToken(token);
-      setAccessTokenInMemory(token);
-      const activeUser = auth.currentUser || getCurrentlyAuthenticatedUser();
-      if (activeUser) {
-        setCurrentUser(activeUser);
-      } else {
-        setCurrentUser({
-          uid: 'google-session',
-          email: null,
-          displayName: 'Google Account',
-          photoURL: null,
-        });
+    const initConnection = async () => {
+      try {
+        const token = await getValidDriveAccessToken();
+        if (isCancelled) return;
+
+        if (token) {
+          setDriveToken(token);
+          setAccessTokenInMemory(token);
+          const activeUser = getCurrentlyAuthenticatedUser() || auth.currentUser;
+          if (activeUser) {
+            setCurrentUser(activeUser);
+          } else {
+            setCurrentUser({
+              uid: 'google-session',
+              email: null,
+              displayName: 'Google Account',
+              photoURL: null,
+            });
+          }
+          setScopeError(false);
+          setIsCheckingAuth(false);
+          // Gracefully load backups with valid or renewed token
+          await loadCloudBackups(token);
+        } else {
+          // Silent token acquisition returned null (never connected or consent revoked)
+          // Do NOT aggressively call clearAuthToken() on benign expiration
+          setDriveToken(null);
+          if (!hasStoredDriveToken() && !hasStoredSessionInStorage()) {
+            setCurrentUser(null);
+          }
+          setIsCheckingAuth(false);
+          setBackups([]);
+          setBackupFolder(null);
+        }
+      } catch (err) {
+        if (isCancelled) return;
+        console.warn('Google Drive token check error:', err);
+        setDriveToken(null);
+        setIsCheckingAuth(false);
       }
-      setIsCheckingAuth(false);
-      // Valid token exists: gracefully load backups
-      loadCloudBackups(token);
-    } else {
-      setDriveToken(null);
-      setCurrentUser(null);
-      setIsCheckingAuth(false);
-      setBackups([]);
-      setBackupFolder(null);
-      setScopeError(false);
-    }
+    };
+
+    initConnection();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [isOpen]);
 
-  // Load backups list directly from Google Drive - ONLY called when valid token exists
+  // Load backups list directly from Google Drive - calls getValidDriveAccessToken()
   const loadCloudBackups = async (tokenOverride?: string) => {
-    if (!isDriveTokenValid()) {
-      setIsLoadingBackups(false);
-      setDriveToken(null);
-      setCurrentUser(null);
-      setBackups([]);
-      setBackupFolder(null);
-      return;
-    }
-
     const token =
       tokenOverride ||
       driveToken ||
-      (typeof window !== 'undefined' ? localStorage.getItem('drive_access_token') : null);
+      (await getValidDriveAccessToken());
 
     // Guard: strictly DO NOT make fetch if no token is present
     if (!token) {
@@ -225,12 +228,21 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
           text: 'Google Drive permission required. Please click "Re-authenticate" below to grant permissions.',
         });
       } else if (isExpiredOrUnregistered) {
-        // DO NOT trigger popup automatically! Clear expired token and set state to Disconnected
-        clearAuthToken();
+        // Attempt silent token renewal before reporting session expiration
+        const renewedToken = await getValidDriveAccessToken();
+        if (renewedToken && renewedToken !== token) {
+          setDriveToken(renewedToken);
+          setAccessTokenInMemory(renewedToken);
+          try {
+            const retryResult = await listShopBackupsFromDrive();
+            setBackupFolder(retryResult.folder);
+            setBackups(retryResult.backups);
+            setScopeError(false);
+            return;
+          } catch {}
+        }
+        // ONLY set disconnected token state if renewal failed
         setDriveToken(null);
-        setCurrentUser(null);
-        setBackups([]);
-        setBackupFolder(null);
         setStatusMessage({
           type: 'error',
           text: 'Google Drive session expired or disconnected. Please click "Connect Google Drive" or "Re-authenticate" to reconnect.',
@@ -248,19 +260,17 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
   // User-initiated refresh button handler
   const handleRefresh = async () => {
-    if (!isDriveTokenValid()) {
-      clearAuthToken();
+    const token = await getValidDriveAccessToken();
+    if (!token) {
       setDriveToken(null);
-      setCurrentUser(null);
-      setBackups([]);
-      setBackupFolder(null);
       setStatusMessage({
         type: 'error',
         text: 'Google Drive session expired. Please click "Re-authenticate" or "Connect Google Drive" below.',
       });
       return;
     }
-    await loadCloudBackups();
+    setDriveToken(token);
+    await loadCloudBackups(token);
   };
 
   // USER-INITIATED OAUTH FLOW ONLY (Direct click event handler attached directly to a button)
@@ -322,16 +332,16 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
   // Manual "Backup Now" Flow
   const handleBackupNow = async () => {
-    if (!isDriveTokenValid()) {
-      clearAuthToken();
+    const token = await getValidDriveAccessToken();
+    if (!token) {
       setDriveToken(null);
-      setCurrentUser(null);
       setStatusMessage({
         type: 'error',
         text: 'Google Drive is disconnected or session expired. Please click "Connect Google Drive" or "Re-authenticate" first.',
       });
       return;
     }
+    setDriveToken(token);
 
     setIsBackingUp(true);
     setStatusMessage(null);
@@ -367,7 +377,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
       });
 
       // Refresh files list
-      await loadCloudBackups();
+      await loadCloudBackups(token);
     } catch (err: any) {
       const msg = err.message || '';
       if (
@@ -376,10 +386,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         msg.toLowerCase().includes('unauthorized') ||
         msg.toLowerCase().includes('unregistered')
       ) {
-        // DO NOT trigger automatic popup!
-        clearAuthToken();
         setDriveToken(null);
-        setCurrentUser(null);
         setStatusMessage({
           type: 'error',
           text: '⚠ Google Drive session expired. Please click "Re-authenticate" above to reconnect.',
@@ -411,16 +418,16 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
   // Safe Restore: Step 1 - Select and Preview Backup
   const handleSelectBackupForRestore = async (file: GoogleDriveFile) => {
-    if (!isDriveTokenValid()) {
-      clearAuthToken();
+    const token = await getValidDriveAccessToken();
+    if (!token) {
       setDriveToken(null);
-      setCurrentUser(null);
       setStatusMessage({
         type: 'error',
         text: 'Google Drive is disconnected or session expired. Please click "Connect Google Drive" or "Re-authenticate" first.',
       });
       return;
     }
+    setDriveToken(token);
 
     setSelectedBackupForRestore(file);
     setIsLoadingPreview(true);
@@ -514,16 +521,16 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   // Delete Backup from Drive
   const handleConfirmDelete = async () => {
     if (!fileToDelete) return;
-    if (!isDriveTokenValid()) {
-      clearAuthToken();
+    const token = await getValidDriveAccessToken();
+    if (!token) {
       setDriveToken(null);
-      setCurrentUser(null);
       setStatusMessage({
         type: 'error',
         text: 'Google Drive is disconnected or session expired. Please click "Connect Google Drive" or "Re-authenticate" first.',
       });
       return;
     }
+    setDriveToken(token);
 
     setIsDeleting(true);
     try {
@@ -533,7 +540,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         text: `Backup "${fileToDelete.name}" deleted from Google Drive.`,
       });
       setFileToDelete(null);
-      await loadCloudBackups();
+      await loadCloudBackups(token);
     } catch (err: any) {
       const msg = err.message || '';
       if (
@@ -542,9 +549,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         msg.toLowerCase().includes('unauthorized') ||
         msg.toLowerCase().includes('unregistered')
       ) {
-        clearAuthToken();
         setDriveToken(null);
-        setCurrentUser(null);
         setStatusMessage({
           type: 'error',
           text: '⚠ Google Drive session expired. Please click "Re-authenticate" above to reconnect.',
@@ -659,7 +664,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         <div className="space-y-4 overflow-y-auto pr-1 flex-1">
           {/* 1. Account Connection & Status Card (Requirements 2 & 12) */}
           {(() => {
-            const hasDriveToken = Boolean(driveToken && isDriveTokenValid());
+            const hasDriveToken = Boolean(driveToken);
             const isDriveConnected = Boolean(currentUser && hasDriveToken);
             const displayUser =
               currentUser ||
@@ -901,7 +906,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
       })()}
 
           {/* 2. Primary Tabs Content (When Connected) */}
-          {Boolean(currentUser && driveToken && isDriveTokenValid()) && (
+          {Boolean(currentUser && driveToken) && (
             <>
               {/* RESTORE FROM GOOGLE DRIVE VIEW (Requirements 8, 9, 10) */}
               {activeTab === 'restore' && (

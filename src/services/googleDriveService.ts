@@ -1,5 +1,6 @@
 import {
   getAccessToken,
+  getValidDriveAccessToken,
   clearAuthToken,
   clearPersistedSession,
   refreshGoogleDriveToken,
@@ -85,15 +86,11 @@ export async function driveFetch(url: string, init: RequestInit = {}): Promise<R
 }
 
 /**
- * Helper to get active Google Drive OAuth token from memory, session, or direct localStorage.
- * Strictly verifies token validity and non-expiration; returns null if missing or expired.
+ * Helper to get active Google Drive OAuth token with silent renewal support.
+ * Returns valid token or null if not authenticated.
  */
 export const getEffectiveToken = async (): Promise<string | null> => {
-  if (!isDriveTokenValid()) {
-    clearAuthToken();
-    return null;
-  }
-  return await getAccessToken();
+  return await getValidDriveAccessToken();
 };
 
 /**

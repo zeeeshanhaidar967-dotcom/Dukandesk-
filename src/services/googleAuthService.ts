@@ -42,7 +42,7 @@ let restorationPromise: Promise<GoogleAuthSession | null> | null = null;
 
 /**
  * Synchronous check whether drive_access_token is currently present and non-expired.
- * If expired or invalid, clears it immediately and returns false.
+ * Note: Does NOT aggressively wipe stored tokens on benign expiration to allow silent background renewal.
  */
 export function isDriveTokenValid(): boolean {
   if (typeof window === 'undefined') return false;
@@ -56,13 +56,11 @@ export function isDriveTokenValid(): boolean {
     if (expiresAtStr) {
       const expiresAt = parseInt(expiresAtStr, 10);
       if (!isNaN(expiresAt) && Date.now() >= expiresAt) {
-        clearAuthToken();
         return false;
       }
     }
 
     if (cachedSession?.expiresAt && Date.now() >= cachedSession.expiresAt) {
-      clearAuthToken();
       return false;
     }
 
@@ -73,12 +71,239 @@ export function isDriveTokenValid(): boolean {
 }
 
 /**
+ * Check if a drive access token string exists in localStorage, regardless of expiration timestamp.
+ */
+export function hasStoredDriveToken(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const token = localStorage.getItem('drive_access_token');
+    return Boolean(token && token.trim());
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Ensure Google Identity Services SDK (https://accounts.google.com/gsi/client) is loaded.
+ */
+export function ensureGoogleGsiLoaded(): Promise<boolean> {
+  if (typeof window === 'undefined') return Promise.resolve(false);
+  if ((window as any).google?.accounts?.oauth2?.initTokenClient) {
+    return Promise.resolve(true);
+  }
+
+  return new Promise((resolve) => {
+    const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+    if (existing) {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if ((window as any).google?.accounts?.oauth2?.initTokenClient) {
+          clearInterval(interval);
+          resolve(true);
+        } else if (attempts > 40) {
+          clearInterval(interval);
+          resolve(false);
+        }
+      }, 100);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if ((window as any).google?.accounts?.oauth2?.initTokenClient) {
+          clearInterval(interval);
+          resolve(true);
+        } else if (attempts > 30) {
+          clearInterval(interval);
+          resolve(false);
+        }
+      }, 50);
+    };
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
+}
+
+// In-flight silent refresh promise to avoid duplicate concurrent GIS requests
+let silentRefreshPromise: Promise<string | null> | null = null;
+
+/**
+ * Silent Token Renewal Engine for Google Drive OAuth.
+ * Inspects drive_access_token and drive_token_expires_at in localStorage.
+ * If the token is expired or expiring within 5 minutes, automatically performs a silent background
+ * token refresh using Google Identity Services (window.google.accounts.oauth2.initTokenClient)
+ * with { prompt: '' } so no popup window is forced on the user.
+ * Automatically persists the newly acquired access token and updated expiration timestamp back into localStorage.
+ */
+export async function getValidDriveAccessToken(): Promise<string | null> {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const token = localStorage.getItem('drive_access_token');
+    const expiresAtStr = localStorage.getItem(TOKEN_EXPIRY_KEY);
+    const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : 0;
+    const now = Date.now();
+
+    // 5 minutes buffer = 300,000 ms
+    const FIVE_MINUTES_MS = 5 * 60 * 1000;
+
+    // 1. If valid token exists with more than 5 minutes remaining, return it immediately
+    if (token && token.trim() && expiresAt > 0 && expiresAt - now > FIVE_MINUTES_MS) {
+      cachedAccessToken = token;
+      return token;
+    }
+
+    // 2. If no token exists at all and no persisted session, user has never authenticated
+    if (!token && !hasStoredSessionInStorage()) {
+      return null;
+    }
+
+    // 3. Token is expired, expiring within 5 minutes, or session exists: attempt silent renewal
+    if (silentRefreshPromise) {
+      return await silentRefreshPromise;
+    }
+
+    silentRefreshPromise = (async () => {
+      try {
+        const isGsiLoaded = await ensureGoogleGsiLoaded();
+        if (!isGsiLoaded) {
+          console.warn('Google Identity Services client is not available for silent token refresh.');
+          if (token && expiresAt > 0 && expiresAt > now) {
+            return token;
+          }
+          return null;
+        }
+
+        const google = (window as any).google;
+        const clientId =
+          firebaseConfig.oAuthClientId ||
+          '1074744512406-3umppinmrr2m48f39hbloeagq3sdm2dn.apps.googleusercontent.com';
+
+        // Known user hint helps GIS resolve the account silently without prompt
+        const knownUser = auth.currentUser || cachedSession?.user || getCurrentlyAuthenticatedUser();
+        const emailHint = knownUser?.email || undefined;
+
+        const refreshedToken = await new Promise<string | null>((resolve) => {
+          let settled = false;
+
+          const timeoutTimer = setTimeout(() => {
+            if (!settled) {
+              settled = true;
+              console.warn('Google Identity Services silent token renewal timed out.');
+              if (token && expiresAt > 0 && expiresAt > now) {
+                resolve(token);
+              } else {
+                resolve(null);
+              }
+            }
+          }, 9000);
+
+          try {
+            const tokenClient = google.accounts.oauth2.initTokenClient({
+              client_id: clientId,
+              scope: SCOPES.join(' '),
+              prompt: '',
+              callback: (response: any) => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timeoutTimer);
+
+                if (response && response.access_token) {
+                  const expiresInSec = parseInt(response.expires_in, 10) || 3550;
+                  const newExpiresAt = Date.now() + expiresInSec * 1000;
+                  const newToken = response.access_token;
+
+                  // Automatically persist new token & expiration timestamp to localStorage
+                  localStorage.setItem('drive_access_token', newToken);
+                  localStorage.setItem(TOKEN_EXPIRY_KEY, String(newExpiresAt));
+                  cachedAccessToken = newToken;
+
+                  if (cachedSession) {
+                    cachedSession.accessToken = newToken;
+                    cachedSession.expiresAt = newExpiresAt;
+                    savePersistedSession(cachedSession).catch(() => {});
+                  } else if (knownUser) {
+                    syncGoogleDriveAuthSession(knownUser, newToken).catch(() => {});
+                  }
+
+                  // Notify listeners of updated token
+                  subscribers.forEach((s) => {
+                    const u = cachedSession?.user || knownUser;
+                    if (u) s.success(u, newToken);
+                  });
+
+                  resolve(newToken);
+                } else {
+                  console.warn('Silent token renewal returned without access_token:', response?.error || response);
+                  if (token && expiresAt > 0 && expiresAt > now) {
+                    resolve(token);
+                  } else {
+                    resolve(null);
+                  }
+                }
+              },
+              error_callback: (err: any) => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timeoutTimer);
+                console.warn('Google Identity Services silent refresh error:', err);
+                if (token && expiresAt > 0 && expiresAt > now) {
+                  resolve(token);
+                } else {
+                  resolve(null);
+                }
+              },
+            });
+
+            tokenClient.requestAccessToken({
+              prompt: '',
+              ...(emailHint ? { hint: emailHint } : {}),
+            });
+          } catch (initErr) {
+            if (!settled) {
+              settled = true;
+              clearTimeout(timeoutTimer);
+              console.warn('Failed to call GIS initTokenClient:', initErr);
+              if (token && expiresAt > 0 && expiresAt > now) {
+                resolve(token);
+              } else {
+                resolve(null);
+              }
+            }
+          }
+        });
+
+        return refreshedToken;
+      } catch (err) {
+        console.warn('Silent token renewal exception:', err);
+        if (token && expiresAt > 0 && expiresAt > now) {
+          return token;
+        }
+        return null;
+      } finally {
+        silentRefreshPromise = null;
+      }
+    })();
+
+    return await silentRefreshPromise;
+  } catch (err) {
+    console.warn('getValidDriveAccessToken exception:', err);
+    return null;
+  }
+}
+
+/**
  * Get stored drive token safely (only if not expired)
  */
 export function getStoredDriveToken(): string | null {
-  if (!isDriveTokenValid()) {
-    return null;
-  }
+  if (typeof window === 'undefined') return null;
   return localStorage.getItem('drive_access_token');
 }
 
@@ -230,14 +455,8 @@ export async function restorePersistedSession(): Promise<GoogleAuthSession | nul
       return null;
     }
 
-    // Check expiration - Google OAuth tokens expire in ~1 hour (strictly enforce expiresAt)
-    if (session.expiresAt && Date.now() >= session.expiresAt) {
-      console.log('Stored Google Drive session has expired. Clearing.');
-      await clearPersistedSession();
-      clearAuthToken();
-      return null;
-    }
-
+    // Restore session into memory without clearing on benign token expiration
+    // so user identity is preserved and can be silently renewed
     cachedSession = session;
     cachedAccessToken = session.accessToken;
     return session;
@@ -267,18 +486,17 @@ export function isCheckingPersistedSession(): boolean {
 }
 
 /**
- * Return currently authenticated user if already known and token is valid
+ * Return currently authenticated user if known from active auth, cached session, or storage.
+ * Does not return null on benign token expiration so user identity remains visible while renewing.
  */
 export function getCurrentlyAuthenticatedUser(): GoogleAuthUser | User | null {
-  if (!isDriveTokenValid()) {
-    return null;
-  }
+  if (auth.currentUser) return auth.currentUser;
+  if (cachedSession?.user) return cachedSession.user;
+
   if (typeof window !== 'undefined') {
     try {
       const token = localStorage.getItem('drive_access_token');
       if (token) {
-        if (auth.currentUser) return auth.currentUser;
-        if (cachedSession?.user) return cachedSession.user;
         return {
           uid: 'google-session',
           email: null,
@@ -288,8 +506,6 @@ export function getCurrentlyAuthenticatedUser(): GoogleAuthUser | User | null {
       }
     } catch {}
   }
-  if (cachedSession?.user && cachedAccessToken) return cachedSession.user;
-  if (auth.currentUser) return auth.currentUser;
   return null;
 }
 
@@ -464,29 +680,10 @@ export async function syncGoogleDriveAuthSession(
 }
 
 /**
- * Get current Google Drive OAuth access token (strictly returns null if missing or expired)
+ * Get current Google Drive OAuth access token with automatic silent renewal if expired or expiring soon.
  */
 export const getAccessToken = async (): Promise<string | null> => {
-  if (!isDriveTokenValid()) {
-    return null;
-  }
-
-  if (cachedAccessToken && cachedSession && cachedSession.expiresAt > Date.now()) {
-    return cachedAccessToken;
-  }
-
-  if (typeof window !== 'undefined') {
-    try {
-      const directToken = localStorage.getItem('drive_access_token');
-      if (directToken) {
-        cachedAccessToken = directToken;
-        return directToken;
-      }
-    } catch {}
-  }
-
-  const restored = await initializeGoogleAuthOnStartup();
-  return restored && restored.accessToken ? restored.accessToken : null;
+  return await getValidDriveAccessToken();
 };
 
 export const setAccessTokenInMemory = (token: string | null) => {
