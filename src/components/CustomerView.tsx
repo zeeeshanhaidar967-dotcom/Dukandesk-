@@ -10,12 +10,15 @@ import {
   AlertCircle,
   CheckCircle2,
   Receipt,
+  RotateCcw,
 } from 'lucide-react';
-import { CustomerEntity, OwnerSettingsEntity } from '../types/database';
+import { CustomerEntity, OwnerSettingsEntity, SaleEntity, SaleReturnEntity } from '../types/database';
 import { formatCurrency } from '../services/calculations';
 
 interface CustomerViewProps {
   customers: CustomerEntity[];
+  sales?: SaleEntity[];
+  returns?: SaleReturnEntity[];
   settings: OwnerSettingsEntity;
   onSelectCustomer: (customer: CustomerEntity) => void;
   onOpenReceivePayment: (customerId: string) => void;
@@ -29,6 +32,8 @@ interface CustomerViewProps {
 
 export const CustomerView: React.FC<CustomerViewProps> = ({
   customers,
+  sales = [],
+  returns = [],
   settings,
   onSelectCustomer,
   onOpenReceivePayment,
@@ -223,6 +228,10 @@ export const CustomerView: React.FC<CustomerViewProps> = ({
         ) : (
           filteredCustomers.map((cust) => {
             const hasDue = cust.outstandingBalance > 0;
+            const custSalesCount = sales.filter((s) => s.customerId === cust.id).length;
+            const custReturnsCount = returns.filter(
+              (r) => r.customerId === cust.id || (r.saleId && sales.some((s) => s.id === r.saleId && s.customerId === cust.id))
+            ).length;
 
             return (
               <div
@@ -257,6 +266,19 @@ export const CustomerView: React.FC<CustomerViewProps> = ({
                         <span className="flex items-center gap-1 truncate max-w-[180px]">
                           <MapPin className="w-3 h-3 text-slate-500" />
                           {cust.address}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Bill & Return Count Badges */}
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-mono font-medium">
+                        {custSalesCount} {custSalesCount === 1 ? 'Sale Bill' : 'Sale Bills'}
+                      </span>
+                      {custReturnsCount > 0 && (
+                        <span className="px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20 text-[10px] font-mono font-medium flex items-center gap-1">
+                          <RotateCcw className="w-2.5 h-2.5 text-rose-400" />
+                          <span>{custReturnsCount} {custReturnsCount === 1 ? 'Return Bill' : 'Return Bills'}</span>
                         </span>
                       )}
                     </div>
@@ -301,9 +323,10 @@ export const CustomerView: React.FC<CustomerViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onSelectCustomer(cust)}
-                    className="text-[11px] text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1"
+                    className="text-[11px] text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 cursor-pointer"
                   >
-                    <span>View Complete Dashboard</span>
+                    <Receipt className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>View Bill History & Profile</span>
                     <ArrowRight className="w-3 h-3" />
                   </button>
 

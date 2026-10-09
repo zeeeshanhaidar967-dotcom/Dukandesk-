@@ -1169,26 +1169,29 @@ class RoomDatabaseManager {
     let refundAmount = 0;
     let creditAmount = 0;
 
-    if (currentCustomerDue >= totalReturnValue) {
-      // Return value is less than or equal to current due: adjust entire return value against due
-      dueAdjustment = totalReturnValue;
-      customer.totalPurchases = Math.max(0, customer.totalPurchases - totalReturnValue);
-      customer.outstandingBalance = Math.max(0, customer.totalPurchases - customer.totalPaid);
+    if (input.settlementType === 'REFUND') {
+      // Cash/UPI Refund Paid to Customer: cash is paid out to customer
+      // Do not automatically subtract the refund amount from outstanding due
+      refundAmount = totalReturnValue;
+      dueAdjustment = 0;
+      customer.outstandingBalance = currentCustomerDue;
+    } else if (input.settlementType === 'STORE_CREDIT') {
+      // Store credit issued to customer: does not reduce outstanding due
+      creditAmount = totalReturnValue;
+      dueAdjustment = 0;
+      customer.outstandingBalance = currentCustomerDue;
     } else {
-      // Return value is greater than current due
-      dueAdjustment = currentCustomerDue;
-      const excess = totalReturnValue - currentCustomerDue;
-
-      if (input.settlementType === 'STORE_CREDIT') {
-        creditAmount = excess;
+      // DUE_ADJUSTMENT: directly reduces customer outstanding due
+      if (currentCustomerDue >= totalReturnValue) {
+        dueAdjustment = totalReturnValue;
         customer.totalPurchases = Math.max(0, customer.totalPurchases - totalReturnValue);
-        customer.outstandingBalance = Math.max(0, customer.totalPurchases - customer.totalPaid);
+        customer.outstandingBalance = Math.max(0, currentCustomerDue - dueAdjustment);
       } else {
-        // Default to REFUND (Cash/UPI returned to customer)
-        refundAmount = excess;
+        dueAdjustment = currentCustomerDue;
+        const excess = totalReturnValue - currentCustomerDue;
+        refundAmount = excess; // Any excess beyond due is refunded in cash to customer
         customer.totalPurchases = Math.max(0, customer.totalPurchases - totalReturnValue);
-        customer.totalPaid = Math.max(0, customer.totalPaid - refundAmount);
-        customer.outstandingBalance = Math.max(0, customer.totalPurchases - customer.totalPaid);
+        customer.outstandingBalance = 0;
       }
     }
     customer.updatedAt = now;

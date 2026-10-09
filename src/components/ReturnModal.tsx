@@ -31,6 +31,7 @@ import {
   SaleReturnEntity,
 } from '../types/database';
 import { formatCurrency } from '../services/calculations';
+import { ReturnReceiptModal } from './ReturnReceiptModal';
 import {
   ProposedBillData,
   ProposedBillItem,
@@ -471,6 +472,22 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
   if (!isOpen) return null;
 
+  // AUTHORITATIVE RETURN BILL SCREEN:
+  // Once the authoritative transaction succeeds, immediately transition to the full Return Bill
+  // matching SaleReceiptModal styling, equipped with Share Bill, Print, and Close actions.
+  if (completedReturn) {
+    return (
+      <ReturnReceiptModal
+        isOpen={true}
+        onClose={handleClose}
+        returnRecord={completedReturn}
+        settings={settings}
+        customer={selectedCustomer || customers.find((c) => c.id === completedReturn.customerId)}
+        sale={selectedSale || sales.find((s) => s.id === completedReturn.saleId)}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] flex flex-col">
@@ -520,41 +537,39 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         />
 
         {/* TWO-MODE ENTRY SELECTOR (Manual Entry vs Add from Bill Photo) */}
-        {!completedReturn && (
-          <div className="grid grid-cols-2 gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                setEntryMode('MANUAL');
-                setErrorMessage('');
-              }}
-              className={`py-2.5 px-3 sm:px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                entryMode === 'MANUAL'
-                  ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/60'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <RotateCcw className="w-4 h-4 text-rose-200" />
-              <span>Manual Entry</span>
-            </button>
+        <div className="grid grid-cols-2 gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setEntryMode('MANUAL');
+              setErrorMessage('');
+            }}
+            className={`py-2.5 px-3 sm:px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              entryMode === 'MANUAL'
+                ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/60'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <RotateCcw className="w-4 h-4 text-rose-200" />
+            <span>Manual Entry</span>
+          </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setEntryMode('PHOTO');
-                setErrorMessage('');
-              }}
-              className={`py-2.5 px-3 sm:px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                entryMode === 'PHOTO'
-                  ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-lg shadow-rose-950/60'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <Camera className="w-4 h-4 text-amber-300" />
-              <span>Add from Bill Photo</span>
-            </button>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={() => {
+              setEntryMode('PHOTO');
+              setErrorMessage('');
+            }}
+            className={`py-2.5 px-3 sm:px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              entryMode === 'PHOTO'
+                ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-lg shadow-rose-950/60'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Camera className="w-4 h-4 text-amber-300" />
+            <span>Add from Bill Photo</span>
+          </button>
+        </div>
 
         {/* Error Alert */}
         {errorMessage && (
@@ -566,83 +581,9 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
         {/* Content Body */}
         <div className="space-y-4 overflow-y-auto pr-1 flex-1">
-          {completedReturn ? (
-            /* SUCCESS CONFIRMATION STATE */
-            <div className="text-center py-6 px-4 space-y-4 bg-slate-950/70 border border-emerald-500/30 rounded-2xl">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-
-              <div>
-                <h4 className="text-base font-bold text-white">Return Processed Successfully</h4>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Return reference ID: <strong className="font-mono text-emerald-400">{completedReturn.id}</strong> (Original Bill #{completedReturn.billNumber})
-                </p>
-              </div>
-
-              {/* Summary Metrics */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-left p-3 rounded-xl bg-slate-900 border border-slate-800">
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Customer</span>
-                  <span className="font-bold text-white truncate block">{completedReturn.customerName}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Return Value</span>
-                  <span className="font-mono font-bold text-rose-400">
-                    {formatCurrency(completedReturn.totalReturnValue, settings.currencySymbol)}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Due Adjusted</span>
-                  <span className="font-mono font-bold text-emerald-400">
-                    -{formatCurrency(completedReturn.dueAdjustment, settings.currencySymbol)}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Refund/Credit</span>
-                  <span className="font-mono font-bold text-amber-400">
-                    {completedReturn.refundAmount > 0
-                      ? `Refund ${formatCurrency(completedReturn.refundAmount, settings.currencySymbol)}`
-                      : completedReturn.creditAmount > 0
-                      ? `Credit ${formatCurrency(completedReturn.creditAmount, settings.currencySymbol)}`
-                      : 'None (Full Due)'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Items Restocked List */}
-              <div className="text-left text-xs bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5">
-                <div className="font-bold text-slate-300 text-[11px] flex items-center gap-1.5">
-                  <Package className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Items Restocked into Inventory:</span>
-                </div>
-                {completedReturn.items.map((it, idx) => (
-                  <div key={idx} className="flex justify-between text-slate-300 py-1 border-t border-slate-800/60 text-[11px]">
-                    <span>
-                      {it.productName} ({it.returnedQuantity} {it.unit} @ {formatCurrency(it.sellingPrice, settings.currencySymbol)})
-                    </span>
-                    <span className="font-mono font-bold text-emerald-400">
-                      +{it.returnedQuantity} {it.unit} added to stock
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="px-6 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/20 active:scale-95 transition-all"
-                >
-                  Done & Close
-                </button>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* ========================================================== */}
-              {/* MODE 2: BILL PHOTO UPLOAD & SMART BILL MATCHING UI       */}
-              {/* ========================================================== */}
+          {/* ========================================================== */}
+          {/* MODE 2: BILL PHOTO UPLOAD & SMART BILL MATCHING UI       */}
+          {/* ========================================================== */}
               {entryMode === 'PHOTO' && (
                 <div className="space-y-3">
                   {!photoFile ? (
@@ -1243,32 +1184,28 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                   </div>
                 </div>
               )}
-            </>
-          )}
         </div>
 
         {/* Footer Actions */}
-        {!completedReturn && (
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3 shrink-0">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
-            >
-              Cancel
-            </button>
+        <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+          >
+            Cancel
+          </button>
 
-            <button
-              type="button"
-              disabled={itemsToReturn.length === 0}
-              onClick={handleReviewReturn}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-rose-500 hover:bg-rose-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-500/20 active:scale-95 transition-all"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Review & Confirm Return</span>
-            </button>
-          </div>
-        )}
+          <button
+            type="button"
+            disabled={itemsToReturn.length === 0}
+            onClick={handleReviewReturn}
+            className="flex-1 py-2.5 px-4 rounded-xl bg-rose-500 hover:bg-rose-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-500/20 active:scale-95 transition-all"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>Review & Confirm Return</span>
+          </button>
+        </div>
       </div>
 
       {/* CONFIRMATION SUMMARY DIALOG */}

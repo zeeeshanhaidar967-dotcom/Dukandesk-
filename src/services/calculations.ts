@@ -1,5 +1,5 @@
 /**
- * Business Calculations & Reporting Engine for DukanMaster
+ * Business Calculations & Reporting Engine for DukanDesk
  * Automated math, date-range filtering, profit formulas, and report generation.
  */
 

@@ -1,5 +1,5 @@
 /**
- * DukanMaster - Enterprise Multi-User Shop Management System (MAHARAJA MARBLE)
+ * DukanDesk - Enterprise Multi-User Shop Management System (MAHARAJA MARBLE)
  * Role-Based Access Control (RBAC) with Firebase Authentication & Firestore Real-Time Sync
  */
 
@@ -12,6 +12,7 @@ import {
   CustomerEntity,
   SaleEntity,
   PaymentEntity,
+  SaleReturnEntity,
   OwnerSettingsEntity,
   AppUserProfile,
   AppUserRole,
@@ -30,6 +31,7 @@ import { StockInModal } from './components/StockInModal';
 import { ProductFormModal } from './components/ProductFormModal';
 import { ReceivePaymentModal } from './components/ReceivePaymentModal';
 import { SaleReceiptModal } from './components/SaleReceiptModal';
+import { ReturnReceiptModal } from './components/ReturnReceiptModal';
 import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { ReturnModal } from './components/ReturnModal';
 import { LoginScreen } from './components/LoginScreen';
@@ -97,7 +99,15 @@ export default function App() {
   const [receivePaymentCustomerId, setReceivePaymentCustomerId] = useState<string | undefined>(undefined);
 
   const [activeReceiptSale, setActiveReceiptSale] = useState<SaleEntity | null>(null);
+  const [activeReceiptReturn, setActiveReceiptReturn] = useState<SaleReturnEntity | null>(null);
   const [activeCustomerDashboard, setActiveCustomerDashboard] = useState<CustomerEntity | null>(null);
+
+  // Authoritative reactive customer object synchronized with roomDb state
+  const currentActiveCustomer = useMemo(() => {
+    if (!activeCustomerDashboard) return null;
+    return dbState.customers.find((c) => c.id === activeCustomerDashboard.id) || activeCustomerDashboard;
+  }, [activeCustomerDashboard, dbState.customers]);
+
   const [isGoogleDriveOpen, setIsGoogleDriveOpen] = useState(false);
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
@@ -668,6 +678,8 @@ export default function App() {
               {activeTab === 'customers' && (
                 <CustomerView
                   customers={dbState.customers}
+                  sales={dbState.sales}
+                  returns={dbState.returns}
                   settings={dbState.settings}
                   onSelectCustomer={(cust) => setActiveCustomerDashboard(cust)}
                   onOpenReceivePayment={(custId) => {
@@ -769,18 +781,19 @@ export default function App() {
 
             {/* 4. Customer Detailed Dashboard Modal */}
             <CustomerDashboardModal
-              customer={activeCustomerDashboard}
+              customer={currentActiveCustomer}
               sales={dbState.sales}
               payments={dbState.payments}
               returns={dbState.returns}
               settings={dbState.settings}
-              isOpen={!!activeCustomerDashboard}
+              isOpen={!!currentActiveCustomer}
               onClose={() => setActiveCustomerDashboard(null)}
               onOpenReceivePayment={(custId) => {
                 setReceivePaymentCustomerId(custId);
                 setIsReceivePaymentOpen(true);
               }}
               onOpenSaleReceipt={(sale) => setActiveReceiptSale(sale)}
+              onOpenReturnReceipt={(returnRecord) => setActiveReceiptReturn(returnRecord)}
             />
 
             {/* 5. Sale Printable Invoice Receipt Modal */}
@@ -793,6 +806,24 @@ export default function App() {
                   : undefined
               }
               onClose={() => setActiveReceiptSale(null)}
+            />
+
+            {/* 5b. Return Printable Bill / Goods Return Receipt Modal */}
+            <ReturnReceiptModal
+              isOpen={!!activeReceiptReturn}
+              onClose={() => setActiveReceiptReturn(null)}
+              returnRecord={activeReceiptReturn}
+              settings={dbState.settings}
+              customer={
+                activeReceiptReturn
+                  ? dbState.customers.find((c) => c.id === activeReceiptReturn.customerId)
+                  : undefined
+              }
+              sale={
+                activeReceiptReturn
+                  ? dbState.sales.find((s) => s.id === activeReceiptReturn.saleId)
+                  : undefined
+              }
             />
 
             {/* 6. Google Drive Cloud Storage & Backup Modal */}

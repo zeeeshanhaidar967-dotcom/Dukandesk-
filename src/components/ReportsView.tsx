@@ -92,7 +92,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
 
     if (reportType === 'monthly_summary') {
       const rows: (string | number)[][] = [
-        ['DUKANMASTER - MONTHLY BUSINESS SUMMARY'],
+        ['DUKANDESK - MONTHLY BUSINESS SUMMARY'],
         ['Month', `${monthlySummary.monthName} ${monthlySummary.year}`],
         ['Generated At', new Date().toISOString()],
         [],

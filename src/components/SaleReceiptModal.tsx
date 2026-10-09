@@ -1,5 +1,5 @@
-import React from 'react';
-import { Printer, X, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Printer, X, CheckCircle2, Share2, Check, Copy } from 'lucide-react';
 import { SaleEntity, OwnerSettingsEntity, CustomerEntity } from '../types/database';
 import { formatCurrency } from '../services/calculations';
 
@@ -16,6 +16,8 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
   customer,
   onClose,
 }) => {
+  const [copiedLink, setCopiedLink] = useState(false);
+
   if (!sale) return null;
 
   const handlePrint = () => {
@@ -24,7 +26,7 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
 
   // Safe fallback to requested shop details
   const shopName = settings.shopName || 'MAHARAJA MARBLE';
-  const shopAddress = 'College Road, Supaul, Biraul, Darbhanga – 847203';
+  const shopAddress = settings.address || 'College Road, Supaul, Biraul, Darbhanga – 847203';
   const shopPhone = settings.phone || '9931683424';
   const proprietor = settings.ownerName || 'HAIDAR ALI';
 
@@ -47,8 +49,60 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
 
   const totalQuantity = sale.items.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Generate shareable text summary for web share sheet or clipboard
+  const generateShareText = () => {
+    const itemsList = sale.items
+      .map(
+        (it, idx) =>
+          `${idx + 1}. ${it.productName} - ${it.quantity} ${it.unit} @ ${formatCurrency(it.sellingPrice, settings.currencySymbol)} = ${formatCurrency(it.subtotal, settings.currencySymbol)}`
+      )
+      .join('\n');
+
+    return `*${shopName.toUpperCase()} - SALES BILL*\n` +
+      `Bill No: #${sale.billNumber}\n` +
+      `Date: ${formattedDate} ${formattedTime}\n` +
+      `Customer: ${sale.customerName}${customerPhone ? ` (${customerPhone})` : ''}\n` +
+      `--------------------------------\n` +
+      `*ITEMS:*\n${itemsList}\n` +
+      `--------------------------------\n` +
+      `Total Bill: ${formatCurrency(sale.totalBill, settings.currencySymbol)}\n` +
+      `Paid: ${formatCurrency(sale.amountPaid, settings.currencySymbol)}\n` +
+      `Balance Due: ${formatCurrency(sale.balanceDue, settings.currencySymbol)}\n` +
+      `Payment Mode: ${sale.paymentMethod}\n` +
+      `--------------------------------\n` +
+      `Thank you for your business!\n${shopAddress}\nPh: ${shopPhone}`;
+  };
+
+  const handleShare = async () => {
+    const shareText = generateShareText();
+    const title = `${shopName} - Bill #${sale.billNumber}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text: shareText,
+        });
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    // Fallback to clipboard
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareText);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2500);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
         {/* Modal Top Bar (screen-only, omitted on print) */}
         <div className="flex items-center justify-between px-5 py-3.5 bg-slate-950 border-b border-slate-800 no-print shrink-0">
@@ -80,7 +134,7 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
             </div>
 
             <p className="text-xs font-semibold text-slate-800">
-              Dealer of Premium Quality Marble, Granite, Floor & Wall Tiles, Sanitaryware
+              Dealer of Premium Quality Marble, Granite, Floor &amp; Wall Tiles, Sanitaryware
             </p>
             <p className="text-[11px] text-slate-600 mt-0.5">
               {shopAddress}
@@ -105,7 +159,7 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 text-[10px] block">DATE & TIME:</span>
+                <span className="text-slate-500 text-[10px] block">DATE &amp; TIME:</span>
                 <span className="font-mono font-semibold text-slate-900">
                   {formattedDate} · {formattedTime}
                 </span>
@@ -276,19 +330,28 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
         </div>
 
         {/* Modal Bottom Action Controls (screen-only, omitted on print) */}
-        <div className="flex items-center justify-between p-3.5 sm:p-4 bg-slate-950 border-t border-slate-800 no-print gap-3 shrink-0">
+        <div className="flex items-center justify-between p-3.5 sm:p-4 bg-slate-950 border-t border-slate-800 no-print gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-center transition-colors"
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-center transition-colors"
           >
             Close
           </button>
 
           <button
             type="button"
+            onClick={handleShare}
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+          >
+            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-emerald-400" />}
+            <span>{copiedLink ? 'Copied!' : 'Share Bill'}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handlePrint}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+            className="flex-1 py-2.5 px-3 sm:px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
           >
             <Printer className="w-4 h-4" />
             <span>Print Bill / PDF</span>

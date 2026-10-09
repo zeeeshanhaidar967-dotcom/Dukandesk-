@@ -1,5 +1,5 @@
-import React from 'react';
-import { Printer, X, CheckCircle2, RotateCcw, Package } from 'lucide-react';
+import React, { useState } from 'react';
+import { Printer, X, CheckCircle2, RotateCcw, Package, Share2, Check } from 'lucide-react';
 import { SaleReturnEntity, OwnerSettingsEntity, CustomerEntity, SaleEntity } from '../types/database';
 import { formatCurrency } from '../services/calculations';
 
@@ -20,6 +20,8 @@ export const ReturnReceiptModal: React.FC<ReturnReceiptModalProps> = ({
   customer,
   sale,
 }) => {
+  const [copiedLink, setCopiedLink] = useState(false);
+
   if (!isOpen || !returnRecord) return null;
 
   const handlePrint = () => {
@@ -61,8 +63,70 @@ export const ReturnReceiptModal: React.FC<ReturnReceiptModalProps> = ({
     }
   };
 
+  const generateShareText = () => {
+    const itemsList = returnRecord.items
+      .map(
+        (it, idx) =>
+          `${idx + 1}. ${it.productName} - ${it.returnedQuantity} ${it.unit} @ ${formatCurrency(it.sellingPrice, settings.currencySymbol)} = ${formatCurrency(it.returnValue, settings.currencySymbol)}`
+      )
+      .join('\n');
+
+    return `*${shopName.toUpperCase()} - RETURN BILL*\n` +
+      `Return Bill No: #${returnRecord.returnBillNumber || returnRecord.id}\n` +
+      `Original Bill No: #${returnRecord.billNumber}\n` +
+      `Date: ${formattedDate} ${formattedTime}\n` +
+      `Customer: ${returnRecord.customerName}${customerPhone ? ` (${customerPhone})` : ''}\n` +
+      `--------------------------------\n` +
+      `*RETURNED ITEMS (RESTOCKED):*\n${itemsList}\n` +
+      `--------------------------------\n` +
+      `Total Return Value: ${formatCurrency(returnRecord.totalReturnValue, settings.currencySymbol)}\n` +
+      (returnRecord.dueAdjustment > 0
+        ? `Due Adjustment: -${formatCurrency(returnRecord.dueAdjustment, settings.currencySymbol)}\n`
+        : '') +
+      (returnRecord.refundAmount > 0
+        ? `Refund Paid: ${formatCurrency(returnRecord.refundAmount, settings.currencySymbol)}\n`
+        : '') +
+      (returnRecord.creditAmount > 0
+        ? `Store Credit Issued: ${formatCurrency(returnRecord.creditAmount, settings.currencySymbol)}\n`
+        : '') +
+      `Settlement Method: ${getSettlementLabel(returnRecord.settlementType)}\n` +
+      (customer
+        ? `Remaining Due: ${formatCurrency(customer.outstandingBalance, settings.currencySymbol)}\n`
+        : '') +
+      (returnRecord.notes ? `Notes: ${returnRecord.notes}\n` : '') +
+      `--------------------------------\n` +
+      `Goods re-admitted to inventory.\n${shopAddress}\nPh: ${shopPhone}`;
+  };
+
+  const handleShare = async () => {
+    const shareText = generateShareText();
+    const title = `${shopName} - Return Bill #${returnRecord.returnBillNumber || returnRecord.id}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text: shareText,
+        });
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareText);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2500);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
         {/* Modal Top Bar (screen-only, omitted on print) */}
         <div className="flex items-center justify-between px-5 py-3.5 bg-slate-950 border-b border-slate-800 no-print shrink-0">
@@ -293,19 +357,28 @@ export const ReturnReceiptModal: React.FC<ReturnReceiptModalProps> = ({
         </div>
 
         {/* Modal Bottom Action Controls (no-print) */}
-        <div className="p-3.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-3 no-print shrink-0">
+        <div className="p-3.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-2 sm:gap-3 no-print shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-xs transition-colors"
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-xs transition-colors"
           >
-            Done
+            Close
+          </button>
+
+          <button
+            type="button"
+            onClick={handleShare}
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+          >
+            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-emerald-400" />}
+            <span>{copiedLink ? 'Copied!' : 'Share Bill'}</span>
           </button>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-950/60 transition-all active:scale-95"
+            className="flex-1 py-2.5 px-3 sm:px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-rose-950/60 transition-all active:scale-95"
           >
             <Printer className="w-4 h-4" />
             <span>Print Return Bill</span>
