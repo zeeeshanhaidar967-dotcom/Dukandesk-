@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   CANONICAL GLOBAL LTR POLICY - DukanDesk
+   Enforces strict Left-To-Right text progression, natural left-to-right caret
+   movement, standard horizontal-tb writing mode, and robust bidirectional
+   behavior across modern desktop and mobile/Android WebViews.
+   ========================================================================== */
+
+:root,
+html,
+body,
+#root {
+  direction: ltr !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  unicode-bidi: normal !important;
+  text-align: left;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Universal Form Controls LTR Base Rule */
+input,
+textarea,
+select,
+button,
+[contenteditable="true"] {
+  direction: ltr !important;
+  writing-mode: horizontal-tb !important;
+  unicode-bidi: normal !important;
+  text-align: left;
+}
+
+/* Explicit Form Input Types */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="url"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+textarea,
+select {
+  direction: ltr !important;
+  writing-mode: horizontal-tb !important;
+  unicode-bidi: normal !important;
+  text-align: left;
+}
+
+/* Placeholder LTR Consistency */
+::placeholder,
+input::placeholder,
+textarea::placeholder {
+  direction: ltr !important;
+  writing-mode: horizontal-tb !important;
+  unicode-bidi: normal !important;
+  text-align: left;
+}
+
+/* Deliberate Centered Inputs (PIN codes, counter quantities) */
+input.text-center,
+textarea.text-center,
+select.text-center,
+[dir="ltr"].text-center {
+  text-align: center !important;
+}
+
+/* Deliberate Right-Aligned Elements */
+input.text-right,
+textarea.text-right,
+select.text-right,
+[dir="ltr"].text-right {
+  text-align: right !important;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+    background: white;
+    color: black;
+  }
+}

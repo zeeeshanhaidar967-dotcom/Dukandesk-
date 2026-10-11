@@ -1,0 +1,6 @@
+{
+  "name": "DukanDesk - Private Shop Management",
+  "description": "Offline-first personal Android shop management system with local SQLite/Room database, inventory control, sales, customer ledgers, and profit reporting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

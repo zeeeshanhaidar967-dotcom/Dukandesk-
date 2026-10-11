@@ -1,0 +1,8 @@
+{
+	"appId": "com.zeeshan.app",
+	"appName": "DukanDesk",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https"
+	}
+}

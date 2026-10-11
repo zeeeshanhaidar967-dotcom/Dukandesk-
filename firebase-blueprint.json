@@ -1,0 +1,191 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Multi-user role-based authentication and account profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 256 },
+        "email": { "type": "string", "maxLength": 256 },
+        "role": { "type": "string", "enum": ["admin", "viewer", "staff", "manager", "stock_viewer"] },
+        "signUpDate": { "type": "string", "format": "date-time" },
+        "lastLogin": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 256 },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdBy": { "type": "string", "maxLength": 256 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "email", "role", "signUpDate", "lastLogin"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Inventory product item in MAHARAJA MARBLE shop catalogue",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 256 },
+        "category": { "type": "string", "maxLength": 128 },
+        "brand": { "type": "string", "maxLength": 128 },
+        "producer": { "type": "string", "maxLength": 128 },
+        "supplier": { "type": "string", "maxLength": 128 },
+        "unit": { "type": "string", "maxLength": 32 },
+        "purchasePrice": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "currentStock": { "type": "number" },
+        "minStockLevel": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "category", "unit", "currentStock"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer ledger account and contact details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 256 },
+        "phone": { "type": "string", "maxLength": 64 },
+        "address": { "type": "string", "maxLength": 512 },
+        "totalPurchases": { "type": "number" },
+        "totalPaid": { "type": "number" },
+        "outstandingBalance": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "phone", "totalPurchases", "totalPaid", "outstandingBalance"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Completed bill invoice and itemized sales record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "billNumber": { "type": "string", "maxLength": 64 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "customerName": { "type": "string", "maxLength": 256 },
+        "customerPhone": { "type": "string", "maxLength": 64 },
+        "totalBill": { "type": "number" },
+        "totalCost": { "type": "number" },
+        "grossProfit": { "type": "number" },
+        "amountPaid": { "type": "number" },
+        "balanceDue": { "type": "number" },
+        "paymentMethod": { "type": "string", "maxLength": 64 },
+        "notes": { "type": "string", "maxLength": 1024 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "billNumber", "customerId", "customerName", "totalBill", "amountPaid", "balanceDue", "paymentMethod", "createdAt"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Recorded customer payment transaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "customerName": { "type": "string", "maxLength": 256 },
+        "saleId": { "type": "string", "maxLength": 128 },
+        "billNumber": { "type": "string", "maxLength": 64 },
+        "amount": { "type": "number" },
+        "paymentMethod": { "type": "string", "maxLength": 64 },
+        "notes": { "type": "string", "maxLength": 1024 },
+        "paymentDate": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "customerId", "customerName", "amount", "paymentMethod", "paymentDate", "createdAt"]
+    },
+    "SaleReturn": {
+      "title": "SaleReturn",
+      "description": "Product return and due adjustment record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "saleId": { "type": "string", "maxLength": 128 },
+        "billNumber": { "type": "string", "maxLength": 64 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "customerName": { "type": "string", "maxLength": 256 },
+        "totalReturnValue": { "type": "number" },
+        "dueAdjustment": { "type": "number" },
+        "refundAmount": { "type": "number" },
+        "creditAmount": { "type": "number" },
+        "settlementType": { "type": "string", "maxLength": 64 },
+        "notes": { "type": "string", "maxLength": 1024 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "saleId", "billNumber", "customerId", "customerName", "totalReturnValue", "settlementType", "createdAt"]
+    },
+    "StockMovement": {
+      "title": "StockMovement",
+      "description": "Audit trail log of all inventory movements",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "productId": { "type": "string", "maxLength": 128 },
+        "productName": { "type": "string", "maxLength": 256 },
+        "type": { "type": "string", "maxLength": 32 },
+        "quantity": { "type": "number" },
+        "previousStock": { "type": "number" },
+        "newStock": { "type": "number" },
+        "reference": { "type": "string", "maxLength": 128 },
+        "notes": { "type": "string", "maxLength": 1024 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "productId", "productName", "type", "quantity", "previousStock", "newStock", "reference", "createdAt"]
+    },
+    "OwnerSettings": {
+      "title": "OwnerSettings",
+      "description": "Shop identity, owner preferences, and cloud backup configuration",
+      "type": "object",
+      "properties": {
+        "shopName": { "type": "string", "maxLength": 256 },
+        "ownerName": { "type": "string", "maxLength": 256 },
+        "phone": { "type": "string", "maxLength": 64 },
+        "address": { "type": "string", "maxLength": 512 },
+        "currencySymbol": { "type": "string", "maxLength": 16 },
+        "receiptFooter": { "type": "string", "maxLength": 512 },
+        "enableStockWarning": { "type": "boolean" },
+        "automaticBackupEnabled": { "type": "boolean" },
+        "isProductionMode": { "type": "boolean" },
+        "lastBackupDate": { "type": "string", "format": "date-time" }
+      },
+      "required": ["shopName", "ownerName", "phone", "address", "currencySymbol"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and RBAC role assignments"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Shop inventory catalogue synchronized across all authorized devices"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Customer ledger accounts (Admin only)"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Shop sales transactions and bill invoices (Admin only)"
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Customer payments and receipts (Admin only)"
+    },
+    "/returns/{returnId}": {
+      "schema": "SaleReturn",
+      "description": "Product return and refund adjustments (Admin only)"
+    },
+    "/stock_movements/{movementId}": {
+      "schema": "StockMovement",
+      "description": "Inventory stock movement audit log (Admin only)"
+    },
+    "/settings/{docId}": {
+      "schema": "OwnerSettings",
+      "description": "Shop owner profile and configuration (Admin only)"
+    }
+  }
+}
