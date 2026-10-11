@@ -50,12 +50,33 @@ jobs:
 
       - name: Sync Capacitor Android Project
         run: |
-          npx cap sync android
-          if [ ! -f "android/gradlew" ]; then
-            echo "gradlew not found, attempting update..."
-            npx cap update android
+          if [ ! -d "android" ]; then
+            echo "android directory missing, adding android platform..."
+            npx cap add android
+          else
+            echo "android directory exists, syncing android assets..."
+            npx cap sync android
           fi
+
+      - name: Verify Gradle Wrapper files
+        run: |
+          if [ ! -f "android/gradlew" ]; then
+            echo "android/gradlew not found! Checking if Gradle can generate wrapper..."
+            if command -v gradle >/dev/null 2>&1; then
+              echo "Generating wrapper using Gradle 8.11.1..."
+              (cd android && gradle wrapper --gradle-version 8.11.1 --distribution-type all)
+            else
+              echo "Error: android/gradlew is missing and gradle CLI is not available."
+              exit 1
+            fi
+          fi
+          if [ ! -f "android/gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "Wrapper JAR missing. Attempting wrapper regeneration..."
+            (cd android && gradle wrapper --gradle-version 8.11.1 --distribution-type all)
+          fi
+          echo "Setting executable bit on android/gradlew..."
           chmod +x android/gradlew
+          ls -la android/gradlew android/gradle/wrapper/
 
       - name: Create temporary debug keystore
         run: |
