@@ -99,11 +99,18 @@ jobs:
           cp -f debug.keystore ~/.android/debug.keystore
           cd ..
 
+      - name: Configure Android SDK and licenses
+        run: |
+          if [ -n "$ANDROID_HOME" ]; then
+            echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          fi
+          yes | sdkmanager --licenses 2>/dev/null || true
+
       - name: Build debug APK
         run: |
           cd android
           chmod +x ./gradlew
-          ./gradlew :app:assembleDebug --stacktrace --no-daemon
+          ./gradlew :app:assembleDebug --stacktrace --no-daemon -Dorg.gradle.java.home="$JAVA_HOME"
           cd ..
 
       - name: Verify the APK
