@@ -52,7 +52,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setUnit(productToEdit.unit);
       setCustomUnit(productToEdit.customUnit || '');
       setPurchasePrice(String(productToEdit.purchasePrice));
-      setSellingPrice(String(productToEdit.sellingPrice));
+      setSellingPrice(productToEdit.sellingPrice != null ? String(productToEdit.sellingPrice) : '');
       setCurrentStock(String(productToEdit.currentStock));
       setMinStockLevel(String(productToEdit.minStockLevel));
     } else {
@@ -108,16 +108,19 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     }
 
     const pPrice = parseFloat(purchasePrice);
-    const sPrice = parseFloat(sellingPrice);
-
     if (isNaN(pPrice) || pPrice < 0) {
       setError('Please provide a valid purchase price.');
       return;
     }
 
-    if (isNaN(sPrice) || sPrice < 0) {
-      setError('Please provide a valid selling price.');
-      return;
+    let sPrice: number | null = null;
+    if (sellingPrice.trim() !== '') {
+      const parsed = parseFloat(sellingPrice);
+      if (isNaN(parsed) || parsed < 0) {
+        setError('Please provide a valid non-negative selling price, or leave it blank.');
+        return;
+      }
+      sPrice = parsed;
     }
 
     const stock = parseFloat(currentStock) || 0;
@@ -386,21 +389,28 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </div>
 
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">
-                Selling Price ({settings.currencySymbol}) *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-slate-300 font-semibold block">
+                  Selling Price ({settings.currencySymbol})
+                </label>
+                <span className="text-[10px] text-amber-400 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                  Optional
+                </span>
+              </div>
               <input
                 type="text"
                 inputMode="decimal"
                 dir="ltr"
                 style={{ direction: 'ltr', textAlign: 'left' }}
                 autoComplete="off"
-                required
                 value={sellingPrice}
                 onChange={(e) => setSellingPrice(e.target.value)}
-                placeholder="e.g. 850"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold text-left"
+                placeholder="Optional (Price not set)"
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold text-left placeholder:font-normal placeholder:text-slate-500 placeholder:text-xs"
               />
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Leave empty if retail price is not yet decided
+              </p>
             </div>
           </div>
 

@@ -126,8 +126,16 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
     return products.reduce((sum, p) => sum + (Number(p.currentStock ?? 0) * Number(p.purchasePrice ?? 0)), 0);
   }, [products]);
 
-  const totalStockRetailValue = useMemo(() => {
-    return products.reduce((sum, p) => sum + (Number(p.currentStock ?? 0) * Number(p.sellingPrice ?? 0)), 0);
+  const { totalStockRetailValue, unpricedProductsCount } = useMemo(() => {
+    let unpricedCount = 0;
+    const total = products.reduce((sum, p) => {
+      if (p.sellingPrice !== null && p.sellingPrice !== undefined) {
+        return sum + Number(p.currentStock ?? 0) * Number(p.sellingPrice);
+      }
+      unpricedCount++;
+      return sum;
+    }, 0);
+    return { totalStockRetailValue: total, unpricedProductsCount: unpricedCount };
   }, [products]);
 
   return (
@@ -214,7 +222,14 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 </strong>
               </div>
               <div className="text-right">
-                <span className="text-slate-400 block text-[11px]">Retail Realization Value</span>
+                <span className="text-slate-400 block text-[11px]">
+                  Retail Realization Value
+                  {unpricedProductsCount > 0 && (
+                    <span className="text-amber-400 text-[10px] ml-1">
+                      ({unpricedProductsCount} unpriced)
+                    </span>
+                  )}
+                </span>
                 <strong className="text-base font-bold font-mono text-white">
                   {formatCurrency(totalStockRetailValue, settings.currencySymbol)}
                 </strong>
@@ -419,9 +434,15 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
                         <div>
                           <span className="text-slate-500 text-[10px] block">Selling:</span>
-                          <span className="font-mono text-emerald-400 font-semibold">
-                            {formatCurrency(p.sellingPrice, settings.currencySymbol)}
-                          </span>
+                          {p.sellingPrice != null ? (
+                            <span className="font-mono text-emerald-400 font-semibold">
+                              {formatCurrency(p.sellingPrice, settings.currencySymbol)}
+                            </span>
+                          ) : (
+                            <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
+                              Price not set
+                            </span>
+                          )}
                         </div>
 
                         <div>
@@ -435,9 +456,20 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
                     {/* Action Bar */}
                     <div className="flex items-center justify-between pt-1 border-t border-slate-800/60">
-                      <span className="text-[10px] text-slate-500">
-                        Min alert: {p.minStockLevel} {p.unit}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-500">
+                          Min alert: {p.minStockLevel} {p.unit}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setInspectProduct(p)}
+                          className="text-[11px] text-slate-400 hover:text-emerald-400 flex items-center gap-1 font-medium transition-colors"
+                          title="View Product Details"
+                        >
+                          <Eye className="w-3 h-3 text-emerald-400" />
+                          <span>Details</span>
+                        </button>
+                      </div>
 
                       {!isStockViewer && (
                         <div className="flex items-center gap-1.5">
@@ -453,10 +485,11 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onEditProduct(p)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
-                            title="Edit Product"
+                            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-all"
+                            title="Edit Product Details"
                           >
-                            <Edit2 className="w-3.5 h-3.5" />
+                            <Edit2 className="w-3.5 h-3.5 text-cyan-400" />
+                            <span>Edit</span>
                           </button>
 
                           <button
@@ -605,6 +638,141 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 <Trash2 className="w-4 h-4" />
                 <span>Yes, Delete</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Details Inspection Modal with Edit Product Action */}
+      {inspectProduct && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Package className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-bold text-white truncate">{inspectProduct.name}</h3>
+                  <span className="text-[11px] font-mono text-slate-400">{inspectProduct.id}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setInspectProduct(null)}
+                className="text-slate-400 hover:text-white text-sm p-1 rounded-lg hover:bg-slate-800 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {inspectProduct.photoUrl && (
+              <div className="w-full h-44 rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">
+                <img
+                  src={inspectProduct.photoUrl}
+                  alt={inspectProduct.name}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            <div className="space-y-2 text-xs">
+              <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
+                <div>
+                  <span className="text-slate-500 text-[10px] block">Category</span>
+                  <span className="text-white font-medium">{inspectProduct.category}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 text-[10px] block">Brand</span>
+                  <span className="text-white font-medium">{inspectProduct.brand || 'Standard'}</span>
+                </div>
+                {!isStockViewer && (
+                  <>
+                    <div>
+                      <span className="text-slate-500 text-[10px] block">Producer / Mfr</span>
+                      <span className="text-slate-300 truncate block">{inspectProduct.producer || '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 text-[10px] block">Supplier</span>
+                      <span className="text-slate-300 truncate block">{inspectProduct.supplier || '—'}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
+                <div>
+                  <span className="text-slate-500 text-[10px] block">Current Stock</span>
+                  <strong className="font-mono text-white text-sm">
+                    {inspectProduct.currentStock} {inspectProduct.unit}
+                  </strong>
+                </div>
+                {!isStockViewer && (
+                  <div>
+                    <span className="text-slate-500 text-[10px] block">Cost Price</span>
+                    <span className="font-mono text-slate-300 font-semibold text-xs">
+                      {formatCurrency(inspectProduct.purchasePrice, settings.currencySymbol)}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <span className="text-slate-500 text-[10px] block">Selling Price</span>
+                  {inspectProduct.sellingPrice != null ? (
+                    <span className="font-mono text-emerald-400 font-bold text-xs">
+                      {formatCurrency(inspectProduct.sellingPrice, settings.currencySymbol)}
+                    </span>
+                  ) : (
+                    <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
+                      Price not set
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between px-1 text-[11px] text-slate-500">
+                <span>Min alert level: {inspectProduct.minStockLevel} {inspectProduct.unit}</span>
+                <span>Updated: {new Date(inspectProduct.updatedAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setInspectProduct(null)}
+                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors"
+              >
+                Close
+              </button>
+              {!isStockViewer && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const p = inspectProduct;
+                      setInspectProduct(null);
+                      onOpenStockIn(p.id);
+                    }}
+                    className="py-2.5 px-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 font-semibold text-xs flex items-center gap-1.5 active:scale-95 transition-all"
+                  >
+                    <PackagePlus className="w-3.5 h-3.5" />
+                    <span>Stock In</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const p = inspectProduct;
+                      setInspectProduct(null);
+                      onEditProduct(p);
+                    }}
+                    className="flex-1 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-cyan-600/20 active:scale-95 transition-all"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    <span>Edit Product</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

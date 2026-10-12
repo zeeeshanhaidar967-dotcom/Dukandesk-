@@ -25,6 +25,7 @@ import { BillPhotoSaleView } from './BillPhotoSaleView';
 interface CartItem {
   product: ProductEntity;
   quantity: number;
+  customSellingPrice?: number;
 }
 
 interface SalesViewProps {
@@ -33,12 +34,14 @@ interface SalesViewProps {
   settings: OwnerSettingsEntity;
   onCompleteSale: (saleInput: {
     customerId: string;
-    items: Array<{ productId: string; quantity: number }>;
+    items: Array<{ productId: string; quantity: number; customSellingPrice?: number }>;
     amountPaid: number;
     paymentMethod: SaleEntity['paymentMethod'];
     notes?: string;
   }) => SaleEntity;
   onQuickAddCustomer: (data: { name: string; phone: string; address: string }) => CustomerEntity;
+  onEditProduct?: (product: ProductEntity) => void;
+  onUpdateProductPrice?: (productId: string, newSellingPrice: number) => void;
 }
 
 export const SalesView: React.FC<SalesViewProps> = ({
@@ -47,6 +50,8 @@ export const SalesView: React.FC<SalesViewProps> = ({
   settings,
   onCompleteSale,
   onQuickAddCustomer,
+  onEditProduct,
+  onUpdateProductPrice,
 }) => {
   // Method selection: 'MANUAL' | 'PHOTO'
   const [saleEntryMode, setSaleEntryMode] = useState<'MANUAL' | 'PHOTO'>('MANUAL');
@@ -60,6 +65,16 @@ export const SalesView: React.FC<SalesViewProps> = ({
   const [isManualPaidEdited, setIsManualPaidEdited] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<SaleEntity['paymentMethod']>('Cash');
   const [saleNotes, setSaleNotes] = useState('');
+
+  // Missing Selling Price dialog state
+  const [missingPriceModalProduct, setMissingPriceModalProduct] = useState<ProductEntity | null>(null);
+  const [missingPriceInput, setMissingPriceInput] = useState<string>('');
+  const [missingPriceSaveToCatalog, setMissingPriceSaveToCatalog] = useState<boolean>(true);
+  const [missingPriceModalError, setMissingPriceModalError] = useState<string>('');
+
+  // Per-cart item rate editing
+  const [editingRateProductId, setEditingRateProductId] = useState<string | null>(null);
+  const [editingRateInput, setEditingRateInput] = useState<string>('');
 
   // Product Search & Selection
   const [searchQuery, setSearchQuery] = useState('');
@@ -99,11 +114,27 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
   // Cart Totals calculation
   const totalBill = useMemo(() => {
-    return cart.reduce((sum, item) => sum + item.product.sellingPrice * item.quantity, 0);
+    return cart.reduce((sum, item) => {
+      const price =
+        item.customSellingPrice !== undefined && item.customSellingPrice !== null
+          ? item.customSellingPrice
+          : item.product.sellingPrice;
+      return sum + (price != null ? price * item.quantity : 0);
+    }, 0);
   }, [cart]);
 
   const totalCost = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.product.purchasePrice * item.quantity, 0);
+  }, [cart]);
+
+  const hasUnpricedCartItems = useMemo(() => {
+    return cart.some((item) => {
+      const price =
+        item.customSellingPrice !== undefined && item.customSellingPrice !== null
+          ? item.customSellingPrice
+          : item.product.sellingPrice;
+      return price === null || price === undefined || isNaN(price);
+    });
   }, [cart]);
 
   const grossProfit = totalBill - totalCost;
@@ -127,6 +158,16 @@ export const SalesView: React.FC<SalesViewProps> = ({
   // Handlers for Cart
   const handleAddToCart = (product: ProductEntity) => {
     setValidationError('');
+
+    // If product has no selling price, prompt user to enter one for this sale
+    if (product.sellingPrice === null || product.sellingPrice === undefined) {
+      setMissingPriceModalProduct(product);
+      setMissingPriceInput('');
+      setMissingPriceSaveToCatalog(true);
+      setMissingPriceModalError('');
+      return;
+    }
+
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
@@ -138,6 +179,59 @@ export const SalesView: React.FC<SalesViewProps> = ({
       }
       return [...prev, { product, quantity: 1 }];
     });
+  };
+
+  const handleConfirmMissingPrice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!missingPriceModalProduct) return;
+    const price = parseFloat(missingPriceInput);
+    if (isNaN(price) || price < 0) {
+      setMissingPriceModalError('Please enter a valid non-negative selling price.');
+      return;
+    }
+
+    const prod = missingPriceModalProduct;
+    if (missingPriceSaveToCatalog && onUpdateProductPrice) {
+      onUpdateProductPrice(prod.id, price);
+    }
+
+    setCart((prev) => {
+      const existing = prev.find((item) => item.product.id === prod.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.product.id === prod.id
+            ? { ...item, quantity: item.quantity + 1, customSellingPrice: price }
+            : item
+        );
+      }
+      return [
+        ...prev,
+        {
+          product: { ...prod, sellingPrice: missingPriceSaveToCatalog ? price : prod.sellingPrice },
+          quantity: 1,
+          customSellingPrice: price,
+        },
+      ];
+    });
+
+    setMissingPriceModalProduct(null);
+    setMissingPriceInput('');
+    setMissingPriceModalError('');
+  };
+
+  const handleSaveItemCustomRate = (productId: string, newRateStr: string) => {
+    const rate = parseFloat(newRateStr);
+    if (isNaN(rate) || rate < 0) {
+      setValidationError('Please enter a valid non-negative selling price.');
+      return;
+    }
+    setCart((prev) =>
+      prev.map((item) =>
+        item.product.id === productId ? { ...item, customSellingPrice: rate } : item
+      )
+    );
+    setEditingRateProductId(null);
+    setEditingRateInput('');
   };
 
   const handleUpdateQuantity = (productId: string, qty: number) => {
@@ -398,7 +492,11 @@ export const SalesView: React.FC<SalesViewProps> = ({
                       <div className="flex items-center gap-2 shrink-0">
                         <div className="text-right">
                           <div className="font-bold font-mono text-white text-xs">
-                            {formatCurrency(p.sellingPrice, settings.currencySymbol)}
+                            {p.sellingPrice !== null && p.sellingPrice !== undefined ? (
+                              formatCurrency(p.sellingPrice, settings.currencySymbol)
+                            ) : (
+                              <span className="text-amber-400 font-sans text-[10px]">Price not set</span>
+                            )}
                           </div>
                           <div className="text-[10px] text-slate-400">/{p.unit}</div>
                         </div>
@@ -476,7 +574,12 @@ export const SalesView: React.FC<SalesViewProps> = ({
             ) : (
               <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
                 {cart.map((item) => {
-                  const subtotal = item.product.sellingPrice * item.quantity;
+                  const effectivePrice =
+                    item.customSellingPrice !== undefined && item.customSellingPrice !== null
+                      ? item.customSellingPrice
+                      : item.product.sellingPrice;
+                  const isPriceSet = effectivePrice !== null && effectivePrice !== undefined;
+                  const subtotal = isPriceSet ? effectivePrice * item.quantity : 0;
                   const hasStockWarning = item.quantity > item.product.currentStock;
 
                   return (
@@ -492,7 +595,11 @@ export const SalesView: React.FC<SalesViewProps> = ({
                             {item.product.name}
                           </div>
                           <div className="text-[11px] text-slate-400">
-                            {formatCurrency(item.product.sellingPrice, settings.currencySymbol)} / {item.product.unit}
+                            {isPriceSet ? (
+                              `${formatCurrency(effectivePrice, settings.currencySymbol)} / ${item.product.unit}`
+                            ) : (
+                              <span className="text-amber-400 font-semibold">Price not set</span>
+                            )}
                           </div>
                           {hasStockWarning && (
                             <div className="text-[10px] text-amber-400 font-semibold mt-0.5">
@@ -503,10 +610,12 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
                         <div className="text-right">
                           <div className="font-bold font-mono text-white">
-                            {formatCurrency(subtotal, settings.currencySymbol)}
+                            {isPriceSet ? formatCurrency(subtotal, settings.currencySymbol) : '—'}
                           </div>
                           <div className="text-[10px] text-emerald-400 font-mono">
-                            Profit: +{formatCurrency((item.product.sellingPrice - item.product.purchasePrice) * item.quantity, settings.currencySymbol)}
+                            {isPriceSet
+                              ? `Profit: +${formatCurrency((effectivePrice - item.product.purchasePrice) * item.quantity, settings.currencySymbol)}`
+                              : 'Profit: —'}
                           </div>
                         </div>
                       </div>

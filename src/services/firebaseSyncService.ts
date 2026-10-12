@@ -608,7 +608,10 @@ export function mapFirestoreProductDoc(docId: string, raw: any): ProductEntity {
     unit: (data.unit as any) || 'Piece',
     customUnit: data.customUnit ? String(data.customUnit) : undefined,
     purchasePrice: Number(data.purchasePrice ?? 0) || 0,
-    sellingPrice: Number(data.sellingPrice ?? 0) || 0,
+    sellingPrice:
+      data.sellingPrice !== undefined && data.sellingPrice !== null && !isNaN(Number(data.sellingPrice))
+        ? Number(data.sellingPrice)
+        : null,
     currentStock: Number(data.currentStock ?? 0) || 0,
     minStockLevel: Number(data.minStockLevel ?? 0) || 0,
     createdAt: data.createdAt ? String(data.createdAt) : new Date().toISOString(),

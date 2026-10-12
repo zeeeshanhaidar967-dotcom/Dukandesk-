@@ -23,7 +23,7 @@ export interface ProductEntity {
   unit: UnitOfMeasurement;
   customUnit?: string;
   purchasePrice: number; // Cost price in currency (e.g. ₹500)
-  sellingPrice: number;  // Retail price in currency (e.g. ₹750)
+  sellingPrice: number | null;  // Retail price in currency (e.g. ₹750) or null if unset
   currentStock: number;
   minStockLevel: number;
   createdAt: string; // ISO 8601

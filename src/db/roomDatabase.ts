@@ -660,6 +660,7 @@ class RoomDatabaseManager {
     const newProduct: ProductEntity = {
       ...data,
       id,
+      sellingPrice: data.sellingPrice !== undefined ? data.sellingPrice : null,
       createdAt: now,
       updatedAt: now,
     };
@@ -687,14 +688,42 @@ class RoomDatabaseManager {
     return newProduct;
   }
 
-  public updateProduct(id: string, updates: Partial<ProductEntity>): ProductEntity {
+  public updateProduct(
+    id: string,
+    updates: Partial<ProductEntity>,
+    options?: { logAdjustment?: boolean; adjustmentNotes?: string }
+  ): ProductEntity {
     const index = this.state.products.findIndex((p) => p.id === id);
     if (index === -1) throw new Error(`Product ${id} not found.`);
     const existing = this.state.products[index];
+    const now = new Date().toISOString();
+
+    if (
+      options?.logAdjustment &&
+      updates.currentStock !== undefined &&
+      updates.currentStock !== existing.currentStock
+    ) {
+      const diff = updates.currentStock - existing.currentStock;
+      const movement: StockMovementEntity = {
+        id: `STK-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`,
+        productId: existing.id,
+        productName: updates.name || existing.name,
+        type: 'ADJUSTMENT',
+        quantity: diff,
+        previousStock: existing.currentStock,
+        newStock: updates.currentStock,
+        unitPrice: updates.purchasePrice !== undefined ? updates.purchasePrice : existing.purchasePrice,
+        reference: 'Stock Edit Adjustment',
+        notes: options.adjustmentNotes || `Manual stock adjustment via Edit Product.`,
+        createdAt: now,
+      };
+      this.state.stockMovements.unshift(movement);
+    }
+
     const updated: ProductEntity = {
       ...existing,
       ...updates,
-      updatedAt: new Date().toISOString(),
+      updatedAt: now,
     };
     this.state.products[index] = updated;
     this.persist(this.state);
@@ -817,6 +846,7 @@ class RoomDatabaseManager {
     items: Array<{
       productId: string;
       quantity: number;
+      customSellingPrice?: number;
     }>;
     amountPaid: number;
     paymentMethod: SaleEntity['paymentMethod'];
@@ -844,7 +874,22 @@ class RoomDatabaseManager {
       const product = this.getProductById(item.productId);
       if (!product) throw new Error(`Product not found: ${item.productId}`);
 
-      const subtotal = product.sellingPrice * item.quantity;
+      const unitPrice =
+        item.customSellingPrice !== undefined && item.customSellingPrice !== null
+          ? item.customSellingPrice
+          : product.sellingPrice;
+
+      if (unitPrice === null || unitPrice === undefined || isNaN(unitPrice)) {
+        throw new Error(
+          `Product "${product.name}" has no selling price set. Please specify a selling price before completing the sale.`
+        );
+      }
+
+      if (unitPrice < 0) {
+        throw new Error(`Selling price for "${product.name}" cannot be negative.`);
+      }
+
+      const subtotal = unitPrice * item.quantity;
       const itemCost = product.purchasePrice * item.quantity;
       const grossProfit = subtotal - itemCost;
 
@@ -859,7 +904,7 @@ class RoomDatabaseManager {
         unit: product.unit,
         quantity: item.quantity,
         purchasePrice: product.purchasePrice,
-        sellingPrice: product.sellingPrice,
+        sellingPrice: unitPrice,
         subtotal,
         itemCost,
         grossProfit,
@@ -1505,7 +1550,7 @@ class RoomDatabaseManager {
       `    supplier TEXT NOT NULL,`,
       `    unit TEXT NOT NULL,`,
       `    purchasePrice REAL NOT NULL,`,
-      `    sellingPrice REAL NOT NULL,`,
+      `    sellingPrice REAL,`,
       `    currentStock REAL NOT NULL,`,
       `    minStockLevel REAL NOT NULL,`,
       `    createdAt TEXT NOT NULL,`,
@@ -1608,7 +1653,7 @@ class RoomDatabaseManager {
     for (const p of s.products) {
       lines.push(
         `INSERT OR REPLACE INTO products (id, name, category, brand, producer, supplier, unit, purchasePrice, sellingPrice, currentStock, minStockLevel, createdAt, updatedAt) VALUES (` +
-        `'${p.id}', '${p.name.replace(/'/g, "''")}', '${p.category.replace(/'/g, "''")}', '${p.brand.replace(/'/g, "''")}', '${p.producer.replace(/'/g, "''")}', '${p.supplier.replace(/'/g, "''")}', '${p.unit}', ${p.purchasePrice}, ${p.sellingPrice}, ${p.currentStock}, ${p.minStockLevel}, '${p.createdAt}', '${p.updatedAt}');`
+        `'${p.id}', '${p.name.replace(/'/g, "''")}', '${p.category.replace(/'/g, "''")}', '${p.brand.replace(/'/g, "''")}', '${p.producer.replace(/'/g, "''")}', '${p.supplier.replace(/'/g, "''")}', '${p.unit}', ${p.purchasePrice}, ${p.sellingPrice != null ? p.sellingPrice : 'NULL'}, ${p.currentStock}, ${p.minStockLevel}, '${p.createdAt}', '${p.updatedAt}');`
       );
     }
 

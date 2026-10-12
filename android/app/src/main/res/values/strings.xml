@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DukanDesk</string>
+    <string name="title_activity_main">DukanDesk</string>
+    <string name="package_name">com.zeeshan.app</string>
+    <string name="custom_url_scheme">com.zeeshan.app</string>
+</resources>

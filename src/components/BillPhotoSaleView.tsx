@@ -215,7 +215,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
           updated.matchConfidence = newProd ? 'EXACT' : 'NONE';
           updated.matchReason = newProd ? 'Manually selected by user' : 'No product selected';
           if (newProd && (!item.unitPrice || item.unitPrice <= 0)) {
-            updated.unitPrice = newProd.sellingPrice;
+            updated.unitPrice = newProd.sellingPrice ?? 0;
           }
         }
 
@@ -238,13 +238,14 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
   const handleAddMissingItem = () => {
     if (!draft) return;
     const defaultProduct = products.length > 0 ? products[0] : null;
+    const initialPrice = (defaultProduct && defaultProduct.sellingPrice != null) ? defaultProduct.sellingPrice : 0;
     const newItem: ProposedBillItem = {
       id: `PROPOSED-MANUAL-${Date.now()}`,
       rawText: 'Manual Added Item',
       detectedName: defaultProduct ? defaultProduct.name : 'New Item',
       quantity: 1,
-      unitPrice: defaultProduct ? defaultProduct.sellingPrice : 100,
-      totalPrice: defaultProduct ? defaultProduct.sellingPrice : 100,
+      unitPrice: initialPrice,
+      totalPrice: initialPrice,
       matchedProductId: defaultProduct ? defaultProduct.id : null,
       matchedProduct: defaultProduct,
       matchConfidence: defaultProduct ? 'CONFIDENT' : 'NONE',

@@ -95,6 +95,7 @@ export interface PeriodSummaryMetrics {
   totalOutstandingBalance: number;
   currentStockValue: number;
   currentRetailStockValue: number;
+  unpricedProductsCount: number;
   lowStockItemsCount: number;
 }
 
@@ -150,11 +151,16 @@ export function computePeriodMetrics(
   // Stock values
   let currentStockValue = 0;
   let currentRetailStockValue = 0;
+  let unpricedProductsCount = 0;
   let lowStockItemsCount = 0;
 
   for (const prod of products) {
     currentStockValue += prod.currentStock * prod.purchasePrice;
-    currentRetailStockValue += prod.currentStock * prod.sellingPrice;
+    if (prod.sellingPrice !== null && prod.sellingPrice !== undefined) {
+      currentRetailStockValue += prod.currentStock * prod.sellingPrice;
+    } else {
+      unpricedProductsCount++;
+    }
     if (prod.currentStock <= prod.minStockLevel) {
       lowStockItemsCount++;
     }
@@ -171,6 +177,7 @@ export function computePeriodMetrics(
     totalOutstandingBalance,
     currentStockValue,
     currentRetailStockValue,
+    unpricedProductsCount,
     lowStockItemsCount,
   };
 }

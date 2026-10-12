@@ -304,6 +304,7 @@ export function createResilientOfflineProposal(
   const items: ProposedBillItem[] = [];
 
   if (sampleP1) {
+    const price1 = sampleP1.sellingPrice ?? sampleP1.purchasePrice ?? 0;
     items.push({
       id: `PROPOSED-${Date.now()}-1`,
       rawText: `${sampleP1.name} (600x600) — 15 Pcs`,
@@ -311,8 +312,8 @@ export function createResilientOfflineProposal(
       brand: sampleP1.brand,
       sizeDimensions: '600x600',
       quantity: 15,
-      unitPrice: sampleP1.sellingPrice,
-      totalPrice: sampleP1.sellingPrice * 15,
+      unitPrice: price1,
+      totalPrice: price1 * 15,
       matchedProductId: sampleP1.id,
       matchedProduct: sampleP1,
       matchConfidence: 'CONFIDENT',
@@ -321,14 +322,15 @@ export function createResilientOfflineProposal(
   }
 
   if (sampleP2 && sampleP2.id !== sampleP1?.id) {
+    const price2 = sampleP2.sellingPrice ?? sampleP2.purchasePrice ?? 0;
     items.push({
       id: `PROPOSED-${Date.now()}-2`,
-      rawText: `${sampleP2.name} — 10 Pcs @ ₹${sampleP2.sellingPrice}`,
+      rawText: `${sampleP2.name} — 10 Pcs @ ₹${price2}`,
       detectedName: sampleP2.name,
       brand: sampleP2.brand,
       quantity: 10,
-      unitPrice: sampleP2.sellingPrice,
-      totalPrice: sampleP2.sellingPrice * 10,
+      unitPrice: price2,
+      totalPrice: price2 * 10,
       matchedProductId: sampleP2.id,
       matchedProduct: sampleP2,
       matchConfidence: 'CONFIDENT',
@@ -337,13 +339,14 @@ export function createResilientOfflineProposal(
   }
 
   if (sampleP3 && sampleP3.id !== sampleP1?.id && sampleP3.id !== sampleP2?.id) {
+    const price3 = sampleP3.sellingPrice ?? sampleP3.purchasePrice ?? 0;
     items.push({
       id: `PROPOSED-${Date.now()}-3`,
       rawText: `Tile Adhesive / Cleaner — 4 units`,
       detectedName: 'Tile Cleaner Rapid',
       quantity: 4,
-      unitPrice: sampleP3.sellingPrice,
-      totalPrice: sampleP3.sellingPrice * 4,
+      unitPrice: price3,
+      totalPrice: price3 * 4,
       matchedProductId: sampleP3.id,
       matchedProduct: sampleP3,
       matchConfidence: 'UNCERTAIN',
