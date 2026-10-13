@@ -626,7 +626,28 @@ class RoomDatabaseManager {
   }
 
   public setSettingsFromCloud(settings: OwnerSettingsEntity): void {
-    this.state.settings = { ...settings };
+    // Preserve local backup metadata if cloud does not have newer timestamps
+    const current = this.state.settings;
+    const chooseNewer = (localDate?: string, cloudDate?: string): string | undefined => {
+      if (!localDate) return cloudDate;
+      if (!cloudDate) return localDate;
+      const localTime = new Date(localDate).getTime();
+      const cloudTime = new Date(cloudDate).getTime();
+      return !isNaN(cloudTime) && cloudTime > localTime ? cloudDate : localDate;
+    };
+
+    const mergedSettings: OwnerSettingsEntity = {
+      ...settings,
+      lastBackupDate: chooseNewer(current.lastBackupDate, settings.lastBackupDate),
+      lastDailyBackupDate: chooseNewer(current.lastDailyBackupDate, settings.lastDailyBackupDate),
+      lastLoginBackupDate: chooseNewer(current.lastLoginBackupDate, settings.lastLoginBackupDate),
+      lastManualBackupDate: chooseNewer(current.lastManualBackupDate, settings.lastManualBackupDate),
+      lastBackupFileId: settings.lastBackupFileId || current.lastBackupFileId,
+      lastBackupFileSize: settings.lastBackupFileSize || current.lastBackupFileSize,
+      lastBackupAccount: settings.lastBackupAccount || current.lastBackupAccount,
+    };
+
+    this.state.settings = mergedSettings;
     this.persist(this.state);
   }
 

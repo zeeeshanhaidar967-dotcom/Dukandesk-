@@ -359,8 +359,12 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
       // 3. Update local database settings
       const nowIso = new Date().toISOString();
       const sizeStr = `${(result.sizeBytes / 1024).toFixed(1)} KB`;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('dukandesk_last_manual_backup_iso', nowIso);
+      }
       const updatedFields = {
         lastBackupDate: nowIso,
+        lastManualBackupDate: nowIso,
         lastBackupFileId: result.file.id,
         lastBackupFileSize: sizeStr,
         lastBackupAccount: currentUser?.email || undefined,

@@ -5,7 +5,10 @@ import {
   User,
   getAuth,
   reauthenticateWithPopup,
+  signInWithCredential,
 } from 'firebase/auth';
+import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { auth } from '../firebase';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -606,13 +609,63 @@ export const initAuth = (
 };
 
 /**
- * Sign in with Google Popup and securely persist the session
+ * Sign in with Google (Native on Android/iOS, Popup on Web) and securely persist the session
  */
 export const googleSignIn = async (
   forceConsent = true
 ): Promise<{ user: GoogleAuthUser | User; accessToken: string } | null> => {
   try {
     isSigningIn = true;
+
+    if (Capacitor.isNativePlatform()) {
+      const result = await FirebaseAuthentication.signInWithGoogle({
+        scopes: SCOPES,
+      });
+
+      const idToken = result.credential?.idToken || (result as any).idToken;
+      const accessToken = result.credential?.accessToken || (result as any).accessToken;
+
+      if (!accessToken) {
+        throw new Error('Failed to obtain Google Drive access token from native sign-in.');
+      }
+
+      let authUser: GoogleAuthUser | User;
+      if (idToken) {
+        const credential = GoogleAuthProvider.credential(idToken, accessToken);
+        const userCredential = await signInWithCredential(auth, credential);
+        authUser = userCredential.user;
+      } else {
+        authUser = auth.currentUser || {
+          uid: (result.user as any)?.uid || 'google-native-user',
+          email: (result.user as any)?.email || null,
+          displayName: (result.user as any)?.displayName || 'Google Account',
+          photoURL: (result.user as any)?.photoUrl || null,
+        };
+      }
+
+      const session: GoogleAuthSession = {
+        accessToken,
+        savedAt: Date.now(),
+        expiresAt: Date.now() + 3550 * 1000, // Valid for ~1 hour
+        user: {
+          uid: authUser.uid,
+          email: authUser.email || null,
+          displayName: authUser.displayName || null,
+          photoURL: authUser.photoURL || null,
+        },
+        scopes: SCOPES,
+      };
+
+      cachedAccessToken = accessToken;
+      cachedSession = session;
+      await savePersistedSession(session);
+
+      // Notify all subscribers
+      subscribers.forEach((s) => s.success(authUser, accessToken));
+
+      return { user: authUser, accessToken };
+    }
+
     const provider = createGoogleProvider(forceConsent);
     const result = await signInWithPopup(auth, provider);
     const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -730,6 +783,40 @@ export const refreshGoogleDriveToken = async (): Promise<string | null> => {
   const user = authInstance.currentUser || auth.currentUser;
 
   if (!user) return null;
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const result = await FirebaseAuthentication.signInWithGoogle({
+        scopes: SCOPES,
+      });
+
+      const idToken = result.credential?.idToken || (result as any).idToken;
+      const accessToken = result.credential?.accessToken || (result as any).accessToken;
+
+      if (idToken) {
+        try {
+          const credential = GoogleAuthProvider.credential(idToken, accessToken);
+          await signInWithCredential(authInstance, credential);
+        } catch (credErr) {
+          console.warn('Native signInWithCredential notice during token refresh:', credErr);
+        }
+      }
+
+      if (accessToken) {
+        const expiresAt = Date.now() + 3550 * 1000;
+        localStorage.setItem('drive_access_token', accessToken);
+        localStorage.setItem(TOKEN_EXPIRY_KEY, String(expiresAt));
+        cachedAccessToken = accessToken;
+        try {
+          await syncGoogleDriveAuthSession(user, accessToken);
+        } catch {}
+        return accessToken;
+      }
+    } catch (error) {
+      console.error('Failed to natively refresh Google Drive token:', error);
+    }
+    return null;
+  }
 
   const provider = new GoogleAuthProvider();
   provider.addScope('https://www.googleapis.com/auth/drive.file');

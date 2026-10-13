@@ -4,16 +4,16 @@ import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfigFile from '../firebase-applet-config.json';
 
 export const firebaseConfig = {
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || firebaseConfigFile.projectId,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || firebaseConfigFile.appId,
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || firebaseConfigFile.apiKey,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfigFile.authDomain,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || firebaseConfigFile.storageBucket,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || firebaseConfigFile.messagingSenderId,
+  projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID || firebaseConfigFile.projectId,
+  appId: import.meta.env?.VITE_FIREBASE_APP_ID || firebaseConfigFile.appId,
+  apiKey: import.meta.env?.VITE_FIREBASE_API_KEY || firebaseConfigFile.apiKey,
+  authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfigFile.authDomain,
+  storageBucket: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET || firebaseConfigFile.storageBucket,
+  messagingSenderId: import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID || firebaseConfigFile.messagingSenderId,
   measurementId: firebaseConfigFile.measurementId || '',
   oAuthClientId: firebaseConfigFile.oAuthClientId || '',
   recaptchaSiteKey: firebaseConfigFile.recaptchaSiteKey || '',
-  firestoreDatabaseId: import.meta.env.VITE_FIREBASE_DATABASE_ID || (firebaseConfigFile as any).firestoreDatabaseId,
+  firestoreDatabaseId: import.meta.env?.VITE_FIREBASE_DATABASE_ID || (firebaseConfigFile as any).firestoreDatabaseId,
 };
 
 // Initialize Firebase App if not already initialized

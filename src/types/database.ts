@@ -146,6 +146,9 @@ export interface OwnerSettingsEntity {
   receiptFooter: string;
   enableStockWarning: boolean;
   lastBackupDate?: string;
+  lastDailyBackupDate?: string;
+  lastLoginBackupDate?: string;
+  lastManualBackupDate?: string;
   lastBackupFileId?: string;
   lastBackupFileSize?: string;
   lastBackupAccount?: string;

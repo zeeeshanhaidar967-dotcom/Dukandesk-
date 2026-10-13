@@ -62,7 +62,11 @@ import {
 } from './services/firebaseSyncService';
 import { clearAllLocalIndexedDB, clearLocalShopStorage } from './utils/storageCleanup';
 import { initializeGoogleAuthOnStartup } from './services/googleAuthService';
-import { startAutoBackupScheduler } from './services/autoBackupService';
+import {
+  startAutoBackupScheduler,
+  triggerLoginBackup,
+  resetLoginBackupSession,
+} from './services/autoBackupService';
 import { ShieldAlert, LogOut, RefreshCw, AlertTriangle } from 'lucide-react';
 
 export default function App() {
@@ -257,6 +261,7 @@ export default function App() {
   const handleLogout = async () => {
     setIsLogoutConfirmOpen(false);
     try {
+      resetLoginBackupSession();
       await logoutAppUser();
       setCurrentUser(null);
       setUserProfile(null);
@@ -500,7 +505,19 @@ export default function App() {
     return (
       <LoginScreen
         shopName={dbState.settings.shopName}
-        onLoginSuccess={() => refreshDbState()}
+        onLoginSuccess={() => {
+          refreshDbState();
+          // Trigger genuine login backup after user logs in (cooldown & session deduplication applied)
+          setTimeout(() => {
+            triggerLoginBackup()
+              .then((res) => {
+                if (res.status === 'SUCCESS') {
+                  refreshDbState();
+                }
+              })
+              .catch((err) => console.warn('Login backup notice:', err));
+          }, 3000);
+        }}
       />
     );
   }

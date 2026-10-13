@@ -78,26 +78,38 @@ jobs:
           chmod +x android/gradlew
           ls -la android/gradlew android/gradle/wrapper/
 
-      - name: Create temporary debug keystore
+      - name: Configure Android debug keystore
+        env:
+          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
         run: |
           mkdir -p ~/.android
-          cd android
-          if [ -f "debug.keystore" ]; then
-            echo "debug.keystore already exists."
+          if [ -n "$DEBUG_KEYSTORE_BASE64" ]; then
+            echo "Decoding fixed debug keystore from DEBUG_KEYSTORE_BASE64 secret..."
+            echo "$DEBUG_KEYSTORE_BASE64" | base64 -d > ~/.android/debug.keystore
+            cp -f ~/.android/debug.keystore android/debug.keystore 2>/dev/null || true
+            echo "Fixed debug keystore successfully configured."
           else
-            echo "Generating temporary debug keystore..."
-            keytool -genkey -v \
-              -keystore debug.keystore \
-              -storepass android \
-              -alias androiddebugkey \
-              -keypass android \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000 \
-              -dname "CN=Android Debug,O=Android,C=US"
+            echo "DEBUG_KEYSTORE_BASE64 secret not found. Falling back to temporary debug keystore..."
+            cd android
+            if [ -f "debug.keystore" ]; then
+              echo "debug.keystore already exists."
+            else
+              echo "Generating temporary debug keystore..."
+              keytool -genkey -v \
+                -keystore debug.keystore \
+                -storepass android \
+                -alias androiddebugkey \
+                -keypass android \
+                -keyalg RSA \
+                -keysize 2048 \
+                -validity 10000 \
+                -dname "CN=Android Debug,O=Android,C=US"
+            fi
+            cp -f debug.keystore ~/.android/debug.keystore
+            cd ..
           fi
-          cp -f debug.keystore ~/.android/debug.keystore
-          cd ..
+          echo "Debug keystore SHA-1 / SHA-256 fingerprint verification:"
+          keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android | grep -E "SHA1:|SHA256:" || true
 
       - name: Configure Android SDK and licenses
         run: |

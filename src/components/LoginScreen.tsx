@@ -35,12 +35,20 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
       onLoginSuccess();
     } catch (err: any) {
       console.warn('Google Sign In notice:', err?.message || err);
-      if (err?.code === 'auth/popup-closed-by-user') {
-        setErrorMessage('Sign-in popup was closed before completion. Please click again to proceed.');
-      } else if (err?.code === 'auth/popup-blocked') {
+      const msg = err?.message || '';
+      const code = err?.code || '';
+      if (code === 'auth/popup-closed-by-user' || msg.includes('cancel') || msg.includes('12501')) {
+        setErrorMessage('Sign-in was cancelled. Please click again to proceed.');
+      } else if (code === 'auth/popup-blocked') {
         setErrorMessage('Popup was blocked by your browser. Please allow popups for this site.');
+      } else if (code === 'auth/unauthorized-domain' || msg.includes('unauthorized-domain')) {
+        setErrorMessage('Google Sign-In authorization error. Please verify google-services.json and SHA-1 in Firebase Console.');
+      } else if (msg.includes('10:') || msg.includes('DEVELOPER_ERROR')) {
+        setErrorMessage('Google Sign-In configuration error (Code 10). Please ensure SHA-1 fingerprint is registered in Firebase Console.');
+      } else if (code === 'auth/network-request-failed' || msg.toLowerCase().includes('network')) {
+        setErrorMessage('Network connection error. Please check your internet connection and try again.');
       } else {
-        setErrorMessage(err?.message || 'Failed to authenticate with Google. Please try again.');
+        setErrorMessage(msg || 'Failed to authenticate with Google. Please try again.');
       }
     } finally {
       setIsLoading(false);

@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   User as FirebaseUser,
   getAuth,
+  signInWithCredential,
 } from 'firebase/auth';
 import {
   collection,
@@ -22,17 +23,48 @@ import {
   DocumentData,
 } from 'firebase/firestore';
 import { initializeApp, deleteApp } from 'firebase/app';
+import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { auth, db } from '../firebase';
 import firebaseConfig from '../../firebase-applet-config.json';
 import { AppUserProfile, AppUserRole, AppUserStatus } from '../types/database';
 import { handleFirestoreError, OperationType } from './firestoreErrorHandler';
-import { syncGoogleDriveAuthSession } from './googleAuthService';
+import { syncGoogleDriveAuthSession, SCOPES } from './googleAuthService';
 
 export const BOOTSTRAP_ADMIN_EMAIL = 'zeeeshanhaidar967@gmail.com';
 export const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 
-// Sign in with Google (Popup) with Google Drive scope included
+// Sign in with Google (Native on Android/iOS, Popup on Web) with Google Drive scope included
 export async function loginWithGoogle(): Promise<{ user: FirebaseUser; accessToken?: string }> {
+  if (Capacitor.isNativePlatform()) {
+    const result = await FirebaseAuthentication.signInWithGoogle({
+      scopes: SCOPES,
+    });
+
+    const idToken = result.credential?.idToken || (result as any).idToken;
+    const accessToken = result.credential?.accessToken || (result as any).accessToken;
+
+    if (!idToken && !accessToken) {
+      throw new Error('Google Sign-In completed but no authentication credentials were returned.');
+    }
+
+    const credential = GoogleAuthProvider.credential(idToken, accessToken);
+    const userCredential = await signInWithCredential(auth, credential);
+    const user = userCredential.user;
+
+    if (accessToken) {
+      try {
+        localStorage.setItem('drive_access_token', accessToken);
+        localStorage.setItem('drive_token_expires_at', String(Date.now() + 3550 * 1000));
+        await syncGoogleDriveAuthSession(user, accessToken);
+      } catch (err) {
+        console.warn('Notice syncing Google Drive session:', err);
+      }
+    }
+
+    return { user, accessToken: accessToken || undefined };
+  }
+
   const provider = new GoogleAuthProvider();
   provider.addScope('https://www.googleapis.com/auth/drive.file');
   provider.setCustomParameters({
