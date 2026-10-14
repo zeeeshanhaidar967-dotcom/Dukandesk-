@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "434518018679",
+    "project_id": "gen-lang-client-0026461231",
+    "storage_bucket": "gen-lang-client-0026461231.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434518018679:android:8616f17a78b057fb5e5472",
+        "android_client_info": {
+          "package_name": "com.zeeshan.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "434518018679-v9tr8emv200ui2u96mdbrgvl9u0bb03t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeeshan.app",
+            "certificate_hash": "6e7fbe52d7ddb14d4db84ed43e9e114d9b3c65c1"
+          }
+        },
+        {
+          "client_id": "434518018679-56s9v40fv4nmn11co32jemdet4ade9um.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIjFxPhteuN2taLrtLXG_8mR4rGa044S4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "434518018679-56s9v40fv4nmn11co32jemdet4ade9um.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
