@@ -81,6 +81,11 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         </div>
         <div className="flex items-center gap-2">
           {userProfile && (
+            <span className="text-[10px] text-slate-400 hidden sm:inline truncate max-w-[150px]">
+              User: <span className="text-slate-300 font-medium">{userProfile.displayName || userProfile.name}</span>
+            </span>
+          )}
+          {userProfile && (
             <span
               className={`px-1.5 py-0.2 rounded text-[10px] font-bold uppercase tracking-wider ${
                 isAdmin
@@ -112,13 +117,11 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </div>
           <div className="min-w-0">
             <h1 className="text-sm font-bold tracking-tight text-white truncate max-w-[150px] sm:max-w-xs uppercase">
-              {shopName}
+              {shopName || 'MAHARAJA MARBLE'}
             </h1>
             <p className="text-[11px] text-slate-400 truncate flex items-center gap-1">
-              <span>{userProfile?.displayName || userProfile?.name || ownerName}</span>
-              {userProfile?.email && (
-                <span className="text-slate-500 truncate hidden sm:inline">({userProfile.email})</span>
-              )}
+              <span className="font-semibold text-slate-200">HAIDAR ALI</span>
+              <span className="text-slate-400 font-mono truncate">(hmotor786@gmail.com)</span>
             </p>
           </div>
         </div>

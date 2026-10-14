@@ -13,11 +13,13 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { ProductEntity, AppUserProfile } from '../types/database';
+import { formatCurrency } from '../services/calculations';
 
 interface StockViewerDashboardProps {
   products: ProductEntity[];
   userProfile: AppUserProfile;
   shopName: string;
+  currencySymbol?: string;
   onLogout: () => void;
 }
 
@@ -25,6 +27,7 @@ export function StockViewerDashboard({
   products,
   userProfile,
   shopName,
+  currencySymbol = '₹',
   onLogout,
 }: StockViewerDashboardProps) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -119,8 +122,11 @@ export function StockViewerDashboard({
             <span className="text-xs text-slate-400">• Read-Only Real-Time Sync</span>
           </div>
           <h2 className="text-xl font-black text-white mt-1 uppercase tracking-tight">{shopName || 'MAHARAJA MARBLE'}</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Logged in as <strong className="text-slate-200">{userProfile.displayName || userProfile.name || 'User'}</strong> ({userProfile.email})
+          <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+            <span className="font-semibold text-slate-200">HAIDAR ALI</span>
+            <span className="text-slate-400 font-mono">(hmotor786@gmail.com)</span>
+            <span className="text-slate-600">•</span>
+            <span className="text-slate-400">Logged in as <strong className="text-slate-300 font-medium">{userProfile.displayName || userProfile.name || 'User'}</strong> ({userProfile.email})</span>
           </p>
         </div>
 
@@ -296,6 +302,11 @@ export function StockViewerDashboard({
           filteredProducts.map((product) => {
             const isOut = product.currentStock <= 0;
             const isLow = product.currentStock > 0 && product.currentStock <= product.minStockLevel;
+            const hasSellingPrice =
+              product.sellingPrice !== null &&
+              product.sellingPrice !== undefined &&
+              (typeof product.sellingPrice !== 'string' || (product.sellingPrice as string).trim() !== '') &&
+              !isNaN(Number(product.sellingPrice));
 
             return (
               <div
@@ -333,6 +344,20 @@ export function StockViewerDashboard({
                       Unit: <strong className="text-slate-300">{product.unit}</strong>
                     </span>
                   </div>
+
+                  {/* Selling Price Display */}
+                  <div className="mt-1.5 flex items-center gap-1.5 text-xs">
+                    <span className="text-slate-400">Selling Price:</span>
+                    {hasSellingPrice ? (
+                      <span className="font-bold text-emerald-400 font-mono">
+                        {formatCurrency(Number(product.sellingPrice), currencySymbol)} per {product.unit}
+                      </span>
+                    ) : (
+                      <span className="font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 text-[11px]">
+                        Not Decided
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Stock Quantity Display */}
@@ -359,7 +384,7 @@ export function StockViewerDashboard({
       <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-[11px] text-slate-500 flex items-center gap-2">
         <ShieldAlert className="w-4 h-4 text-cyan-500 shrink-0" />
         <span>
-          Stock Viewer role is restricted to real-time inventory quantity viewing. Customer, billing, profit, and pricing records are secured by Firebase Firestore rules.
+          Stock Viewer role is restricted to real-time inventory quantity and selling price viewing. Customer, billing, profit, and purchase cost records are secured by Firebase Firestore rules.
         </span>
       </div>
     </div>

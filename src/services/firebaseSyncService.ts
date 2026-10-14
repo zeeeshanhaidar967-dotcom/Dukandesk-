@@ -992,7 +992,7 @@ export function startRealtimeSync(
     notifySyncState();
   }
 
-  // 2. Settings (Synchronized to both Admin, Manager, and Stock Viewer)
+  // 2. Settings (Synchronized to both Admin and Viewer)
   try {
     const unsubSettings = onSnapshot(
       doc(db, 'settings', 'current'),
@@ -1011,14 +1011,14 @@ export function startRealtimeSync(
     console.warn('Settings sync subscription notice:', err);
   }
 
-  // Stock Viewer users ONLY subscribe to products & settings. Exit early for stock_viewer / viewer.
-  if (role === 'viewer' || role === 'stock_viewer') {
+  // Viewer users ONLY subscribe to products & settings. Exit early for viewer.
+  if (role !== 'admin') {
     return () => {
       unsubscribers.forEach((unsub) => unsub());
     };
   }
 
-  // --- MANAGEMENT (ADMIN & MANAGER) REAL-TIME LISTENERS ---
+  // --- ADMIN REAL-TIME LISTENERS ---
 
   // 3. Customers
   try {

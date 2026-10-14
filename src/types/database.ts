@@ -159,7 +159,7 @@ export interface OwnerSettingsEntity {
   autoPromptWhatsAppBilling?: boolean; // Auto-prompt WhatsApp share on new bill (defaults to true)
 }
 
-export type AppUserRole = 'admin' | 'viewer' | 'staff' | 'manager' | 'stock_viewer';
+export type AppUserRole = 'admin' | 'viewer';
 export type AppUserStatus = 'active' | 'inactive';
 
 export interface AppUserProfile {

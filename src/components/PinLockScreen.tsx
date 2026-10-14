@@ -100,9 +100,9 @@ export const PinLockScreen: React.FC<PinLockScreenProps> = ({
         <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 shadow-lg shadow-emerald-500/5">
           <ShieldCheck className="w-8 h-8" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-white">{shopName}</h1>
+        <h1 className="text-xl font-bold tracking-tight text-white">{shopName || 'MAHARAJA MARBLE'}</h1>
         <p className="text-xs text-slate-400 mt-1">
-          Owner: <span className="text-slate-200 font-semibold">{ownerName}</span>
+          Owner: <span className="text-slate-200 font-semibold">{ownerName || 'HAIDAR ALI'}</span> <span className="text-slate-400 font-mono">(hmotor786@gmail.com)</span>
         </p>
         <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-[11px] text-slate-400">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>

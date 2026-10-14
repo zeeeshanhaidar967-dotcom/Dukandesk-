@@ -32,6 +32,7 @@ import {
   toggleUserStatus,
   deleteUserDoc,
   syncUserProfile,
+  isPrimaryAdmin,
   BOOTSTRAP_ADMIN_EMAIL,
 } from '../services/firebaseAuthService';
 import { auth } from '../firebase';
@@ -47,7 +48,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
   const [isLoading, setIsLoading] = useState(true);
   const [firestoreReadError, setFirestoreReadError] = useState<{ code: string; message: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'ALL' | 'admin' | 'viewer' | 'staff' | 'manager'>('ALL');
+  const [roleFilter, setRoleFilter] = useState<'ALL' | 'admin' | 'viewer'>('ALL');
 
   // Create User Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -121,11 +122,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
   // Filtered Users
   const filteredUsers = users.filter((u) => {
     if (roleFilter !== 'ALL') {
-      if (roleFilter === 'viewer') {
-        if (u.role !== 'viewer' && u.role !== 'stock_viewer') return false;
-      } else if (u.role !== roleFilter) {
-        return false;
-      }
+      if (u.role !== roleFilter) return false;
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -153,10 +150,10 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
     const userName = user.displayName || user.name || user.email;
     const userEmail = (user.email || '').toLowerCase().trim();
 
-    // 1. Protection for configured bootstrap admin
-    if (userEmail === BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim() && newRole !== 'admin') {
+    // 1. Protection for configured primary admins
+    if (isPrimaryAdmin(userEmail) && newRole !== 'admin') {
       setActionError(
-        `Action Denied: ${BOOTSTRAP_ADMIN_EMAIL} is the primary permanent Admin account and cannot be demoted.`
+        `Action Denied: ${user.email} is a primary permanent Admin account and cannot be demoted.`
       );
       return;
     }
@@ -189,8 +186,8 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
     const userName = user.displayName || user.name || user.email;
     const userEmail = (user.email || '').toLowerCase().trim();
 
-    if (userEmail === BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim()) {
-      setActionError('The primary owner admin account cannot be deactivated.');
+    if (isPrimaryAdmin(userEmail)) {
+      setActionError('Primary admin accounts cannot be deactivated.');
       return;
     }
 
@@ -213,8 +210,8 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
     const userName = user.displayName || user.name || user.email;
     const userEmail = (user.email || '').toLowerCase().trim();
 
-    if (userEmail === BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim()) {
-      setActionError('The primary permanent admin account cannot be deleted.');
+    if (isPrimaryAdmin(userEmail)) {
+      setActionError('Primary permanent admin accounts cannot be deleted.');
       return;
     }
 
@@ -313,8 +310,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
   };
 
   const adminCount = users.filter((u) => u.role === 'admin').length;
-  const viewerCount = users.filter((u) => u.role === 'viewer' || u.role === 'stock_viewer').length;
-  const otherCount = users.filter((u) => u.role === 'staff' || u.role === 'manager').length;
+  const viewerCount = users.filter((u) => u.role === 'viewer').length;
   const activeCount = users.filter((u) => !u.status || u.status === 'active').length;
 
   return (
@@ -395,7 +391,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                 <p className="mt-1 text-slate-300 text-xs">{firestoreReadError.message}</p>
                 {firestoreReadError.code === 'permission-denied' && (
                   <p className="text-[11px] text-rose-300/80 mt-1.5 bg-rose-900/40 p-2 rounded-lg border border-rose-800/40">
-                    Your authenticated account does not currently have permission to read the users collection in Firestore. In DukanDesk, only active Admin and Manager accounts are authorized to manage team users.
+                    Your authenticated account does not currently have permission to read the users collection in Firestore. In DukanDesk, only active Admin accounts are authorized to manage team users.
                   </p>
                 )}
                 {firestoreReadError.code === 'unavailable' && (
@@ -419,7 +415,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
       )}
 
       {/* User Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
         <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
           <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
             <Users className="w-3 h-3 text-slate-400" />
@@ -459,17 +455,6 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             {isLoading ? '...' : firestoreReadError ? '—' : viewerCount}
           </div>
           <div className="text-[10px] text-cyan-500/80">Stock-Only Access</div>
-        </div>
-
-        <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <div className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <Sparkles className="w-3 h-3" />
-            Staff / Other
-          </div>
-          <div className="text-xl font-black text-amber-300">
-            {isLoading ? '...' : firestoreReadError ? '—' : otherCount}
-          </div>
-          <div className="text-[10px] text-amber-500/80">Expandable Roles</div>
         </div>
       </div>
 
@@ -525,17 +510,6 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             }`}
           >
             Viewers ({firestoreReadError ? '—' : viewerCount})
-          </button>
-          <button
-            type="button"
-            onClick={() => setRoleFilter('manager')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
-              roleFilter === 'manager'
-                ? 'bg-amber-950 text-amber-300 border border-amber-500/40'
-                : 'text-slate-400 hover:text-amber-400'
-            }`}
-          >
-            Managers ({firestoreReadError ? '—' : users.filter((u) => u.role === 'manager').length})
           </button>
         </div>
       </div>
@@ -611,7 +585,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
           filteredUsers.map((user) => {
             const userName = user.displayName || user.name || 'User';
             const userEmail = (user.email || '').toLowerCase().trim();
-            const isOwner = userEmail === BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim();
+            const isOwner = isPrimaryAdmin(userEmail);
             const isCurrentUser = userEmail === (currentUserEmail || '').toLowerCase().trim();
             const isActive = !user.status || user.status === 'active';
             const isAdmin = user.role === 'admin';
@@ -692,8 +666,6 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                         >
                           <option value="viewer" className="bg-slate-900 text-white">viewer (Stock-Only)</option>
                           <option value="admin" className="bg-slate-900 text-white">admin (Full Access)</option>
-                          <option value="staff" className="bg-slate-900 text-white">staff (Standard)</option>
-                          <option value="manager" className="bg-slate-900 text-white">manager (Supervisory)</option>
                         </select>
                       )}
                     </div>
@@ -803,7 +775,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                     spellCheck={false}
                     value={createName}
                     onChange={(e) => setCreateName(e.target.value)}
-                    placeholder="e.g. Ramesh Kumar / Counter Staff"
+                    placeholder="e.g. Ramesh Kumar / Stock Viewer"
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-left"
                     required
                   />

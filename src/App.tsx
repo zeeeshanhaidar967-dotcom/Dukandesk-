@@ -42,6 +42,10 @@ import {
   subscribeToUserProfile,
   logoutAppUser,
   getCachedUserProfile,
+  isPrimaryAdmin,
+  getPrimaryAdminName,
+  BOOTSTRAP_ADMIN_EMAIL,
+  BOOTSTRAP_ADMIN_NAME,
 } from './services/firebaseAuthService';
 import {
   startRealtimeSync,
@@ -147,14 +151,15 @@ export default function App() {
       setCurrentUser(user);
 
       if (user) {
-        const isOwner = (user.email || '').toLowerCase().trim() === 'zeeeshanhaidar967@gmail.com';
+        const isOwner = isPrimaryAdmin(user.email);
+        const primaryAdminName = getPrimaryAdminName(user.email);
 
         // 1. Instant hydration from cached profile (zero-latency startup!)
         const cached = getCachedUserProfile(user.uid);
 
         if (cached) {
           setUserProfile(cached);
-          if (cached.role === 'viewer' || cached.role === 'stock_viewer') {
+          if (cached.role === 'viewer') {
             setActiveTab('stock_dashboard');
           } else {
             setActiveTab('dashboard');
@@ -163,11 +168,12 @@ export default function App() {
           setIsAuthChecking(false);
         } else {
           // Provide instant baseline for brand new session
+          const displayName = (isOwner && primaryAdminName) ? primaryAdminName : (user.displayName || user.email?.split('@')[0] || 'User');
           const baseline: AppUserProfile = {
             uid: user.uid,
             userId: user.uid,
-            displayName: user.displayName || user.email?.split('@')[0] || 'User',
-            name: user.displayName || user.email?.split('@')[0] || 'User',
+            displayName,
+            name: displayName,
             email: user.email || '',
             role: isOwner ? 'admin' : 'viewer',
             signUpDate: new Date().toISOString(),
@@ -214,8 +220,8 @@ export default function App() {
     const unsubProfile = subscribeToUserProfile(currentUser.uid, (profile) => {
       if (profile) {
         setUserProfile(profile);
-        // Reconcile role: If cloud profile is viewer/stock_viewer, immediately revoke admin access & route
-        if (profile.role === 'viewer' || profile.role === 'stock_viewer') {
+        // Reconcile role: If cloud profile is viewer, immediately revoke admin access & route
+        if (profile.role === 'viewer') {
           setActiveTab((prev) => (prev === 'stock_dashboard' || prev === 'inventory' ? prev : 'stock_dashboard'));
         }
       }
@@ -228,8 +234,8 @@ export default function App() {
     if (!currentUser) return;
     const currentRole: AppUserRole = userProfile?.role || 'viewer';
 
-    // If admin or manager, check and seed existing local data so records are preserved in Firestore
-    if (currentRole === 'admin' || currentRole === 'manager') {
+    // If admin, check and seed existing local data so records are preserved in Firestore
+    if (currentRole === 'admin') {
       seedLocalDataToFirestoreIfEmpty();
     }
 
@@ -548,7 +554,7 @@ export default function App() {
             </p>
           </div>
           <p className="text-xs text-slate-500 bg-slate-950 p-3 rounded-xl border border-slate-800">
-            Please contact the owner/manager (HAIDAR ALI, MAHARAJA MARBLE) to reactivate your device or role.
+            Please contact the store administrator (HAIDAR ALI, MAHARAJA MARBLE) to reactivate your device or role.
           </p>
           <button
             type="button"
@@ -565,8 +571,6 @@ export default function App() {
 
   // 4. Admin PIN Lock Screen (Optional layer within active admin session)
   const isAdmin = userProfile?.role === 'admin';
-  const isManager = userProfile?.role === 'manager';
-  const isManagementRole = isAdmin || isManager;
 
   if (isAdmin && isLocked) {
     return (
@@ -596,20 +600,21 @@ export default function App() {
           syncState={syncState}
           onLock={() => setIsLocked(true)}
           onLogout={promptLogout}
-          onNotificationClick={() => setActiveTab(isManagementRole ? 'dashboard' : 'stock_dashboard')}
+          onNotificationClick={() => setActiveTab(isAdmin ? 'dashboard' : 'stock_dashboard')}
           onOpenGoogleDrive={() => setIsGoogleDriveOpen(true)}
         />
 
         {/* Scrollable Content Viewport */}
         <main className="flex-1 p-4 overflow-y-auto pb-24">
-          {/* --- STOCK VIEWER ROLE VIEWS --- */}
-          {!isManagementRole && (
+          {/* --- VIEWER ROLE VIEWS --- */}
+          {!isAdmin && (
             <>
               {activeTab === 'stock_dashboard' && (
                 <StockViewerDashboard
                   products={dbState.products}
                   userProfile={userProfile!}
                   shopName={dbState.settings.shopName}
+                  currencySymbol={dbState.settings.currencySymbol}
                   onLogout={promptLogout}
                 />
               )}
@@ -619,7 +624,7 @@ export default function App() {
                   products={dbState.products}
                   stockMovements={[]}
                   settings={dbState.settings}
-                  role="stock_viewer"
+                  role="viewer"
                   onOpenAddProduct={() => {}}
                   onEditProduct={() => {}}
                   onDeleteProduct={() => {}}
@@ -647,8 +652,8 @@ export default function App() {
             </>
           )}
 
-          {/* --- MANAGEMENT ROLE VIEWS (Admin & Manager) --- */}
-          {isManagementRole && (
+          {/* --- ADMIN ROLE VIEWS --- */}
+          {isAdmin && (
             <>
               {activeTab === 'dashboard' && (
                 <DashboardView
@@ -693,7 +698,7 @@ export default function App() {
                   products={dbState.products}
                   stockMovements={dbState.stockMovements}
                   settings={dbState.settings}
-                  role={isAdmin ? 'admin' : 'manager'}
+                  role="admin"
                   onOpenAddProduct={() => {
                     setEditingProduct(null);
                     setIsProductFormOpen(true);
@@ -768,8 +773,8 @@ export default function App() {
           role={userProfile?.role}
         />
 
-        {/* Management Modals & Dialogs (Admin & Manager) */}
-        {isManagementRole && (
+        {/* Admin Modals & Dialogs */}
+        {isAdmin && (
           <>
             {/* 1. Stock-In Modal */}
             <StockInModal

@@ -68,7 +68,10 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
             <Building2 className="w-9 h-9" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">{shopName || 'MAHARAJA MARBLE'}</h1>
-          <p className="text-xs text-slate-400 font-medium mt-1">
+          <p className="text-xs text-slate-300 font-semibold mt-1">
+            HAIDAR ALI <span className="text-slate-400 font-mono font-normal">(hmotor786@gmail.com)</span>
+          </p>
+          <p className="text-[11px] text-slate-400 font-medium mt-0.5">
             Enterprise Cloud Management & Real-Time Sync
           </p>
 

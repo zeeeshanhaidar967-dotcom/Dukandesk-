@@ -31,7 +31,32 @@ import { AppUserProfile, AppUserRole, AppUserStatus } from '../types/database';
 import { handleFirestoreError, OperationType } from './firestoreErrorHandler';
 import { syncGoogleDriveAuthSession, SCOPES } from './googleAuthService';
 
-export const BOOTSTRAP_ADMIN_EMAIL = 'zeeeshanhaidar967@gmail.com';
+// Bootstrap Primary Administrators
+export interface PrimaryAdminConfig {
+  email: string;
+  name: string;
+}
+
+export const PRIMARY_ADMINS: PrimaryAdminConfig[] = [
+  { email: 'hmotor786@gmail.com', name: 'Haidar ali' },
+  { email: 'zeeeshanhaidar967@gmail.com', name: 'ZEESHAN HAIDAR' },
+];
+
+export const PRIMARY_ADMIN_EMAILS = PRIMARY_ADMINS.map((a) => a.email.toLowerCase().trim());
+
+export function isPrimaryAdmin(email?: string | null): boolean {
+  if (!email) return false;
+  return PRIMARY_ADMIN_EMAILS.includes(email.toLowerCase().trim());
+}
+
+export function getPrimaryAdminName(email?: string | null): string | null {
+  if (!email) return null;
+  const match = PRIMARY_ADMINS.find((a) => a.email.toLowerCase().trim() === email.toLowerCase().trim());
+  return match ? match.name : null;
+}
+
+export const BOOTSTRAP_ADMIN_EMAIL = 'hmotor786@gmail.com';
+export const BOOTSTRAP_ADMIN_NAME = 'Haidar ali';
 export const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 
 // Sign in with Google (Native on Android/iOS, Popup on Web) with Google Drive scope included
@@ -98,9 +123,10 @@ export async function loginWithEmail(email: string, pass: string): Promise<Fireb
 export async function registerWithEmail(name: string, email: string, pass: string): Promise<FirebaseUser> {
   const result = await createUserWithEmailAndPassword(auth, email.trim(), pass);
   const user = result.user;
-  const isOwner = (user.email || '').toLowerCase().trim() === BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim();
+  const isOwner = isPrimaryAdmin(user.email);
+  const defaultAdminName = getPrimaryAdminName(user.email);
   const now = new Date().toISOString();
-  const displayName = name.trim() || user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+  const displayName = name.trim() || user.displayName || defaultAdminName || (user.email ? user.email.split('@')[0] : 'User');
 
   const profile: AppUserProfile = {
     uid: user.uid,
@@ -178,7 +204,7 @@ export function mapFirestoreUserDoc(docId: string, raw: any): AppUserProfile {
     displayName: resolvedName,
     name: String(d.name || d.displayName || resolvedName),
     email: String(d.email || ''),
-    role: (d.role as AppUserRole) || 'viewer',
+    role: (d.role === 'admin' ? 'admin' : 'viewer') as AppUserRole,
     status: (d.status as AppUserStatus) || 'active',
     signUpDate: d.signUpDate ? String(d.signUpDate) : (d.createdAt ? String(d.createdAt) : ''),
     lastLogin: d.lastLogin ? String(d.lastLogin) : '',
@@ -202,19 +228,21 @@ export async function logoutAppUser(): Promise<void> {
 export async function syncUserProfile(user: FirebaseUser): Promise<AppUserProfile> {
   const userRef = doc(db, 'users', user.uid);
   const userEmail = (user.email || '').toLowerCase().trim();
-  const isOwner = userEmail === BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim();
+  const isOwner = isPrimaryAdmin(userEmail);
+  const primaryAdminName = getPrimaryAdminName(userEmail);
   const now = new Date().toISOString();
 
   // 1. Read cached profile if available for fast startup hydration
   const cached = getCachedUserProfile(user.uid);
   const existingRole: AppUserRole = isOwner ? 'admin' : (cached?.role || 'viewer');
-  const displayName = cached?.displayName || user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+  const fallbackName = primaryAdminName || (user.email ? user.email.split('@')[0] : 'User');
+  const displayName = cached?.displayName || user.displayName || fallbackName;
 
   const baselineProfile: AppUserProfile = {
     uid: user.uid,
     userId: user.uid,
-    displayName,
-    name: displayName,
+    displayName: isOwner && (!displayName || displayName === 'User') && primaryAdminName ? primaryAdminName : displayName,
+    name: isOwner && (!displayName || displayName === 'User') && primaryAdminName ? primaryAdminName : displayName,
     email: user.email || cached?.email || '',
     role: existingRole,
     signUpDate: cached?.signUpDate || cached?.createdAt || now,
@@ -230,9 +258,13 @@ export async function syncUserProfile(user: FirebaseUser): Promise<AppUserProfil
 
     if (snap.exists()) {
       const cloudProfile = mapFirestoreUserDoc(snap.id, snap.data());
-      // Owner admin retains admin authority
-      if (isOwner && cloudProfile.role !== 'admin') {
-        cloudProfile.role = 'admin';
+      // Primary admin accounts retain permanent admin authority
+      if (isOwner) {
+        if (cloudProfile.role !== 'admin') cloudProfile.role = 'admin';
+        if ((!cloudProfile.displayName || cloudProfile.displayName === 'User') && primaryAdminName) {
+          cloudProfile.displayName = primaryAdminName;
+          cloudProfile.name = primaryAdminName;
+        }
       }
       setCachedUserProfile(cloudProfile);
 
@@ -320,7 +352,7 @@ export async function loadAllUsersOnce(): Promise<AppUserProfile[]> {
       list.push(mapFirestoreUserDoc(snap.id, snap.data()));
     });
     list.sort((a, b) => {
-      const roleOrder: Record<string, number> = { admin: 1, manager: 2, staff: 3, viewer: 4, stock_viewer: 5 };
+      const roleOrder: Record<string, number> = { admin: 1, viewer: 2 };
       const orderA = roleOrder[a.role] || 99;
       const orderB = roleOrder[b.role] || 99;
       if (orderA !== orderB) return orderA - orderB;
@@ -335,7 +367,7 @@ export async function loadAllUsersOnce(): Promise<AppUserProfile[]> {
 
 // ADMIN USER MANAGEMENT FUNCTIONS
 
-// Subscribe to all users in Firestore (Admin & Manager)
+// Subscribe to all users in Firestore (Admin)
 export function subscribeToAllUsers(
   onUsers: (users: AppUserProfile[]) => void,
   onError?: (err: Error) => void
@@ -348,9 +380,9 @@ export function subscribeToAllUsers(
       snapshot.forEach((snap) => {
         list.push(mapFirestoreUserDoc(snap.id, snap.data()));
       });
-      // Sort: Admins first, then managers, then by name
+      // Sort: Admins first, then viewers, then by name
       list.sort((a, b) => {
-        const roleOrder: Record<string, number> = { admin: 1, manager: 2, staff: 3, viewer: 4, stock_viewer: 5 };
+        const roleOrder: Record<string, number> = { admin: 1, viewer: 2 };
         const orderA = roleOrder[a.role] || 99;
         const orderB = roleOrder[b.role] || 99;
         if (orderA !== orderB) return orderA - orderB;
@@ -365,7 +397,7 @@ export function subscribeToAllUsers(
   );
 }
 
-// Admin: Create a new account (Viewer, Staff, or Admin) without logging out the Admin
+// Admin: Create a new account (Viewer or Admin) without logging out the Admin
 export async function createManagedUserAccount(input: {
   name: string;
   email: string;

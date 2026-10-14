@@ -395,18 +395,32 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                     {/* Stock & Metric Bar */}
                     {isStockViewer ? (
                       <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Available Stock:</span>
-                        <strong
-                          className={`font-mono text-sm ${
-                            isOutOfStock
-                              ? 'text-rose-400'
-                              : isLow
-                              ? 'text-amber-400'
-                              : 'text-emerald-400'
-                          }`}
-                        >
-                          {p.currentStock} {p.unit}
-                        </strong>
+                        <div>
+                          <span className="text-slate-400 block text-[10px]">Selling Price:</span>
+                          {p.sellingPrice !== null && p.sellingPrice !== undefined && (typeof p.sellingPrice !== 'string' || (p.sellingPrice as string).trim() !== '') && !isNaN(Number(p.sellingPrice)) ? (
+                            <strong className="font-mono text-emerald-400 text-xs font-bold">
+                              {formatCurrency(Number(p.sellingPrice), settings.currencySymbol)} per {p.unit}
+                            </strong>
+                          ) : (
+                            <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
+                              Not Decided
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <span className="text-slate-400 block text-[10px]">Available Stock:</span>
+                          <strong
+                            className={`font-mono text-sm ${
+                              isOutOfStock
+                                ? 'text-rose-400'
+                                : isLow
+                                ? 'text-amber-400'
+                                : 'text-emerald-400'
+                            }`}
+                          >
+                            {p.currentStock} {p.unit}
+                          </strong>
+                        </div>
                       </div>
                     ) : (
                       <div className="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-slate-950/70 border border-slate-800/80 text-[11px]">
@@ -434,13 +448,13 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
                         <div>
                           <span className="text-slate-500 text-[10px] block">Selling:</span>
-                          {p.sellingPrice != null ? (
+                          {p.sellingPrice != null && !isNaN(Number(p.sellingPrice)) ? (
                             <span className="font-mono text-emerald-400 font-semibold">
-                              {formatCurrency(p.sellingPrice, settings.currencySymbol)}
+                              {formatCurrency(Number(p.sellingPrice), settings.currencySymbol)}
                             </span>
                           ) : (
                             <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
-                              Price not set
+                              Not Decided
                             </span>
                           )}
                         </div>
@@ -718,13 +732,13 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 )}
                 <div>
                   <span className="text-slate-500 text-[10px] block">Selling Price</span>
-                  {inspectProduct.sellingPrice != null ? (
+                  {inspectProduct.sellingPrice !== null && inspectProduct.sellingPrice !== undefined && (typeof inspectProduct.sellingPrice !== 'string' || (inspectProduct.sellingPrice as string).trim() !== '') && !isNaN(Number(inspectProduct.sellingPrice)) ? (
                     <span className="font-mono text-emerald-400 font-bold text-xs">
-                      {formatCurrency(inspectProduct.sellingPrice, settings.currencySymbol)}
+                      {formatCurrency(Number(inspectProduct.sellingPrice), settings.currencySymbol)} per {inspectProduct.unit}
                     </span>
                   ) : (
                     <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
-                      Price not set
+                      Not Decided
                     </span>
                   )}
                 </div>

@@ -38,9 +38,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   unpaidCustomersCount = 0,
   role = 'admin',
 }) => {
-  // If user is a Viewer / Stock Viewer, show ONLY stock-related tabs
-  const isManagement = role === 'admin' || role === 'manager';
-  if (!isManagement) {
+  // If user is a Viewer, show ONLY stock-related tabs
+  const isAdmin = role === 'admin';
+  if (!isAdmin) {
     const stockTabs = [
       {
         id: 'stock_dashboard' as NavTabId,

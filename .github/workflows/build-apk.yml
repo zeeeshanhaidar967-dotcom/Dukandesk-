@@ -57,6 +57,23 @@ jobs:
             echo "android directory exists, syncing android assets..."
             npx cap sync android
           fi
+          echo "Listing installed Capacitor Android plugins:"
+          npx cap ls android
+
+      - name: Verify FirebaseAuthentication Plugin Registration
+        run: |
+          PLUGINS_JSON="android/app/src/main/assets/capacitor.plugins.json"
+          if [ ! -f "$PLUGINS_JSON" ]; then
+            echo "::error::Capacitor plugins asset file ($PLUGINS_JSON) does not exist! Native plugins were not synced."
+            exit 1
+          fi
+          echo "Contents of $PLUGINS_JSON:"
+          cat "$PLUGINS_JSON"
+          if ! grep -q "FirebaseAuthentication" "$PLUGINS_JSON"; then
+            echo "::error::FirebaseAuthentication plugin is NOT registered in $PLUGINS_JSON! The native Android plugin is not registered in the APK."
+            exit 1
+          fi
+          echo "Verification passed: FirebaseAuthentication plugin is registered in $PLUGINS_JSON."
 
       - name: Verify Gradle Wrapper files
         run: |
