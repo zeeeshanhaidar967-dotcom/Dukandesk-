@@ -618,22 +618,25 @@ export const googleSignIn = async (
     isSigningIn = true;
 
     if (Capacitor.isNativePlatform()) {
+      console.log('Google Sign-In (googleAuthService): initiating native signInWithGoogle...');
       const result = await FirebaseAuthentication.signInWithGoogle({
         scopes: SCOPES,
       });
 
+      console.log('Google Sign-In: account chosen:', Boolean(result));
+
       const idToken = result.credential?.idToken || (result as any).idToken;
       const accessToken = result.credential?.accessToken || (result as any).accessToken;
 
-      if (!accessToken) {
-        throw new Error('Failed to obtain Google Drive access token from native sign-in.');
-      }
+      console.log('Google Sign-In: idToken received:', Boolean(idToken));
+      console.log('Google Sign-In: accessToken received:', Boolean(accessToken));
 
       let authUser: GoogleAuthUser | User;
       if (idToken) {
         const credential = GoogleAuthProvider.credential(idToken, accessToken);
         const userCredential = await signInWithCredential(auth, credential);
         authUser = userCredential.user;
+        console.log('Google Sign-In: signInWithCredential result:', Boolean(authUser?.uid));
       } else {
         authUser = auth.currentUser || {
           uid: (result.user as any)?.uid || 'google-native-user',
@@ -641,6 +644,13 @@ export const googleSignIn = async (
           displayName: (result.user as any)?.displayName || 'Google Account',
           photoURL: (result.user as any)?.photoUrl || null,
         };
+        console.log('Google Sign-In: signInWithCredential result:', Boolean(authUser?.uid));
+      }
+
+      if (!accessToken) {
+        const tokenErr: any = new Error('Failed to obtain Google Drive access token from native sign-in.');
+        tokenErr.code = 'NO_DRIVE_TOKEN';
+        throw tokenErr;
       }
 
       const session: GoogleAuthSession = {
@@ -668,9 +678,17 @@ export const googleSignIn = async (
 
     const provider = createGoogleProvider(forceConsent);
     const result = await signInWithPopup(auth, provider);
+    console.log('Google Sign-In: account chosen:', Boolean(result));
+
     const credential = GoogleAuthProvider.credentialFromResult(result);
+    console.log('Google Sign-In: idToken received:', Boolean(credential?.idToken));
+    console.log('Google Sign-In: accessToken received:', Boolean(credential?.accessToken));
+    console.log('Google Sign-In: signInWithCredential result:', Boolean(result.user?.uid));
+
     if (!credential?.accessToken) {
-      throw new Error('Failed to obtain Google Drive access token from sign-in.');
+      const err: any = new Error('Failed to obtain Google Drive access token from sign-in.');
+      err.code = 'NO_DRIVE_TOKEN';
+      throw err;
     }
 
     const session: GoogleAuthSession = {
@@ -696,7 +714,13 @@ export const googleSignIn = async (
     return { user: result.user, accessToken: credential.accessToken };
   } catch (error: any) {
     console.error('Google Sign-In failed:', error);
-    throw error;
+    const rawCode = error?.code;
+    const rawMsg = error?.message || String(error || '');
+    const code = rawCode || (rawMsg.match(/\b(\d{2,5})\b/)?.[1]) || 'AUTH_ERROR';
+    const enhancedErr: any = new Error(rawMsg);
+    enhancedErr.code = code;
+    enhancedErr.raw = error;
+    throw enhancedErr;
   } finally {
     isSigningIn = false;
   }

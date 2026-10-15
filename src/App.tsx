@@ -122,6 +122,13 @@ export default function App() {
   const [isGoogleDriveOpen, setIsGoogleDriveOpen] = useState(false);
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [driveNotice, setDriveNotice] = useState<string | null>(() => {
+    try {
+      return sessionStorage.getItem('drive_connect_notice');
+    } catch {
+      return null;
+    }
+  });
 
   // Synchronize state from roomDb manager
   const refreshDbState = () => {
@@ -606,6 +613,28 @@ export default function App() {
 
         {/* Scrollable Content Viewport */}
         <main className="flex-1 p-4 overflow-y-auto pb-24">
+          {/* Drive status notice if permissions were skipped or failed */}
+          {driveNotice && (
+            <div className="mb-3.5 p-3.5 bg-amber-950/80 border border-amber-500/40 rounded-2xl text-amber-200 text-xs flex items-center justify-between gap-2 shadow-lg animate-fadeIn">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-amber-300">Notice:</span>
+                <span>{driveNotice}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setDriveNotice(null);
+                  try {
+                    sessionStorage.removeItem('drive_connect_notice');
+                  } catch {}
+                }}
+                className="text-amber-400 hover:text-amber-100 font-bold px-2 py-0.5 rounded cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           {/* --- VIEWER ROLE VIEWS --- */}
           {!isAdmin && (
             <>

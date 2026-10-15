@@ -32,23 +32,27 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
           console.warn('Notice saving drive_access_token to localStorage:', storageErr);
         }
       }
+      if (res.driveMessage && !res.driveConnected) {
+        try {
+          sessionStorage.setItem('drive_connect_notice', res.driveMessage);
+        } catch {}
+      }
       onLoginSuccess();
     } catch (err: any) {
-      console.warn('Google Sign In notice:', err?.message || err);
-      const msg = err?.message || '';
-      const code = err?.code || '';
-      if (code === 'auth/popup-closed-by-user' || msg.includes('cancel') || msg.includes('12501')) {
+      console.error('Google Sign In caught in LoginScreen:', err);
+      const msg = err?.message || String(err || '');
+      const code = err?.code || (msg.match(/\b(\d{2,5})\b/)?.[1]) || 'AUTH_ERROR';
+
+      // Show the "cancelled" message only if the error clearly means user closed the picker themselves
+      const isExplicitCancellation =
+        code === 'auth/popup-closed-by-user' ||
+        (code === '12501' && msg.toLowerCase().includes('canceled') && !msg.includes('Exception') && !msg.includes('10'));
+
+      if (isExplicitCancellation) {
         setErrorMessage('Sign-in was cancelled. Please click again to proceed.');
-      } else if (code === 'auth/popup-blocked') {
-        setErrorMessage('Popup was blocked by your browser. Please allow popups for this site.');
-      } else if (code === 'auth/unauthorized-domain' || msg.includes('unauthorized-domain')) {
-        setErrorMessage('Google Sign-In authorization error. Please verify google-services.json and SHA-1 in Firebase Console.');
-      } else if (msg.includes('10:') || msg.includes('DEVELOPER_ERROR')) {
-        setErrorMessage('Google Sign-In configuration error (Code 10). Please ensure SHA-1 fingerprint is registered in Firebase Console.');
-      } else if (code === 'auth/network-request-failed' || msg.toLowerCase().includes('network')) {
-        setErrorMessage('Network connection error. Please check your internet connection and try again.');
       } else {
-        setErrorMessage(msg || 'Failed to authenticate with Google. Please try again.');
+        // Exact format required: "Sign-in failed: <error code> - <error message>"
+        setErrorMessage(`Sign-in failed: ${code} - ${msg}`);
       }
     } finally {
       setIsLoading(false);

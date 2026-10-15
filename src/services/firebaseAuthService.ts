@@ -59,58 +59,134 @@ export const BOOTSTRAP_ADMIN_EMAIL = 'hmotor786@gmail.com';
 export const BOOTSTRAP_ADMIN_NAME = 'Haidar ali';
 export const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 
-// Sign in with Google (Native on Android/iOS, Popup on Web) with Google Drive scope included
-export async function loginWithGoogle(): Promise<{ user: FirebaseUser; accessToken?: string }> {
+export interface LoginGoogleResult {
+  user: FirebaseUser;
+  accessToken?: string;
+  driveConnected?: boolean;
+  driveMessage?: string;
+}
+
+// Sign in with Google (Native on Android/iOS, Popup on Web) with separated Drive permissions
+export async function loginWithGoogle(): Promise<LoginGoogleResult> {
   if (Capacitor.isNativePlatform()) {
-    const result = await FirebaseAuthentication.signInWithGoogle({
-      scopes: SCOPES,
+    try {
+      // Step 1: Core native Google Sign-In (WITHOUT Drive scopes to ensure authentication always succeeds)
+      console.log('Google Sign-In: initiating native sign-in...');
+      const result = await FirebaseAuthentication.signInWithGoogle();
+
+      console.log('Google Sign-In: account chosen:', Boolean(result));
+
+      const idToken = result.credential?.idToken || (result as any).idToken;
+      let accessToken = result.credential?.accessToken || (result as any).accessToken;
+
+      console.log('Google Sign-In: idToken received:', Boolean(idToken));
+      console.log('Google Sign-In: accessToken received:', Boolean(accessToken));
+
+      if (!idToken && !accessToken) {
+        const noCredErr: any = new Error('Google Sign-In completed but no authentication credentials were returned.');
+        noCredErr.code = 'NO_CREDENTIALS';
+        throw noCredErr;
+      }
+
+      const credential = GoogleAuthProvider.credential(idToken, accessToken);
+      const userCredential = await signInWithCredential(auth, credential);
+      const user = userCredential.user;
+
+      console.log('Google Sign-In: signInWithCredential result:', Boolean(user?.uid));
+
+      // Step 2: Separate Google Drive Scope Request (Optional; failure does NOT cancel login)
+      let driveConnected = false;
+      let driveMessage: string | undefined;
+
+      try {
+        console.log('Google Sign-In: requesting separate Google Drive permissions...');
+        const driveResult = await FirebaseAuthentication.signInWithGoogle({
+          scopes: SCOPES,
+        });
+        const driveAccessToken = driveResult.credential?.accessToken || (driveResult as any).accessToken;
+        console.log('Google Sign-In: Drive accessToken received:', Boolean(driveAccessToken));
+
+        if (driveAccessToken) {
+          accessToken = driveAccessToken;
+          localStorage.setItem('drive_access_token', driveAccessToken);
+          localStorage.setItem('drive_token_expires_at', String(Date.now() + 3550 * 1000));
+          await syncGoogleDriveAuthSession(user, driveAccessToken);
+          driveConnected = true;
+        } else {
+          driveConnected = false;
+          driveMessage = 'Drive backup is not connected.';
+        }
+      } catch (driveErr: any) {
+        console.warn('Google Drive permission step notice (login not affected):', driveErr?.message || driveErr);
+        driveConnected = false;
+        driveMessage = 'Drive backup is not connected.';
+      }
+
+      return { user, accessToken: accessToken || undefined, driveConnected, driveMessage };
+    } catch (err: any) {
+      console.error('Native Google Sign-In failed:', err);
+      const rawCode = err?.code;
+      const rawMsg = err?.message || String(err || '');
+      const code = rawCode || (rawMsg.match(/\b(\d{2,5})\b/)?.[1]) || 'AUTH_ERROR';
+      const enhancedErr: any = new Error(rawMsg);
+      enhancedErr.code = code;
+      enhancedErr.raw = err;
+      throw enhancedErr;
+    }
+  }
+
+  // Web Flow:
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/drive.file');
+    provider.setCustomParameters({
+      prompt: 'select_account',
+      access_type: 'offline',
     });
 
-    const idToken = result.credential?.idToken || (result as any).idToken;
-    const accessToken = result.credential?.accessToken || (result as any).accessToken;
+    const result = await signInWithPopup(auth, provider);
+    console.log('Google Sign-In: account chosen:', Boolean(result));
 
-    if (!idToken && !accessToken) {
-      throw new Error('Google Sign-In completed but no authentication credentials were returned.');
-    }
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const idToken = credential?.idToken;
+    const token = credential?.accessToken;
 
-    const credential = GoogleAuthProvider.credential(idToken, accessToken);
-    const userCredential = await signInWithCredential(auth, credential);
-    const user = userCredential.user;
+    console.log('Google Sign-In: idToken received:', Boolean(idToken));
+    console.log('Google Sign-In: accessToken received:', Boolean(token));
 
-    if (accessToken) {
+    const user = result.user;
+    console.log('Google Sign-In: signInWithCredential result:', Boolean(user?.uid));
+
+    let driveConnected = false;
+    let driveMessage: string | undefined;
+
+    if (token) {
       try {
-        localStorage.setItem('drive_access_token', accessToken);
+        localStorage.setItem('drive_access_token', token);
         localStorage.setItem('drive_token_expires_at', String(Date.now() + 3550 * 1000));
-        await syncGoogleDriveAuthSession(user, accessToken);
+        await syncGoogleDriveAuthSession(user, token);
+        driveConnected = true;
       } catch (err) {
         console.warn('Notice syncing Google Drive session:', err);
+        driveConnected = false;
+        driveMessage = 'Drive backup is not connected.';
       }
+    } else {
+      driveConnected = false;
+      driveMessage = 'Drive backup is not connected.';
     }
 
-    return { user, accessToken: accessToken || undefined };
+    return { user, accessToken: token || undefined, driveConnected, driveMessage };
+  } catch (err: any) {
+    console.error('Web Google Sign-In failed:', err);
+    const rawCode = err?.code;
+    const rawMsg = err?.message || String(err || '');
+    const code = rawCode || (rawMsg.match(/\b(\d{2,5})\b/)?.[1]) || 'AUTH_ERROR';
+    const enhancedErr: any = new Error(rawMsg);
+    enhancedErr.code = code;
+    enhancedErr.raw = err;
+    throw enhancedErr;
   }
-
-  const provider = new GoogleAuthProvider();
-  provider.addScope('https://www.googleapis.com/auth/drive.file');
-  provider.setCustomParameters({
-    prompt: 'select_account',
-    access_type: 'offline',
-  });
-  const result = await signInWithPopup(auth, provider);
-  const credential = GoogleAuthProvider.credentialFromResult(result);
-  const token = credential?.accessToken;
-
-  if (token) {
-    try {
-      localStorage.setItem('drive_access_token', token);
-      localStorage.setItem('drive_token_expires_at', String(Date.now() + 3550 * 1000));
-      await syncGoogleDriveAuthSession(result.user, token);
-    } catch (err) {
-      console.warn('Notice syncing Google Drive session:', err);
-    }
-  }
-
-  return { user: result.user, accessToken: token || undefined };
 }
 
 // Sign in with Email and Password
