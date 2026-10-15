@@ -154,11 +154,16 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
           </div>
         </div>
 
-        <div className="mt-5 text-center">
-          <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-mono">
-            <Lock className="w-3 h-3 text-emerald-500/80" />
-            Protected by Cloud Firestore Security Rules
-          </span>
+        <div className="mt-5 text-center space-y-1">
+          <div>
+            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-mono">
+              <Lock className="w-3 h-3 text-emerald-500/80" />
+              Protected by Cloud Firestore Security Rules
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-500 font-mono">
+            Build #{import.meta.env.VITE_BUILD_NUMBER || 'dev'}
+          </p>
         </div>
       </div>
     </div>
