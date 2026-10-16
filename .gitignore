@@ -8,3 +8,7 @@ coverage/
 !.env.example
 *.keystore
 *.jks
+
+# Ensure Android Google Services config is tracked
+!google-services.json
+!android/app/google-services.json
