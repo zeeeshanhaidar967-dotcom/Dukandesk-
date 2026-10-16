@@ -72,7 +72,56 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
     try {
       // Step 1: Core native Google Sign-In (WITHOUT Drive scopes to ensure authentication always succeeds)
       console.log('Google Sign-In: initiating native sign-in...');
-      const result = await FirebaseAuthentication.signInWithGoogle();
+      let result;
+      try {
+        result = await FirebaseAuthentication.signInWithGoogle();
+      } catch (firstErr: any) {
+        console.warn('Native signInWithGoogle first attempt notice:', firstErr);
+        console.log('Full native sign-in first error object:', firstErr);
+        try {
+          console.log('Full native sign-in first error JSON:', JSON.stringify(firstErr, Object.getOwnPropertyNames(firstErr), 2));
+        } catch {}
+
+        // In Android 13/14, Credential Manager may cancel prematurely or report "activity is cancelled by the user".
+        // Attempt with useCredentialManager: false (legacy GoogleSignInClient) which either completes successfully
+        // or exposes the underlying native ApiException status code (e.g. 10 DEVELOPER_ERROR, 12500, 12501).
+        try {
+          console.log('Attempting native signInWithGoogle with useCredentialManager: false...');
+          result = await FirebaseAuthentication.signInWithGoogle({
+            useCredentialManager: false,
+          });
+          console.log('Native signInWithGoogle with useCredentialManager: false succeeded!');
+        } catch (fallbackErr: any) {
+          console.error('Native signInWithGoogle fallback also failed:', fallbackErr);
+          console.log('Full native sign-in fallback error object:', fallbackErr);
+          try {
+            console.log('Full native sign-in fallback error JSON:', JSON.stringify(fallbackErr, Object.getOwnPropertyNames(fallbackErr), 2));
+          } catch {}
+
+          // Retain all codes, status numbers, and messages across both attempts
+          const fullErr: any = new Error(fallbackErr?.message || firstErr?.message || 'Native sign-in failed');
+          fullErr.code = fallbackErr?.code || firstErr?.code || 'AUTH_ERROR';
+          fullErr.firstAttemptError = firstErr?.message || String(firstErr);
+          fullErr.fallbackError = fallbackErr?.message || String(fallbackErr);
+          fullErr.firstAttemptCode = firstErr?.code;
+          fullErr.fallbackCode = fallbackErr?.code;
+          fullErr.firstAttemptData = firstErr?.data;
+          fullErr.fallbackData = fallbackErr?.data;
+
+          for (const key of Object.getOwnPropertyNames(firstErr || {})) {
+            if (key !== 'stack' && !(key in fullErr)) {
+              fullErr[`first_${key}`] = firstErr[key];
+            }
+          }
+          for (const key of Object.getOwnPropertyNames(fallbackErr || {})) {
+            if (key !== 'stack' && !(key in fullErr)) {
+              fullErr[key] = fallbackErr[key];
+            }
+          }
+
+          throw fullErr;
+        }
+      }
 
       console.log('Google Sign-In: account chosen:', Boolean(result));
 
@@ -100,9 +149,18 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
 
       try {
         console.log('Google Sign-In: requesting separate Google Drive permissions...');
-        const driveResult = await FirebaseAuthentication.signInWithGoogle({
-          scopes: SCOPES,
-        });
+        let driveResult;
+        try {
+          driveResult = await FirebaseAuthentication.signInWithGoogle({
+            scopes: SCOPES,
+          });
+        } catch {
+          driveResult = await FirebaseAuthentication.signInWithGoogle({
+            scopes: SCOPES,
+            useCredentialManager: false,
+          });
+        }
+
         const driveAccessToken = driveResult.credential?.accessToken || (driveResult as any).accessToken;
         console.log('Google Sign-In: Drive accessToken received:', Boolean(driveAccessToken));
 
@@ -119,19 +177,16 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
       } catch (driveErr: any) {
         console.warn('Google Drive permission step notice (login not affected):', driveErr?.message || driveErr);
         driveConnected = false;
-        driveMessage = 'Drive backup is not connected.';
       }
 
       return { user, accessToken: accessToken || undefined, driveConnected, driveMessage };
     } catch (err: any) {
       console.error('Native Google Sign-In failed:', err);
-      const rawCode = err?.code;
-      const rawMsg = err?.message || String(err || '');
-      const code = rawCode || (rawMsg.match(/\b(\d{2,5})\b/)?.[1]) || 'AUTH_ERROR';
-      const enhancedErr: any = new Error(rawMsg);
-      enhancedErr.code = code;
-      enhancedErr.raw = err;
-      throw enhancedErr;
+      console.log('Full Google Sign-In error object:', err);
+      try {
+        console.log('Full Google Sign-In error JSON:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+      } catch {}
+      throw err;
     }
   }
 
@@ -179,13 +234,11 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
     return { user, accessToken: token || undefined, driveConnected, driveMessage };
   } catch (err: any) {
     console.error('Web Google Sign-In failed:', err);
-    const rawCode = err?.code;
-    const rawMsg = err?.message || String(err || '');
-    const code = rawCode || (rawMsg.match(/\b(\d{2,5})\b/)?.[1]) || 'AUTH_ERROR';
-    const enhancedErr: any = new Error(rawMsg);
-    enhancedErr.code = code;
-    enhancedErr.raw = err;
-    throw enhancedErr;
+    console.log('Full Google Sign-In error object:', err);
+    try {
+      console.log('Full Google Sign-In error JSON:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+    } catch {}
+    throw err;
   }
 }
 

@@ -619,9 +619,55 @@ export const googleSignIn = async (
 
     if (Capacitor.isNativePlatform()) {
       console.log('Google Sign-In (googleAuthService): initiating native signInWithGoogle...');
-      const result = await FirebaseAuthentication.signInWithGoogle({
-        scopes: SCOPES,
-      });
+      let result;
+      try {
+        result = await FirebaseAuthentication.signInWithGoogle({
+          scopes: SCOPES,
+        });
+      } catch (firstErr: any) {
+        console.warn('Google Sign-In (googleAuthService) first attempt notice:', firstErr);
+        console.log('Full googleAuthService first error object:', firstErr);
+        try {
+          console.log('Full googleAuthService first error JSON:', JSON.stringify(firstErr, Object.getOwnPropertyNames(firstErr), 2));
+        } catch {}
+
+        try {
+          console.log('Trying googleAuthService with useCredentialManager: false...');
+          result = await FirebaseAuthentication.signInWithGoogle({
+            scopes: SCOPES,
+            useCredentialManager: false,
+          });
+          console.log('googleAuthService with useCredentialManager: false succeeded!');
+        } catch (fallbackErr: any) {
+          console.error('Google Sign-In (googleAuthService) fallback error:', fallbackErr);
+          console.log('Full googleAuthService fallback error object:', fallbackErr);
+          try {
+            console.log('Full googleAuthService fallback error JSON:', JSON.stringify(fallbackErr, Object.getOwnPropertyNames(fallbackErr), 2));
+          } catch {}
+
+          const fullErr: any = new Error(fallbackErr?.message || firstErr?.message || 'Native sign-in failed');
+          fullErr.code = fallbackErr?.code || firstErr?.code || 'AUTH_ERROR';
+          fullErr.firstAttemptError = firstErr?.message || String(firstErr);
+          fullErr.fallbackError = fallbackErr?.message || String(fallbackErr);
+          fullErr.firstAttemptCode = firstErr?.code;
+          fullErr.fallbackCode = fallbackErr?.code;
+          fullErr.firstAttemptData = firstErr?.data;
+          fullErr.fallbackData = fallbackErr?.data;
+
+          for (const key of Object.getOwnPropertyNames(firstErr || {})) {
+            if (key !== 'stack' && !(key in fullErr)) {
+              fullErr[`first_${key}`] = firstErr[key];
+            }
+          }
+          for (const key of Object.getOwnPropertyNames(fallbackErr || {})) {
+            if (key !== 'stack' && !(key in fullErr)) {
+              fullErr[key] = fallbackErr[key];
+            }
+          }
+
+          throw fullErr;
+        }
+      }
 
       console.log('Google Sign-In: account chosen:', Boolean(result));
 
@@ -714,13 +760,11 @@ export const googleSignIn = async (
     return { user: result.user, accessToken: credential.accessToken };
   } catch (error: any) {
     console.error('Google Sign-In failed:', error);
-    const rawCode = error?.code;
-    const rawMsg = error?.message || String(error || '');
-    const code = rawCode || (rawMsg.match(/\b(\d{2,5})\b/)?.[1]) || 'AUTH_ERROR';
-    const enhancedErr: any = new Error(rawMsg);
-    enhancedErr.code = code;
-    enhancedErr.raw = error;
-    throw enhancedErr;
+    console.log('Full Google Sign-In error object:', error);
+    try {
+      console.log('Full Google Sign-In error JSON:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    } catch {}
+    throw error;
   } finally {
     isSigningIn = false;
   }
@@ -810,9 +854,17 @@ export const refreshGoogleDriveToken = async (): Promise<string | null> => {
 
   if (Capacitor.isNativePlatform()) {
     try {
-      const result = await FirebaseAuthentication.signInWithGoogle({
-        scopes: SCOPES,
-      });
+      let result;
+      try {
+        result = await FirebaseAuthentication.signInWithGoogle({
+          scopes: SCOPES,
+        });
+      } catch {
+        result = await FirebaseAuthentication.signInWithGoogle({
+          scopes: SCOPES,
+          useCredentialManager: false,
+        });
+      }
 
       const idToken = result.credential?.idToken || (result as any).idToken;
       const accessToken = result.credential?.accessToken || (result as any).accessToken;
