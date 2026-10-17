@@ -160,18 +160,66 @@ jobs:
           ./gradlew :app:assembleDebug --stacktrace --no-daemon -Dorg.gradle.java.home="$JAVA_HOME"
           cd ..
 
-      - name: Diagnostic checks for google-services and APK signing
+      - name: Verify Google Sign-In setup inside the built APK
+        if: always()
         run: |
-          echo "=== A. google-services.json present? ==="
-          ls -l android/app/google-services.json || true
+          set +e
+          EXPECTED_SHA1="6e7fbe52d7ddb14d4db84ed43e9e114d9b3c65c1"
+          EXPECTED_WEB="434518018679-56s9v40fv4nmn11co32jemdet4ade9um.apps.googleusercontent.com"
+          EXPECTED_PKG="com.zeeshan.app"
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
 
-          echo "=== B. default_web_client_id in build output ==="
-          grep -rn "default_web_client_id" android/app/build --include=*.xml | head -5 || true
-          echo "(end of B)"
+          GS_INFO=$(python3 - <<'PY'
+          import json
+          try:
+              d = json.load(open("android/app/google-services.json"))
+              c = d["client"][0]
+              print("pkg=" + c["client_info"]["android_client_info"]["package_name"])
+              for o in c.get("oauth_client", []):
+                  if o.get("client_type") == 1:
+                      print("hash=" + o["android_info"]["certificate_hash"].lower())
+                  if o.get("client_type") == 3:
+                      print("web=" + o["client_id"])
+          except Exception as e:
+              print("error=" + str(e))
+          PY
+          )
+          GS_PKG=$(echo "$GS_INFO" | sed -n 's/^pkg=//p' | head -1)
+          GS_HASH=$(echo "$GS_INFO" | sed -n 's/^hash=//p' | head -1)
+          GS_WEB=$(echo "$GS_INFO" | sed -n 's/^web=//p' | head -1)
 
-          echo "=== C. APK signing certificate ==="
-          APKSIGNER=$(ls -d $ANDROID_HOME/build-tools/*/apksigner | sort -V | tail -1) || true
-          $APKSIGNER verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk | grep -E "SHA-1|SHA-256" || true
+          VALUES_FILE=$(grep -rl "default_web_client_id" android/app/build --include=values.xml 2>/dev/null | head -1)
+          BUILT_WEB=""
+          if [ -n "$VALUES_FILE" ]; then
+            BUILT_WEB=$(sed -n 's/.*name="default_web_client_id"[^>]*>\([^<]*\)<.*/\1/p' "$VALUES_FILE" | head -1)
+          fi
+
+          APKSIGNER=$(ls -d $ANDROID_HOME/build-tools/*/apksigner 2>/dev/null | sort -V | tail -1)
+          [ -z "$APKSIGNER" ] && APKSIGNER=$(command -v apksigner)
+          APK_SHA1=""
+          if [ -n "$APKSIGNER" ]; then
+            APK_SHA1=$("$APKSIGNER" verify --print-certs "$APK" 2>&1 | sed -n 's/.*certificate SHA-1 digest: *//p' | head -1 | tr -d ': ' | tr 'A-F' 'a-f')
+          fi
+
+          check() { if [ "$2" = "$3" ] && [ -n "$2" ]; then echo "PASS"; else echo "FAIL"; fi; }
+          R1=$(check x "$GS_PKG" "$EXPECTED_PKG")
+          R2=$(check x "$GS_HASH" "$EXPECTED_SHA1")
+          R3=$(check x "$GS_WEB" "$EXPECTED_WEB")
+          R4=$(check x "$BUILT_WEB" "$EXPECTED_WEB")
+          R5=$(check x "$APK_SHA1" "$EXPECTED_SHA1")
+
+          {
+            echo "### Google Sign-In check"
+            echo ""
+            echo "| # | Check | Result | Found |"
+            echo "|---|-------|--------|-------|"
+            echo "| 1 | App name in google-services.json | $R1 | ${GS_PKG:-missing} |"
+            echo "| 2 | Signing key (SHA-1) in google-services.json | $R2 | ${GS_HASH:-missing} |"
+            echo "| 3 | Web client id in google-services.json | $R3 | ${GS_WEB:-missing} |"
+            echo "| 4 | Web client id built into the app | $R4 | ${BUILT_WEB:-NOT FOUND} |"
+            echo "| 5 | Real signing key (SHA-1) of the APK | $R5 | ${APK_SHA1:-NOT FOUND} |"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          exit 0
 
       - name: Verify the APK
         run: |
