@@ -17,19 +17,21 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Verify android/app/google-services.json presence
+      - name: Create google-services.json from secret
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          if [ ! -f "android/app/google-services.json" ]; then
-            echo "::error::CRITICAL ERROR: android/app/google-services.json is missing from repository!"
-            echo "Google Sign-In and native FirebaseAuthentication require android/app/google-services.json."
-            echo "Please ensure android/app/google-services.json is committed and pushed to GitHub."
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "::error::GitHub secret GOOGLE_SERVICES_JSON is missing"
             exit 1
           fi
-          if [ ! -s "android/app/google-services.json" ]; then
-            echo "::error::CRITICAL ERROR: android/app/google-services.json exists but is empty!"
+          mkdir -p android/app
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          python3 -c "import json; json.load(open('android/app/google-services.json'))" || {
+            echo "::error::android/app/google-services.json is not valid JSON"
             exit 1
-          fi
-          echo "Verification passed: android/app/google-services.json is present and valid."
+          }
+          echo "Successfully created and validated android/app/google-services.json from secret."
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
