@@ -17,21 +17,25 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Create google-services.json from secret
+      - name: Verify google-services.json exists
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
-            echo "::error::GitHub secret GOOGLE_SERVICES_JSON is missing"
-            exit 1
+          if [ ! -f "android/app/google-services.json" ]; then
+            if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+              echo "Creating android/app/google-services.json from GitHub secret..."
+              mkdir -p android/app
+              printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            else
+              echo "::error::android/app/google-services.json does not exist! Please ensure android/app/google-services.json is committed in the repository or the GOOGLE_SERVICES_JSON secret is set."
+              exit 1
+            fi
           fi
-          mkdir -p android/app
-          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
           python3 -c "import json; json.load(open('android/app/google-services.json'))" || {
             echo "::error::android/app/google-services.json is not valid JSON"
             exit 1
           }
-          echo "Successfully created and validated android/app/google-services.json from secret."
+          echo "Verified android/app/google-services.json exists and is valid JSON."
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -157,6 +161,7 @@ jobs:
         run: |
           cd android
           chmod +x ./gradlew
+          echo "HOME=$HOME ANDROID_USER_HOME=$ANDROID_USER_HOME"; ls -l ~/.android debug.keystore || true
           ./gradlew :app:assembleDebug --stacktrace --no-daemon -Dorg.gradle.java.home="$JAVA_HOME"
           cd ..
 
