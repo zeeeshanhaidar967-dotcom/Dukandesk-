@@ -161,7 +161,6 @@ jobs:
         run: |
           cd android
           chmod +x ./gradlew
-          echo "HOME=$HOME ANDROID_USER_HOME=$ANDROID_USER_HOME"; ls -l ~/.android debug.keystore || true
           ./gradlew :app:assembleDebug --stacktrace --no-daemon -Dorg.gradle.java.home="$JAVA_HOME"
           cd ..
 

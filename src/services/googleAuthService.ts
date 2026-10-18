@@ -618,33 +618,18 @@ export const googleSignIn = async (
     isSigningIn = true;
 
     if (Capacitor.isNativePlatform()) {
-      console.log('Google Sign-In (googleAuthService): initiating native signInWithGoogle...');
       let result;
       try {
         result = await FirebaseAuthentication.signInWithGoogle({
           scopes: SCOPES,
         });
       } catch (firstErr: any) {
-        console.warn('Google Sign-In (googleAuthService) first attempt notice:', firstErr);
-        console.log('Full googleAuthService first error object:', firstErr);
         try {
-          console.log('Full googleAuthService first error JSON:', JSON.stringify(firstErr, Object.getOwnPropertyNames(firstErr), 2));
-        } catch {}
-
-        try {
-          console.log('Trying googleAuthService with useCredentialManager: false...');
           result = await FirebaseAuthentication.signInWithGoogle({
             scopes: SCOPES,
             useCredentialManager: false,
           });
-          console.log('googleAuthService with useCredentialManager: false succeeded!');
         } catch (fallbackErr: any) {
-          console.error('Google Sign-In (googleAuthService) fallback error:', fallbackErr);
-          console.log('Full googleAuthService fallback error object:', fallbackErr);
-          try {
-            console.log('Full googleAuthService fallback error JSON:', JSON.stringify(fallbackErr, Object.getOwnPropertyNames(fallbackErr), 2));
-          } catch {}
-
           const fullErr: any = new Error(fallbackErr?.message || firstErr?.message || 'Native sign-in failed');
           fullErr.code = fallbackErr?.code || firstErr?.code || 'AUTH_ERROR';
           fullErr.firstAttemptError = firstErr?.message || String(firstErr);
@@ -669,20 +654,14 @@ export const googleSignIn = async (
         }
       }
 
-      console.log('Google Sign-In: account chosen:', Boolean(result));
-
       const idToken = result.credential?.idToken || (result as any).idToken;
       const accessToken = result.credential?.accessToken || (result as any).accessToken;
-
-      console.log('Google Sign-In: idToken received:', Boolean(idToken));
-      console.log('Google Sign-In: accessToken received:', Boolean(accessToken));
 
       let authUser: GoogleAuthUser | User;
       if (idToken) {
         const credential = GoogleAuthProvider.credential(idToken, accessToken);
         const userCredential = await signInWithCredential(auth, credential);
         authUser = userCredential.user;
-        console.log('Google Sign-In: signInWithCredential result:', Boolean(authUser?.uid));
       } else {
         authUser = auth.currentUser || {
           uid: (result.user as any)?.uid || 'google-native-user',
@@ -690,7 +669,6 @@ export const googleSignIn = async (
           displayName: (result.user as any)?.displayName || 'Google Account',
           photoURL: (result.user as any)?.photoUrl || null,
         };
-        console.log('Google Sign-In: signInWithCredential result:', Boolean(authUser?.uid));
       }
 
       if (!accessToken) {
@@ -724,12 +702,7 @@ export const googleSignIn = async (
 
     const provider = createGoogleProvider(forceConsent);
     const result = await signInWithPopup(auth, provider);
-    console.log('Google Sign-In: account chosen:', Boolean(result));
-
     const credential = GoogleAuthProvider.credentialFromResult(result);
-    console.log('Google Sign-In: idToken received:', Boolean(credential?.idToken));
-    console.log('Google Sign-In: accessToken received:', Boolean(credential?.accessToken));
-    console.log('Google Sign-In: signInWithCredential result:', Boolean(result.user?.uid));
 
     if (!credential?.accessToken) {
       const err: any = new Error('Failed to obtain Google Drive access token from sign-in.');
@@ -760,10 +733,6 @@ export const googleSignIn = async (
     return { user: result.user, accessToken: credential.accessToken };
   } catch (error: any) {
     console.error('Google Sign-In failed:', error);
-    console.log('Full Google Sign-In error object:', error);
-    try {
-      console.log('Full Google Sign-In error JSON:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
-    } catch {}
     throw error;
   } finally {
     isSigningIn = false;

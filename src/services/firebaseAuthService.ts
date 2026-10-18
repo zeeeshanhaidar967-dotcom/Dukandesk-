@@ -70,52 +70,46 @@ export interface LoginGoogleResult {
 export async function loginWithGoogle(): Promise<LoginGoogleResult> {
   if (Capacitor.isNativePlatform()) {
     try {
-      // Step 1: Core native Google Sign-In (WITHOUT Drive scopes to ensure authentication always succeeds)
-      console.log('Google Sign-In: initiating native sign-in...');
       let result;
+      let driveConnected = false;
+      let driveMessage: string | undefined;
+
       try {
-        result = await FirebaseAuthentication.signInWithGoogle();
+        result = await FirebaseAuthentication.signInWithGoogle({
+          scopes: SCOPES,
+        });
       } catch (firstErr: any) {
-        console.warn('Native signInWithGoogle first attempt notice:', firstErr);
-        console.log('Full native sign-in first error object:', firstErr);
-        try {
-          console.log('Full native sign-in first error JSON:', JSON.stringify(firstErr, Object.getOwnPropertyNames(firstErr), 2));
-        } catch {}
+        const errMessage = (firstErr?.message || String(firstErr || '')).toLowerCase();
+        const isCancelled = errMessage.includes('cancel') || firstErr?.code === '12501';
 
-        // In Android 13/14, Credential Manager may cancel prematurely or report "activity is cancelled by the user".
-        // Attempt with useCredentialManager: false (legacy GoogleSignInClient) which either completes successfully
-        // or exposes the underlying native ApiException status code (e.g. 10 DEVELOPER_ERROR, 12500, 12501).
-        try {
-          console.log('Attempting native signInWithGoogle with useCredentialManager: false...');
-          result = await FirebaseAuthentication.signInWithGoogle({
-            useCredentialManager: false,
-          });
-          console.log('Native signInWithGoogle with useCredentialManager: false succeeded!');
-        } catch (fallbackErr: any) {
-          console.error('Native signInWithGoogle fallback also failed:', fallbackErr);
-          console.log('Full native sign-in fallback error object:', fallbackErr);
-          try {
-            console.log('Full native sign-in fallback error JSON:', JSON.stringify(fallbackErr, Object.getOwnPropertyNames(fallbackErr), 2));
-          } catch {}
+        // If cancelled, do NOT open a second account picker - throw immediately
+        if (isCancelled) {
+          throw firstErr;
+        }
 
-          // Retain all codes, status numbers, and messages across both attempts
-          const fullErr: any = new Error(fallbackErr?.message || firstErr?.message || 'Native sign-in failed');
-          fullErr.code = fallbackErr?.code || firstErr?.code || 'AUTH_ERROR';
+        // Retry ONCE without scopes so login still works
+        try {
+          result = await FirebaseAuthentication.signInWithGoogle();
+          driveConnected = false;
+          driveMessage = 'Drive backup is not connected.';
+        } catch (retryErr: any) {
+          const fullErr: any = new Error(retryErr?.message || firstErr?.message || 'Native sign-in failed');
+          fullErr.code = retryErr?.code || firstErr?.code || 'AUTH_ERROR';
           fullErr.firstAttemptError = firstErr?.message || String(firstErr);
-          fullErr.fallbackError = fallbackErr?.message || String(fallbackErr);
+          fullErr.retryError = retryErr?.message || String(retryErr);
           fullErr.firstAttemptCode = firstErr?.code;
-          fullErr.fallbackCode = fallbackErr?.code;
+          fullErr.retryCode = retryErr?.code;
           fullErr.firstAttemptData = firstErr?.data;
-          fullErr.fallbackData = fallbackErr?.data;
+          fullErr.retryData = retryErr?.data;
 
           for (const key of Object.getOwnPropertyNames(firstErr || {})) {
             if (key !== 'stack' && !(key in fullErr)) {
               fullErr[`first_${key}`] = firstErr[key];
             }
           }
-          for (const key of Object.getOwnPropertyNames(fallbackErr || {})) {
+          for (const key of Object.getOwnPropertyNames(retryErr || {})) {
             if (key !== 'stack' && !(key in fullErr)) {
-              fullErr[key] = fallbackErr[key];
+              fullErr[key] = retryErr[key];
             }
           }
 
@@ -123,13 +117,8 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
         }
       }
 
-      console.log('Google Sign-In: account chosen:', Boolean(result));
-
       const idToken = result.credential?.idToken || (result as any).idToken;
-      let accessToken = result.credential?.accessToken || (result as any).accessToken;
-
-      console.log('Google Sign-In: idToken received:', Boolean(idToken));
-      console.log('Google Sign-In: accessToken received:', Boolean(accessToken));
+      const accessToken = result.credential?.accessToken || (result as any).accessToken;
 
       if (!idToken && !accessToken) {
         const noCredErr: any = new Error('Google Sign-In completed but no authentication credentials were returned.');
@@ -141,51 +130,20 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
       const userCredential = await signInWithCredential(auth, credential);
       const user = userCredential.user;
 
-      console.log('Google Sign-In: signInWithCredential result:', Boolean(user?.uid));
-
-      // Step 2: Separate Google Drive Scope Request (Optional; failure does NOT cancel login)
-      let driveConnected = false;
-      let driveMessage: string | undefined;
-
-      try {
-        console.log('Google Sign-In: requesting separate Google Drive permissions...');
-        let driveResult;
-        try {
-          driveResult = await FirebaseAuthentication.signInWithGoogle({
-            scopes: SCOPES,
-          });
-        } catch {
-          driveResult = await FirebaseAuthentication.signInWithGoogle({
-            scopes: SCOPES,
-            useCredentialManager: false,
-          });
-        }
-
-        const driveAccessToken = driveResult.credential?.accessToken || (driveResult as any).accessToken;
-        console.log('Google Sign-In: Drive accessToken received:', Boolean(driveAccessToken));
-
-        if (driveAccessToken) {
-          accessToken = driveAccessToken;
-          localStorage.setItem('drive_access_token', driveAccessToken);
-          localStorage.setItem('drive_token_expires_at', String(Date.now() + 3550 * 1000));
-          await syncGoogleDriveAuthSession(user, driveAccessToken);
-          driveConnected = true;
-        } else {
-          driveConnected = false;
-          driveMessage = 'Drive backup is not connected.';
-        }
-      } catch (driveErr: any) {
-        console.warn('Google Drive permission step notice (login not affected):', driveErr?.message || driveErr);
+      // Handle Drive token from single result
+      if (accessToken && !driveMessage) {
+        localStorage.setItem('drive_access_token', accessToken);
+        localStorage.setItem('drive_token_expires_at', String(Date.now() + 3550 * 1000));
+        await syncGoogleDriveAuthSession(user, accessToken);
+        driveConnected = true;
+      } else if (!driveConnected) {
         driveConnected = false;
+        driveMessage = driveMessage || 'Drive backup is not connected.';
       }
 
       return { user, accessToken: accessToken || undefined, driveConnected, driveMessage };
     } catch (err: any) {
       console.error('Native Google Sign-In failed:', err);
-      console.log('Full Google Sign-In error object:', err);
-      try {
-        console.log('Full Google Sign-In error JSON:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
-      } catch {}
       throw err;
     }
   }
@@ -200,17 +158,11 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
     });
 
     const result = await signInWithPopup(auth, provider);
-    console.log('Google Sign-In: account chosen:', Boolean(result));
-
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const idToken = credential?.idToken;
     const token = credential?.accessToken;
 
-    console.log('Google Sign-In: idToken received:', Boolean(idToken));
-    console.log('Google Sign-In: accessToken received:', Boolean(token));
-
     const user = result.user;
-    console.log('Google Sign-In: signInWithCredential result:', Boolean(user?.uid));
 
     let driveConnected = false;
     let driveMessage: string | undefined;
@@ -234,10 +186,6 @@ export async function loginWithGoogle(): Promise<LoginGoogleResult> {
     return { user, accessToken: token || undefined, driveConnected, driveMessage };
   } catch (err: any) {
     console.error('Web Google Sign-In failed:', err);
-    console.log('Full Google Sign-In error object:', err);
-    try {
-      console.log('Full Google Sign-In error JSON:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
-    } catch {}
     throw err;
   }
 }

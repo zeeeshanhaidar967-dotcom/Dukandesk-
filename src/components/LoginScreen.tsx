@@ -16,12 +16,12 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorInfo, setErrorInfo] = useState<{ message: string; code?: string } | null>(null);
 
   // Handle Google Sign In
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
-    setErrorMessage(null);
+    setErrorInfo(null);
     try {
       const res = await loginWithGoogle();
       if (res.accessToken) {
@@ -39,77 +39,28 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
       }
       onLoginSuccess();
     } catch (err: any) {
-      console.error('Google Sign In caught in LoginScreen:', err);
-      console.log('Full Google Sign-In error object:', err);
-      try {
-        console.log('Full Google Sign-In error properties:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
-      } catch {}
+      console.error('Google Sign In failed:', err);
 
-      // Collect all properties from the raw error (including non-enumerable properties)
-      const propNames = err && typeof err === 'object' ? Object.getOwnPropertyNames(err) : [];
-      const rawProps: Record<string, any> = {};
-      for (const key of propNames) {
-        if (key !== 'stack') {
-          rawProps[key] = err[key];
-        }
+      const msg = err?.message || (typeof err === 'string' ? err : '');
+      const rawCode = err?.code || err?.errorCode || '';
+      const fullText = `${msg} ${rawCode} ${String(err)}`.toLowerCase();
+
+      const isCancelled = fullText.includes('cancel') || rawCode === '12501' || rawCode === '16';
+
+      const codeMatch = `${msg} ${rawCode}`.match(/\b(12500|12501|12502|10|7|8|4|5|6|13|14|15|16|17)\b/);
+      const code = codeMatch ? codeMatch[1] : (rawCode && rawCode !== 'AUTH_ERROR' ? String(rawCode) : undefined);
+
+      if (isCancelled) {
+        setErrorInfo({
+          message: 'Sign-in was cancelled.',
+          code,
+        });
+      } else {
+        setErrorInfo({
+          message: 'Sign-in failed. Please try again.',
+          code,
+        });
       }
-      if (typeof err === 'object' && err !== null) {
-        for (const [k, v] of Object.entries(err)) {
-          if (k !== 'stack' && !(k in rawProps)) {
-            rawProps[k] = v;
-          }
-        }
-      }
-
-      const msg = err?.message || (typeof err === 'string' ? err : 'Unknown error');
-      const rawCode = err?.code || err?.errorCode || rawProps.code || rawProps.errorCode || '';
-
-      // Reference table of Google Sign-In / Play Services status codes
-      const STATUS_NAMES: Record<string, string> = {
-        '0': 'SUCCESS',
-        '4': 'SIGN_IN_REQUIRED',
-        '5': 'INVALID_ACCOUNT',
-        '6': 'RESOLUTION_REQUIRED',
-        '7': 'NETWORK_ERROR',
-        '8': 'INTERNAL_ERROR',
-        '10': 'DEVELOPER_ERROR (Check SHA-1 fingerprint & OAuth client ID in Firebase Console)',
-        '13': 'ERROR',
-        '14': 'INTERRUPTED',
-        '15': 'TIMEOUT',
-        '16': 'CANCELED',
-        '17': 'API_NOT_CONNECTED',
-        '12500': 'SIGN_IN_FAILED (Google Play Services internal failure)',
-        '12501': 'SIGN_IN_CANCELLED (User dismissed account picker)',
-        '12502': 'SIGN_IN_CURRENTLY_IN_PROGRESS',
-      };
-
-      // Check for native Google Sign-In status code numbers (e.g. 10 DEVELOPER_ERROR, 12500 SIGN_IN_FAILED, 12501 SIGN_IN_CANCELLED, 7, 8, etc.)
-      const fullSearch = `${msg} ${rawCode} ${JSON.stringify(rawProps)}`;
-      const statusMatch = fullSearch.match(/(?:status(?:code)?[:=\s]+|\b(?:code|error|status)[:=\s]+|ApiException:\s*|\b)\b(12500|12501|12502|12503|10|7|8|4|5|6|13|14|15|16|17)\b/i);
-      const statusCode = statusMatch ? statusMatch[1] : undefined;
-
-      const code = rawCode || (statusCode ? `STATUS_${statusCode}` : 'AUTH_ERROR');
-
-      // Extra data fields (anything beyond basic message/code)
-      const extraFields: Record<string, any> = {};
-      for (const [k, v] of Object.entries(rawProps)) {
-        if (k !== 'message' && k !== 'code' && v !== undefined && v !== null) {
-          extraFields[k] = v;
-        }
-      }
-
-      let errorText = `Sign-in failed: ${code} - ${msg}`;
-      if (statusCode) {
-        const desc = STATUS_NAMES[statusCode] || 'Unknown status';
-        errorText += `\n\n• Native Status Code: ${statusCode} (${desc})`;
-      }
-      if (Object.keys(extraFields).length > 0) {
-        errorText += `\n\n• Extra Data:\n${JSON.stringify(extraFields, null, 2)}`;
-      }
-      errorText += `\n\n• Full Raw Error:\n${JSON.stringify(rawProps, null, 2)}`;
-
-      // Do NOT hide behind "cancelled" text - display full raw error directly as requested
-      setErrorMessage(errorText);
     } finally {
       setIsLoading(false);
     }
@@ -142,10 +93,17 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
         </div>
 
         {/* Error Notification */}
-        {errorMessage && (
-          <div className="mb-5 p-3.5 bg-rose-950/80 border border-rose-500/40 rounded-xl text-rose-300 text-xs flex items-start gap-2.5 animate-fadeIn">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-            <div className="leading-relaxed break-words font-mono text-[11px] whitespace-pre-wrap">{errorMessage}</div>
+        {errorInfo && (
+          <div className="mb-5 p-3.5 bg-rose-950/80 border border-rose-500/40 rounded-xl text-rose-300 text-xs flex items-center gap-2.5 animate-fadeIn">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <div className="font-medium text-xs leading-normal">
+              {errorInfo.message}
+              {errorInfo.code && (
+                <span className="text-slate-400 font-mono text-[11px] ml-1.5 font-normal">
+                  (code {errorInfo.code})
+                </span>
+              )}
+            </div>
           </div>
         )}
 
@@ -210,16 +168,11 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
           </div>
         </div>
 
-        <div className="mt-5 text-center space-y-1">
-          <div>
-            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-mono">
-              <Lock className="w-3 h-3 text-emerald-500/80" />
-              Protected by Cloud Firestore Security Rules
-            </span>
-          </div>
-          <p className="text-[11px] text-slate-500 font-mono">
-            Build #{import.meta.env.VITE_BUILD_NUMBER || 'dev'}
-          </p>
+        <div className="mt-5 text-center">
+          <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-mono">
+            <Lock className="w-3 h-3 text-emerald-500/80" />
+            Protected by Cloud Firestore Security Rules
+          </span>
         </div>
       </div>
     </div>
