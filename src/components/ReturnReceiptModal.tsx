@@ -126,25 +126,25 @@ export const ReturnReceiptModal: React.FC<ReturnReceiptModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-card border border-line rounded-3xl max-w-xl w-full overflow-hidden shadow-card flex flex-col max-h-[92vh]">
         {/* Modal Top Bar (screen-only, omitted on print) */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-slate-950 border-b border-slate-800 no-print shrink-0">
-          <div className="flex items-center gap-2 text-rose-400 font-bold text-xs sm:text-sm">
+        <div className="flex items-center justify-between px-5 py-3.5 bg-primary border-b border-line no-print shrink-0 text-white">
+          <div className="flex items-center gap-2 font-bold text-xs sm:text-sm">
             <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             <span>Customer Return Receipt / Return Bill</span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-card/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Customer-Facing Printable Return Bill Container */}
-        <div className="p-4 sm:p-7 overflow-y-auto printable-area bg-white text-slate-900 select-text flex-1">
+        <div className="p-4 sm:p-7 overflow-y-auto printable-area bg-card text-slate-900 select-text flex-1">
           {/* 1. SHOP HEADER & LOGO */}
           <div className="border-b-2 border-slate-900 pb-3 mb-3 text-center">
             <div className="flex items-center justify-center gap-2.5 mb-1">
@@ -243,7 +243,7 @@ export const ReturnReceiptModal: React.FC<ReturnReceiptModalProps> = ({
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {returnRecord.items.map((item, idx) => (
-                  <tr key={item.saleItemId || idx} className={idx % 2 === 1 ? 'bg-slate-50/40' : 'bg-white'}>
+                  <tr key={item.saleItemId || idx} className={idx % 2 === 1 ? 'bg-slate-50/40' : 'bg-card'}>
                     <td className="py-2 px-2 text-center text-slate-600 border-r border-slate-200 font-mono">
                       {idx + 1}
                     </td>
@@ -357,11 +357,11 @@ export const ReturnReceiptModal: React.FC<ReturnReceiptModalProps> = ({
         </div>
 
         {/* Modal Bottom Action Controls (no-print) */}
-        <div className="p-3.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-2 sm:gap-3 no-print shrink-0">
+        <div className="p-3.5 bg-inner border-t border-line-strong flex items-center justify-between gap-2 sm:gap-3 no-print shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-xs transition-colors"
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong font-semibold text-xs transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -369,16 +369,16 @@ export const ReturnReceiptModal: React.FC<ReturnReceiptModalProps> = ({
           <button
             type="button"
             onClick={handleShare}
-            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
-            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-emerald-400" />}
+            {copiedLink ? <Check className="w-4 h-4 text-badge-green-text" /> : <Share2 className="w-4 h-4 text-primary" />}
             <span>{copiedLink ? 'Copied!' : 'Share Bill'}</span>
           </button>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="flex-1 py-2.5 px-3 sm:px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-rose-950/60 transition-all active:scale-95"
+            className="flex-1 py-2.5 px-3 sm:px-4 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-95 cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>Print Return Bill</span>

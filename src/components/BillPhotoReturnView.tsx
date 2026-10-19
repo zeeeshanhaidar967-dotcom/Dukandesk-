@@ -289,8 +289,8 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
       />
 
       {errorMessage && (
-        <div className="p-3 rounded-2xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300 flex items-start gap-2.5">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-3 rounded-2xl bg-badge-red-bg border border-badge-red-text/35 text-xs text-badge-red-text flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 text-badge-red-text shrink-0 mt-0.5" />
           <div className="flex-1">{errorMessage}</div>
         </div>
       )}
@@ -298,14 +298,14 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
       {/* STEP: UPLOAD */}
       {step === 'UPLOAD' && (
         <div className="space-y-4">
-          <div className="p-6 bg-slate-950/80 border border-slate-800 rounded-3xl text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-500/20 to-amber-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto shadow-inner">
+          <div className="p-6 bg-card border border-line rounded-3xl text-center space-y-4 shadow-card">
+            <div className="w-16 h-16 rounded-2xl bg-badge-red-bg text-badge-red-text border border-line-strong flex items-center justify-center mx-auto shadow-inner">
               <Camera className="w-8 h-8" />
             </div>
 
             <div className="max-w-md mx-auto space-y-1">
-              <h4 className="text-sm font-bold text-white">Scan Original Customer Sale Bill</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <h4 className="text-sm font-bold text-ink">Scan Original Customer Sale Bill</h4>
+              <p className="text-xs text-muted leading-relaxed">
                 Photograph the physical bill/invoice. AI extracts the bill number, customer, and items, matches your shop's database record, and lets you choose what is being returned.
               </p>
             </div>
@@ -314,7 +314,7 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
               <button
                 type="button"
                 onClick={() => cameraInputRef.current?.click()}
-                className="py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/60 active:scale-95 transition-all cursor-pointer"
+                className="py-3 px-4 rounded-2xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow active:scale-95 transition-all cursor-pointer"
               >
                 <Camera className="w-4 h-4" />
                 <span>Take Bill Photo</span>
@@ -323,9 +323,9 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
               <button
                 type="button"
                 onClick={() => galleryInputRef.current?.click()}
-                className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 active:scale-95 transition-all cursor-pointer"
+                className="py-3 px-4 rounded-2xl bg-card hover:bg-inner text-ink font-bold text-xs flex items-center justify-center gap-2 border border-line-strong active:scale-95 transition-all cursor-pointer"
               >
-                <Upload className="w-4 h-4 text-slate-400" />
+                <Upload className="w-4 h-4 text-muted" />
                 <span>Upload from Gallery</span>
               </button>
             </div>
@@ -334,7 +334,7 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleProcessImage(generateDemoBillImage(), true)}
-                className="text-[11px] text-amber-400 hover:text-amber-300 font-medium inline-flex items-center gap-1.5 underline underline-offset-4"
+                className="text-[11px] text-badge-yellow-text hover:underline font-medium inline-flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Test with Sample Invoice Bill (Instant Demo)</span>
@@ -346,15 +346,15 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
 
       {/* STEP: ANALYZING */}
       {step === 'ANALYZING' && (
-        <div className="p-8 bg-slate-950/80 border border-slate-800 rounded-3xl text-center space-y-4">
+        <div className="p-8 bg-card border border-line rounded-3xl text-center space-y-4 shadow-card">
           <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border-4 border-rose-500/20 border-t-rose-500 animate-spin" />
-            <Sparkles className="w-6 h-6 text-rose-400" />
+            <div className="absolute inset-0 rounded-full border-4 border-badge-red-text/35 border-t-badge-red-text animate-spin" />
+            <Sparkles className="w-6 h-6 text-badge-red-text" />
           </div>
 
           <div className="space-y-1">
-            <h4 className="text-sm font-bold text-white">Analyzing Physical Bill Photograph</h4>
-            <p className="text-xs text-slate-400">
+            <h4 className="text-sm font-bold text-ink">Analyzing Physical Bill Photograph</h4>
+            <p className="text-xs text-muted">
               Extracting bill number, customer details, and reconciling with your database...
             </p>
           </div>
@@ -363,21 +363,21 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
 
       {/* STEP: NO MATCH */}
       {step === 'NO_MATCH' && (
-        <div className="p-6 bg-slate-950/80 border border-slate-800 rounded-3xl text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto">
+        <div className="p-6 bg-card border border-line rounded-3xl text-center space-y-4 shadow-card">
+          <div className="w-14 h-14 rounded-2xl bg-badge-yellow-bg border border-line-strong text-badge-yellow-text flex items-center justify-center mx-auto">
             <AlertTriangle className="w-7 h-7" />
           </div>
 
           <div className="max-w-md mx-auto space-y-1.5">
-            <h4 className="text-sm font-bold text-white">Original bill could not be matched.</h4>
-            <p className="text-xs text-slate-400">
+            <h4 className="text-sm font-bold text-ink">Original bill could not be matched.</h4>
+            <p className="text-xs text-muted">
               {matchSummaryMessage || 'No matching sale found in DukanDesk with this bill number or customer.'}
             </p>
             {extractedBill && (
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] text-left text-slate-300 font-mono space-y-1 mt-3">
-                <div>Extracted Bill No: <strong className="text-white">{extractedBill.billNumber || 'Not detected'}</strong></div>
-                <div>Extracted Customer: <strong className="text-white">{extractedBill.detectedCustomerName || 'Not detected'}</strong></div>
-                <div>Extracted Total: <strong className="text-white">{extractedBill.totalAmount ? `₹${extractedBill.totalAmount}` : 'Not detected'}</strong></div>
+              <div className="p-3 rounded-xl bg-inner border border-line-strong text-[11px] text-left text-muted font-mono space-y-1 mt-3">
+                <div>Extracted Bill No: <strong className="text-ink">{extractedBill.billNumber || 'Not detected'}</strong></div>
+                <div>Extracted Customer: <strong className="text-ink">{extractedBill.detectedCustomerName || 'Not detected'}</strong></div>
+                <div>Extracted Total: <strong className="text-ink">{extractedBill.totalAmount ? `₹${extractedBill.totalAmount}` : 'Not detected'}</strong></div>
               </div>
             )}
           </div>
@@ -386,14 +386,14 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
             <button
               type="button"
               onClick={() => setStep('UPLOAD')}
-              className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+              className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-semibold transition-colors"
             >
               Try Another Photo
             </button>
             <button
               type="button"
               onClick={onSwitchToManual}
-              className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all shadow-md shadow-rose-950/60"
+              className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white text-xs font-bold transition-all shadow"
             >
               Switch to Manual Entry
             </button>
@@ -404,15 +404,15 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
       {/* STEP: MATCH_SELECTION (Multiple matching sales found) */}
       {step === 'MATCH_SELECTION' && (
         <div className="space-y-3">
-          <div className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+          <div className="p-3 rounded-2xl bg-inner border border-line-strong flex items-center justify-between">
             <div>
-              <h4 className="text-xs font-bold text-white">Select Matched Original Bill</h4>
-              <p className="text-[11px] text-slate-400">{matchSummaryMessage}</p>
+              <h4 className="text-xs font-bold text-ink">Select Matched Original Bill</h4>
+              <p className="text-[11px] text-muted">{matchSummaryMessage}</p>
             </div>
             <button
               type="button"
               onClick={() => setStep('UPLOAD')}
-              className="text-xs text-slate-400 hover:text-white"
+              className="text-xs text-muted hover:text-ink"
             >
               Scan Again
             </button>
@@ -423,33 +423,33 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
               <div
                 key={cand.sale.id}
                 onClick={() => initSaleForReturn(cand.sale, extractedBill)}
-                className="p-3 rounded-2xl bg-slate-950/90 border border-slate-800 hover:border-rose-500/50 hover:bg-slate-900 transition-all cursor-pointer flex items-center justify-between gap-3"
+                className="p-3 rounded-2xl bg-card border border-line-strong hover:border-badge-red-text transition-all cursor-pointer flex items-center justify-between gap-3"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-white text-xs">
+                    <span className="font-mono font-bold text-ink text-xs">
                       #{cand.sale.billNumber}
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-inner text-muted font-mono">
                       {cand.sale.createdAt.slice(0, 10)}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-300 font-semibold">
+                  <div className="text-xs text-ink font-semibold">
                     {cand.sale.customerName}
                     {cand.sale.customerPhone && (
-                      <span className="text-slate-400 font-normal font-mono ml-1">({cand.sale.customerPhone})</span>
+                      <span className="text-muted font-normal font-mono ml-1">({cand.sale.customerPhone})</span>
                     )}
                   </div>
-                  <div className="text-[10px] text-rose-400 flex items-center gap-1">
+                  <div className="text-[10px] text-badge-red-text flex items-center gap-1">
                     <span>{cand.matchReasons.join(' • ')}</span>
                   </div>
                 </div>
 
                 <div className="text-right shrink-0">
-                  <div className="font-mono font-bold text-white text-xs">
+                  <div className="font-mono font-bold text-ink text-xs">
                     {formatCurrency(cand.sale.totalBill, settings.currencySymbol)}
                   </div>
-                  <span className="inline-block mt-1 text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-lg border border-rose-500/20">
+                  <span className="inline-block mt-1 text-[10px] font-bold text-badge-red-text bg-badge-red-bg px-2 py-0.5 rounded-lg border border-line-strong">
                     Select Bill ➔
                   </span>
                 </div>
@@ -461,14 +461,14 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
             <button
               type="button"
               onClick={() => setStep('UPLOAD')}
-              className="py-2 px-3 text-xs text-slate-400 hover:text-white"
+              className="py-2 px-3 text-xs text-muted hover:text-ink"
             >
               ← Back
             </button>
             <button
               type="button"
               onClick={onSwitchToManual}
-              className="py-2 px-3 text-xs text-rose-400 hover:text-rose-300"
+              className="py-2 px-3 text-xs text-badge-red-text hover:underline"
             >
               Switch to Manual Entry
             </button>
@@ -480,39 +480,39 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
       {step === 'SELECT_ITEMS' && selectedSale && (
         <div className="space-y-3.5">
           {/* Matched Original Bill Header Banner */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-slate-950 to-slate-900 border border-rose-500/30 flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-inner border border-line-strong flex items-center justify-between">
             <div className="space-y-0.5">
               <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-rose-400" />
-                <span className="text-[11px] font-bold text-rose-300 uppercase tracking-wider">
+                <CheckCircle2 className="w-3.5 h-3.5 text-badge-red-text" />
+                <span className="text-[11px] font-bold text-badge-red-text uppercase tracking-wider">
                   Matched Original Bill
                 </span>
               </div>
-              <div className="text-sm font-bold text-white font-mono">
+              <div className="text-sm font-bold text-ink font-mono">
                 #{selectedSale.billNumber}
               </div>
-              <div className="text-xs text-slate-300">
-                {selectedSale.customerName} {selectedSale.customerPhone ? `(${selectedSale.customerPhone})` : ''} · Original Total: <strong className="font-mono text-white">{formatCurrency(selectedSale.totalBill, settings.currencySymbol)}</strong>
+              <div className="text-xs text-muted">
+                {selectedSale.customerName} {selectedSale.customerPhone ? `(${selectedSale.customerPhone})` : ''} · Original Total: <strong className="font-mono text-ink">{formatCurrency(selectedSale.totalBill, settings.currencySymbol)}</strong>
               </div>
             </div>
 
             <button
               type="button"
               onClick={() => setStep('UPLOAD')}
-              className="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] text-slate-300 hover:text-white border border-slate-700"
+              className="px-2.5 py-1 rounded-lg bg-card text-[11px] text-ink hover:bg-inner border border-line-strong"
             >
               Change Photo
             </button>
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-white flex items-center justify-between">
+            <label className="text-xs font-bold text-ink flex items-center justify-between">
               <span>Select Returned Quantities</span>
-              <span className="text-[10px] text-slate-400 font-normal">
+              <span className="text-[10px] text-muted font-normal">
                 Adjust quantities being returned below
               </span>
             </label>
-            <p className="text-[10px] text-slate-400 leading-tight">
+            <p className="text-[10px] text-muted leading-tight">
               A bill photo does not mean a full return. Specify exactly how many units the customer is handing back.
             </p>
           </div>
@@ -530,35 +530,35 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
                   key={item.id}
                   className={`p-3 rounded-2xl border transition-all ${
                     returnQty > 0
-                      ? 'bg-rose-950/20 border-rose-500/50'
+                      ? 'bg-badge-red-bg/30 border-badge-red-text/50'
                       : isEligible
-                      ? 'bg-slate-950/70 border-slate-800'
-                      : 'bg-slate-950/40 border-slate-900 opacity-60'
+                      ? 'bg-card border-line-strong'
+                      : 'bg-inner border-line-strong opacity-60'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-white text-xs truncate">
+                      <div className="font-semibold text-ink text-xs truncate">
                         {item.productName}
                       </div>
-                      <div className="text-[11px] text-slate-400 mt-0.5 space-x-2">
-                        <span>Original: <strong className="text-slate-300 font-mono">{item.quantity} {item.unit}</strong></span>
-                        <span>• Already Ret: <strong className="text-slate-300 font-mono">{alreadyReturned}</strong></span>
-                        <span>• Returnable: <strong className="text-emerald-400 font-mono">{eligibleQty} {item.unit}</strong></span>
+                      <div className="text-[11px] text-muted mt-0.5 space-x-2">
+                        <span>Original: <strong className="text-ink font-mono">{item.quantity} {item.unit}</strong></span>
+                        <span>• Already Ret: <strong className="text-ink font-mono">{alreadyReturned}</strong></span>
+                        <span>• Returnable: <strong className="text-badge-green-text font-mono">{eligibleQty} {item.unit}</strong></span>
                       </div>
-                      <div className="text-[11px] text-slate-400 mt-0.5">
-                        Rate: <strong className="font-mono text-slate-200">{formatCurrency(item.sellingPrice, settings.currencySymbol)}</strong> per {item.unit}
+                      <div className="text-[11px] text-muted mt-0.5">
+                        Rate: <strong className="font-mono text-ink">{formatCurrency(item.sellingPrice, settings.currencySymbol)}</strong> per {item.unit}
                       </div>
                     </div>
 
                     {/* Stepper Controls */}
                     <div className="flex flex-col items-end gap-1 shrink-0">
                       {isEligible ? (
-                        <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-xl p-1">
+                        <div className="flex items-center gap-1.5 bg-inner border border-line-strong rounded-xl p-1">
                           <button
                             type="button"
                             onClick={() => handleQuantityChange(item.id, eligibleQty, returnQty - 1)}
-                            className="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center font-bold text-xs"
+                            className="w-7 h-7 rounded-lg bg-card text-ink hover:bg-line flex items-center justify-center font-bold text-xs"
                           >
                             -
                           </button>
@@ -571,24 +571,24 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
                               const num = cleaned === '' ? 0 : parseInt(cleaned, 10);
                               handleQuantityChange(item.id, eligibleQty, num);
                             }}
-                            className="w-10 text-center bg-transparent text-white font-mono font-bold text-xs outline-none"
+                            className="w-10 text-center bg-transparent text-ink font-mono font-bold text-xs outline-none"
                           />
                           <button
                             type="button"
                             onClick={() => handleQuantityChange(item.id, eligibleQty, returnQty + 1)}
-                            className="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center font-bold text-xs"
+                            className="w-7 h-7 rounded-lg bg-card text-ink hover:bg-line flex items-center justify-center font-bold text-xs"
                           >
                             +
                           </button>
                         </div>
                       ) : (
-                        <span className="text-[10px] text-slate-500 font-mono py-1 px-2 rounded bg-slate-900">
+                        <span className="text-[10px] text-muted font-mono py-1 px-2 rounded bg-inner">
                           Fully Returned
                         </span>
                       )}
 
                       {returnQty > 0 && (
-                        <span className="font-mono font-bold text-rose-400 text-xs">
+                        <span className="font-mono font-bold text-badge-red-text text-xs">
                           +{formatCurrency(returnQty * item.sellingPrice, settings.currencySymbol)}
                         </span>
                       )}
@@ -601,32 +601,32 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
 
           {/* Financial Calculation & Excess settlement */}
           {itemsToReturn.length > 0 && (
-            <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2.5 text-xs">
-              <div className="flex justify-between items-center text-xs pb-1 border-b border-slate-800">
-                <span className="font-bold text-slate-300">Total Return Value:</span>
-                <span className="font-mono font-black text-rose-400 text-sm">
+            <div className="p-3.5 rounded-2xl bg-card border border-line-strong space-y-2.5 text-xs">
+              <div className="flex justify-between items-center text-xs pb-1 border-b border-line-strong">
+                <span className="font-bold text-ink">Total Return Value:</span>
+                <span className="font-mono font-black text-badge-red-text text-sm">
                   {formatCurrency(totalReturnValue, settings.currencySymbol)}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">Customer Current Due:</span>
-                  <span className="font-mono font-bold text-white">
+                <div className="p-2 rounded-xl bg-inner border border-line-strong">
+                  <span className="text-muted block text-[10px]">Customer Current Due:</span>
+                  <span className="font-mono font-bold text-ink">
                     {formatCurrency(currentCustomerDue, settings.currencySymbol)}
                   </span>
                 </div>
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">Due Reduction:</span>
-                  <span className="font-mono font-bold text-emerald-400">
+                <div className="p-2 rounded-xl bg-inner border border-line-strong">
+                  <span className="text-muted block text-[10px]">Due Reduction:</span>
+                  <span className="font-mono font-bold text-badge-green-text">
                     -{formatCurrency(dueAdjustment, settings.currencySymbol)}
                   </span>
                 </div>
               </div>
 
               {excessAmount > 0 && (
-                <div className="pt-1.5 border-t border-slate-800/80 space-y-2">
-                  <div className="flex justify-between text-amber-300 font-bold text-[11px]">
+                <div className="pt-1.5 border-t border-line-strong space-y-2">
+                  <div className="flex justify-between text-badge-yellow-text font-bold text-[11px]">
                     <span>Return value exceeds due by:</span>
                     <span className="font-mono">{formatCurrency(excessAmount, settings.currencySymbol)}</span>
                   </div>
@@ -636,8 +636,8 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
                       onClick={() => setSettlementType('REFUND')}
                       className={`p-2 rounded-xl border text-center transition-all ${
                         settlementType === 'REFUND'
-                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 font-bold'
-                          : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                          ? 'bg-badge-green-bg text-badge-green-text border-badge-green-text font-bold'
+                          : 'bg-card text-muted border-line-strong hover:text-ink'
                       }`}
                     >
                       💵 Refund Cash/UPI
@@ -647,8 +647,8 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
                       onClick={() => setSettlementType('STORE_CREDIT')}
                       className={`p-2 rounded-xl border text-center transition-all ${
                         settlementType === 'STORE_CREDIT'
-                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/50 font-bold'
-                          : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                          ? 'bg-badge-blue-bg text-badge-blue-text border-badge-blue-text font-bold'
+                          : 'bg-card text-muted border-line-strong hover:text-ink'
                       }`}
                     >
                       🏷️ Store Credit
@@ -664,7 +664,7 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
                   value={returnNotes}
                   onChange={(e) => setReturnNotes(e.target.value)}
                   placeholder="Optional return memo / reason"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-rose-400"
+                  className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
             </div>
@@ -675,7 +675,7 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
             <button
               type="button"
               onClick={() => setStep('UPLOAD')}
-              className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+              className="py-2.5 px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-semibold"
             >
               Back
             </button>
@@ -684,7 +684,7 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
               type="button"
               disabled={itemsToReturn.length === 0}
               onClick={handleProceedToReview}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-950/60 active:scale-95 transition-all"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-all"
             >
               <span>Review Return</span>
               <ArrowRight className="w-4 h-4" />
@@ -696,43 +696,43 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
       {/* STEP: REVIEW (Strict Confirmation Screen before mutation) */}
       {step === 'REVIEW' && selectedSale && (
         <div className="space-y-4">
-          <div className="p-4 bg-slate-950/90 border border-rose-500/40 rounded-3xl space-y-3">
-            <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
-              <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
+          <div className="p-4 bg-card border border-line rounded-3xl space-y-3 shadow-card">
+            <div className="flex items-center gap-2 border-b border-line-strong pb-2">
+              <div className="w-8 h-8 rounded-lg bg-badge-red-bg text-badge-red-text flex items-center justify-center">
                 <FileText className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-ink uppercase tracking-wider">
                   RETURN FROM BILL PHOTO
                 </h4>
-                <p className="text-[11px] text-slate-400">Review final return breakdown before executing</p>
+                <p className="text-[11px] text-muted">Review final return breakdown before executing</p>
               </div>
             </div>
 
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Matched Original Bill:</span>
-                <strong className="font-mono text-white">#{selectedSale.billNumber}</strong>
+                <span className="text-muted">Matched Original Bill:</span>
+                <strong className="font-mono text-ink">#{selectedSale.billNumber}</strong>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Customer:</span>
-                <strong className="text-white">{selectedSale.customerName}</strong>
+                <span className="text-muted">Customer:</span>
+                <strong className="text-ink">{selectedSale.customerName}</strong>
               </div>
             </div>
 
             {/* Items Being Returned */}
-            <div className="pt-2 border-t border-slate-800 space-y-1.5">
-              <div className="text-[11px] font-bold text-slate-300">Items Being Returned:</div>
+            <div className="pt-2 border-t border-line-strong space-y-1.5">
+              <div className="text-[11px] font-bold text-ink">Items Being Returned:</div>
               <div className="space-y-1 max-h-[160px] overflow-y-auto pr-1">
                 {itemsToReturn.map((item, idx) => (
-                  <div key={idx} className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-xs flex justify-between items-center">
+                  <div key={idx} className="p-2 rounded-xl bg-inner border border-line-strong text-xs flex justify-between items-center">
                     <div>
-                      <div className="font-semibold text-white">{item.saleItem.productName}</div>
-                      <div className="text-[10px] text-slate-400 font-mono">
+                      <div className="font-semibold text-ink">{item.saleItem.productName}</div>
+                      <div className="text-[10px] text-muted font-mono">
                         {item.returnQty} {item.saleItem.unit} × {formatCurrency(item.saleItem.sellingPrice, settings.currencySymbol)}
                       </div>
                     </div>
-                    <div className="font-mono font-bold text-rose-400 text-xs">
+                    <div className="font-mono font-bold text-badge-red-text text-xs">
                       {formatCurrency(item.itemReturnValue, settings.currencySymbol)}
                     </div>
                   </div>
@@ -741,16 +741,16 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
             </div>
 
             {/* Financial summary */}
-            <div className="pt-2 border-t border-slate-800 space-y-1 text-xs">
-              <div className="flex justify-between font-bold text-slate-200">
+            <div className="pt-2 border-t border-line-strong space-y-1 text-xs">
+              <div className="flex justify-between font-bold text-ink">
                 <span>Total Return Value:</span>
-                <span className="font-mono text-base font-black text-rose-400">
+                <span className="font-mono text-base font-black text-badge-red-text">
                   {formatCurrency(totalReturnValue, settings.currencySymbol)}
                 </span>
               </div>
-              <div className="flex justify-between text-slate-400 text-[11px]">
+              <div className="flex justify-between text-muted text-[11px]">
                 <span>Settlement:</span>
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-ink">
                   {excessAmount > 0
                     ? settlementType === 'REFUND'
                       ? 'Due Reduction + Refund Balance'
@@ -759,21 +759,21 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
                 </span>
               </div>
               {returnNotes && (
-                <div className="text-[11px] text-slate-400 pt-1">
+                <div className="text-[11px] text-muted pt-1">
                   <span>Return Notes: </span>
-                  <span className="italic text-slate-300">{returnNotes}</span>
+                  <span className="italic text-ink">{returnNotes}</span>
                 </div>
               )}
             </div>
 
             {/* Stock restock preview */}
-            <div className="p-2.5 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-[11px] space-y-0.5">
-              <div className="font-bold text-emerald-400 flex items-center gap-1.5">
+            <div className="p-2.5 rounded-xl bg-badge-green-bg border border-line-strong text-[11px] space-y-0.5">
+              <div className="font-bold text-badge-green-text flex items-center gap-1.5">
                 <Package className="w-3.5 h-3.5" />
                 <span>Inventory Restocked (Stock +):</span>
               </div>
               {itemsToReturn.map((item, idx) => (
-                <div key={idx} className="text-emerald-300 font-mono pl-5">
+                <div key={idx} className="text-badge-green-text font-mono pl-5">
                   +{item.returnQty} {item.saleItem.unit} {item.saleItem.productName}
                 </div>
               ))}
@@ -785,7 +785,7 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => setStep('SELECT_ITEMS')}
-              className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+              className="py-2.5 px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-semibold transition-colors"
             >
               Back / Edit
             </button>
@@ -794,7 +794,7 @@ export const BillPhotoReturnView: React.FC<BillPhotoReturnViewProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={handleExecuteConfirmedReturn}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/60 active:scale-95 transition-all cursor-pointer"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow active:scale-95 transition-all cursor-pointer"
             >
               {isSubmitting ? (
                 <>

@@ -55,22 +55,22 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
   };
 
   return (
-    <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col my-auto border-emerald-500/30">
+    <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+      <div className="bg-card border border-line rounded-3xl max-w-lg w-full overflow-hidden shadow-card flex flex-col my-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-emerald-950/80 via-slate-950 to-emerald-950/40 border-b border-emerald-500/20">
+        <div className="flex items-center justify-between px-5 py-4 bg-primary text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-950/50">
+            <div className="w-10 h-10 rounded-2xl bg-card/15 text-white border border-white/20 flex items-center justify-center shadow-card">
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                 <span>Send Bill on WhatsApp</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-nav-active-pill text-primary border border-badge-green-text/35 font-semibold">
                   Instant Share
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-white/85">
                 Do you want to send this bill on WhatsApp to the customer now?
               </p>
             </div>
@@ -78,7 +78,7 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-white/80 hover:text-white hover:bg-card/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -87,13 +87,13 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
         {/* Body */}
         <div className="p-5 space-y-4 text-xs">
           {/* Bill Summary Card */}
-          <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2.5">
+          <div className="bg-inner p-4 rounded-2xl border border-line-strong space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-emerald-400" />
-                <span className="font-bold text-white font-mono">Invoice #{sale.billNumber}</span>
+                <Receipt className="w-4 h-4 text-primary" />
+                <span className="font-bold text-ink font-mono">Invoice #{sale.billNumber}</span>
               </div>
-              <span className="text-[11px] font-mono text-slate-400">
+              <span className="text-[11px] font-mono text-muted">
                 {new Date(sale.createdAt).toLocaleDateString('en-IN', {
                   day: '2-digit',
                   month: 'short',
@@ -102,31 +102,31 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
               </span>
             </div>
 
-            <div className="flex items-center justify-between pt-1 border-t border-slate-800/80">
-              <div className="flex items-center gap-1.5 text-slate-300">
-                <User className="w-3.5 h-3.5 text-slate-400" />
-                <span className="font-semibold text-white">{sale.customerName}</span>
+            <div className="flex items-center justify-between pt-1 border-t border-line-strong">
+              <div className="flex items-center gap-1.5 text-muted">
+                <User className="w-3.5 h-3.5 text-muted" />
+                <span className="font-semibold text-ink">{sale.customerName}</span>
               </div>
               <div className="text-right">
-                <span className="text-[10px] text-slate-400 block">Total Amount</span>
-                <span className="font-bold text-sm text-emerald-400 font-mono">
+                <span className="text-[10px] text-muted block">Total Amount</span>
+                <span className="font-bold text-sm text-primary font-mono">
                   {formatCurrency(sale.totalBill, currencySymbol)}
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60 text-[11px]">
-              <div className="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-                <span className="text-slate-400 block text-[10px]">Paid:</span>
-                <span className="font-semibold text-white font-mono">
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-line-strong text-[11px]">
+              <div className="p-2 rounded-xl bg-card border border-line-strong">
+                <span className="text-muted block text-[10px]">Paid:</span>
+                <span className="font-semibold text-ink font-mono">
                   {formatCurrency(sale.amountPaid, currencySymbol)} ({sale.paymentMethod})
                 </span>
               </div>
-              <div className="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-                <span className="text-slate-400 block text-[10px]">Balance Due:</span>
+              <div className="p-2 rounded-xl bg-card border border-line-strong">
+                <span className="text-muted block text-[10px]">Balance Due:</span>
                 <span
                   className={`font-semibold font-mono ${
-                    sale.balanceDue > 0 ? 'text-rose-400' : 'text-emerald-400'
+                    sale.balanceDue > 0 ? 'text-badge-red-text' : 'text-badge-green-text'
                   }`}
                 >
                   {formatCurrency(sale.balanceDue, currencySymbol)}
@@ -137,17 +137,17 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
 
           {/* Customer Phone Input (Required or Editable) */}
           <div className="space-y-1.5">
-            <label className="text-slate-300 font-semibold flex items-center justify-between">
+            <label className="text-ink font-semibold flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                <Phone className="w-3.5 h-3.5 text-primary" />
                 <span>Customer WhatsApp Number</span>
               </span>
-              <span className="text-[11px] text-slate-400 font-normal">
+              <span className="text-[11px] text-muted font-normal">
                 {sale.customerPhone ? 'Auto-filled from contact' : 'Enter mobile number'}
               </span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-mono font-medium">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted font-mono font-medium">
                 +91
               </div>
               <input
@@ -160,16 +160,16 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
                   setPhoneError('');
                 }}
                 placeholder="e.g. 9876543210"
-                className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl pl-12 pr-4 py-2.5 text-white font-mono text-sm placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl pl-12 pr-4 py-2.5 text-ink font-mono text-sm placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
             {phoneError ? (
-              <p className="text-[11px] text-rose-400 flex items-center gap-1 pt-0.5">
+              <p className="text-[11px] text-badge-red-text flex items-center gap-1 pt-0.5">
                 <AlertCircle className="w-3 h-3" />
                 <span>{phoneError}</span>
               </p>
             ) : (
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-muted">
                 Standard 10-digit mobile number. Country code (+91) will be formatted automatically.
               </p>
             )}
@@ -177,19 +177,19 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
 
           {/* Collapsible Message Preview */}
           <div className="space-y-1">
-            <span className="text-[11px] font-semibold text-slate-400">Message Preview:</span>
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-300 max-h-36 overflow-y-auto whitespace-pre-wrap leading-relaxed select-text">
+            <span className="text-[11px] font-semibold text-muted">Message Preview:</span>
+            <div className="p-3 bg-inner rounded-xl border border-line-strong text-[11px] font-mono text-ink max-h-36 overflow-y-auto whitespace-pre-wrap leading-relaxed select-text">
               {previewText}
             </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between p-4 bg-slate-950 border-t border-slate-800 gap-3">
+        <div className="flex items-center justify-between p-4 bg-inner border-t border-line-strong gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-center transition-colors cursor-pointer"
+            className="flex-1 py-2.5 px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-semibold text-center transition-colors cursor-pointer"
           >
             No, Skip
           </button>
@@ -197,7 +197,7 @@ export const WhatsAppSharePromptModal: React.FC<WhatsAppSharePromptModalProps> =
           <button
             type="button"
             onClick={handleSend}
-            className="flex-[2] py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 active:scale-95 transition-all cursor-pointer"
+            className="flex-[2] py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer"
           >
             <Send className="w-4 h-4" />
             <span>Yes, Send on WhatsApp</span>

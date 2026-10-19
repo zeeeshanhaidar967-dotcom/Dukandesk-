@@ -327,17 +327,17 @@ export const SalesView: React.FC<SalesViewProps> = ({
   return (
     <div className="space-y-4 pb-24">
       {/* Method Selection Bar: Option 1 (Manual Entry) & Option 2 (Add from Bill Photo) */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-1.5 grid grid-cols-2 gap-1.5 shadow-md">
+      <div className="bg-card border border-line rounded-3xl p-1.5 grid grid-cols-2 gap-1.5 shadow-card">
         <button
           type="button"
           onClick={() => setSaleEntryMode('MANUAL')}
           className={`py-3 px-3 sm:px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
             saleEntryMode === 'MANUAL'
-              ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/60'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              ? 'bg-primary text-white shadow-sm'
+              : 'text-muted hover:text-ink hover:bg-inner'
           }`}
         >
-          <ShoppingCart className="w-4 h-4 text-emerald-300" />
+          <ShoppingCart className="w-4 h-4 text-white" />
           <span>Manual Entry</span>
         </button>
 
@@ -346,11 +346,11 @@ export const SalesView: React.FC<SalesViewProps> = ({
           onClick={() => setSaleEntryMode('PHOTO')}
           className={`py-3 px-3 sm:px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
             saleEntryMode === 'PHOTO'
-              ? 'bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-950/60'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              ? 'bg-primary text-white shadow-sm'
+              : 'text-muted hover:text-ink hover:bg-inner'
           }`}
         >
-          <Camera className="w-4 h-4 text-emerald-400" />
+          <Camera className="w-4 h-4 text-white" />
           <span>Add from Bill Photo</span>
         </button>
       </div>
@@ -369,11 +369,11 @@ export const SalesView: React.FC<SalesViewProps> = ({
           {/* Sales Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5 text-emerald-400" />
+              <h2 className="text-base font-bold text-ink flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5 text-primary" />
                 <span>New Sale (Point of Sale)</span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted">
                 Manual entry &amp; automatic profit / stock calculations
               </p>
             </div>
@@ -382,7 +382,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setCart([])}
-                className="text-xs text-rose-400 hover:text-rose-300 font-medium px-2 py-1 rounded bg-rose-500/10"
+                className="text-xs text-badge-red-text hover:text-badge-red-text/80 font-medium px-2 py-1 rounded bg-badge-red-bg"
               >
                 Clear Cart ({cart.length})
               </button>
@@ -391,8 +391,8 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
       {/* Validation Error Alert */}
       {validationError && (
-        <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-500/40 flex items-start gap-2.5 text-xs text-rose-300">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-3 rounded-xl bg-badge-red-bg border border-badge-red-text/35 flex items-start gap-2.5 text-xs text-badge-red-text">
+          <AlertCircle className="w-4 h-4 text-badge-red-text shrink-0 mt-0.5" />
           <div>{validationError}</div>
         </div>
       )}
@@ -401,10 +401,10 @@ export const SalesView: React.FC<SalesViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Column: Product Selection (NO SCANNING - Manual Search & Selection) */}
         <div className="lg:col-span-7 space-y-3">
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 space-y-3">
+          <div className="bg-card border border-line rounded-2xl p-3.5 space-y-3 shadow-card">
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 dir="ltr"
@@ -416,13 +416,13 @@ export const SalesView: React.FC<SalesViewProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products by name, brand..."
-                className="w-full bg-slate-950 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 text-left"
+                className="w-full bg-card border border-line-strong rounded-xl pl-9 pr-3 py-2 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink"
                 >
                   ✕
                 </button>
@@ -438,8 +438,8 @@ export const SalesView: React.FC<SalesViewProps> = ({
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-2.5 py-1 rounded-lg whitespace-nowrap text-[11px] font-medium transition-colors ${
                     selectedCategory === cat
-                      ? 'bg-emerald-500 text-slate-950'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'bg-inner text-muted hover:bg-inner hover:text-ink'
                   }`}
                 >
                   {cat}
@@ -450,7 +450,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
             {/* Product Grid / List */}
             <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
               {filteredProducts.length === 0 ? (
-                <div className="text-center py-8 text-xs text-slate-500">
+                <div className="text-center py-8 text-xs text-muted">
                   No matching products found.
                 </div>
               ) : (
@@ -464,13 +464,13 @@ export const SalesView: React.FC<SalesViewProps> = ({
                       key={p.id}
                       className={`flex items-center justify-between p-2.5 rounded-xl border transition-all text-xs ${
                         inCart
-                          ? 'bg-emerald-950/20 border-emerald-500/40'
-                          : 'bg-slate-950/70 border-slate-800/80 hover:border-slate-700'
+                          ? 'bg-badge-green-bg border-badge-green-text/35'
+                          : 'bg-card border-line hover:border-line-strong shadow-card'
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <div className="font-semibold text-white truncate">{p.name}</div>
-                        <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2">
+                        <div className="font-semibold text-ink truncate">{p.name}</div>
+                        <div className="text-[11px] text-muted mt-0.5 flex items-center gap-2">
                           <span>{p.category}</span>
                           <span>·</span>
                           <span>Brand: {p.brand}</span>
@@ -478,10 +478,10 @@ export const SalesView: React.FC<SalesViewProps> = ({
                           <span
                             className={
                               isOutOfStock
-                                ? 'text-rose-400 font-bold'
+                                ? 'text-badge-red-text font-bold'
                                 : isLowStock
-                                ? 'text-amber-400 font-semibold'
-                                : 'text-slate-300'
+                                ? 'text-badge-yellow-text font-semibold'
+                                : 'text-muted'
                             }
                           >
                             Stock: {p.currentStock} {p.unit}
@@ -491,20 +491,20 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
                       <div className="flex items-center gap-2 shrink-0">
                         <div className="text-right">
-                          <div className="font-bold font-mono text-white text-xs">
+                          <div className="font-bold font-mono text-ink text-xs">
                             {p.sellingPrice !== null && p.sellingPrice !== undefined ? (
                               formatCurrency(p.sellingPrice, settings.currencySymbol)
                             ) : (
-                              <span className="text-amber-400 font-sans text-[10px]">Price not set</span>
+                              <span className="text-badge-yellow-text font-sans text-[10px]">Price not set</span>
                             )}
                           </div>
-                          <div className="text-[10px] text-slate-400">/{p.unit}</div>
+                          <div className="text-[10px] text-muted">/{p.unit}</div>
                         </div>
 
                         <button
                           type="button"
                           onClick={() => handleAddToCart(p)}
-                          className="min-h-[36px] min-w-[36px] px-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold active:scale-95 transition-all"
+                          className="min-h-[36px] min-w-[36px] px-2.5 rounded-lg bg-badge-green-bg hover:bg-badge-green-bg/80 text-badge-green-text border border-badge-green-text/35 flex items-center justify-center font-bold active:scale-95 transition-all"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -520,17 +520,17 @@ export const SalesView: React.FC<SalesViewProps> = ({
         {/* Right Column: Cart, Customer & Checkout */}
         <div className="lg:col-span-5 space-y-3">
           {/* Customer Selection Card */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+          <div className="bg-card border border-line rounded-2xl p-3.5 space-y-2.5 shadow-card">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="text-xs font-bold text-ink flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-primary" />
                 <span>Customer</span>
               </label>
 
               <button
                 type="button"
                 onClick={() => setShowQuickCustomerModal(true)}
-                className="text-[11px] text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1"
+                className="text-[11px] text-primary hover:text-primary-hover font-semibold flex items-center gap-1"
               >
                 <UserPlus className="w-3 h-3" />
                 <span>+ Quick New</span>
@@ -541,7 +541,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
               value={selectedCustomerId}
               style={{ direction: 'ltr', textAlign: 'left' }}
               onChange={(e) => setSelectedCustomerId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-400"
+              className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-primary"
             >
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -551,9 +551,9 @@ export const SalesView: React.FC<SalesViewProps> = ({
             </select>
 
             {selectedCustomer && selectedCustomer.outstandingBalance > 0 && (
-              <div className="px-2.5 py-1.5 rounded-lg bg-amber-950/30 border border-amber-500/30 text-[11px] text-amber-300 flex items-center justify-between">
+              <div className="px-2.5 py-1.5 rounded-lg bg-badge-yellow-bg border border-badge-yellow-text/35 text-[11px] text-badge-yellow-text flex items-center justify-between">
                 <span>Existing Outstanding Balance:</span>
-                <strong className="font-mono text-amber-400">
+                <strong className="font-mono text-badge-yellow-text">
                   {formatCurrency(selectedCustomer.outstandingBalance, settings.currencySymbol)}
                 </strong>
               </div>
@@ -561,14 +561,14 @@ export const SalesView: React.FC<SalesViewProps> = ({
           </div>
 
           {/* Cart Items List */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold text-white border-b border-slate-800 pb-2">
+          <div className="bg-card border border-line rounded-2xl p-3.5 space-y-3 shadow-card">
+            <div className="flex items-center justify-between text-xs font-bold text-ink border-b border-line pb-2">
               <span>Sale Items ({cart.length})</span>
               <span>Subtotal</span>
             </div>
 
             {cart.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-500">
+              <div className="text-center py-6 text-xs text-muted">
                 Cart is empty. Select products from the left to start billing.
               </div>
             ) : (
@@ -585,34 +585,34 @@ export const SalesView: React.FC<SalesViewProps> = ({
                   return (
                     <div
                       key={item.product.id}
-                      className={`p-2 rounded-xl bg-slate-950/60 border ${
-                        hasStockWarning ? 'border-amber-500/50 bg-amber-950/10' : 'border-slate-800/80'
+                      className={`p-2 rounded-xl bg-inner border ${
+                        hasStockWarning ? 'border-badge-yellow-text/35 bg-badge-yellow-bg' : 'border-line-strong'
                       } text-xs`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="min-w-0 pr-2">
-                          <div className="font-semibold text-white truncate">
+                          <div className="font-semibold text-ink truncate">
                             {item.product.name}
                           </div>
-                          <div className="text-[11px] text-slate-400">
+                          <div className="text-[11px] text-muted">
                             {isPriceSet ? (
                               `${formatCurrency(effectivePrice, settings.currencySymbol)} / ${item.product.unit}`
                             ) : (
-                              <span className="text-amber-400 font-semibold">Price not set</span>
+                              <span className="text-badge-yellow-text font-semibold">Price not set</span>
                             )}
                           </div>
                           {hasStockWarning && (
-                            <div className="text-[10px] text-amber-400 font-semibold mt-0.5">
+                            <div className="text-[10px] text-badge-yellow-text font-semibold mt-0.5">
                               Exceeds stock ({item.product.currentStock} avail)
                             </div>
                           )}
                         </div>
 
                         <div className="text-right">
-                          <div className="font-bold font-mono text-white">
+                          <div className="font-bold font-mono text-ink">
                             {isPriceSet ? formatCurrency(subtotal, settings.currencySymbol) : '—'}
                           </div>
-                          <div className="text-[10px] text-emerald-400 font-mono">
+                          <div className="text-[10px] text-badge-green-text font-mono">
                             {isPriceSet
                               ? `Profit: +${formatCurrency((effectivePrice - item.product.purchasePrice) * item.quantity, settings.currencySymbol)}`
                               : 'Profit: —'}
@@ -621,12 +621,12 @@ export const SalesView: React.FC<SalesViewProps> = ({
                       </div>
 
                       {/* Quantity Controls */}
-                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-800/60">
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-line-strong">
                         <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
-                            className="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center font-bold"
+                            className="w-7 h-7 rounded-lg bg-card border border-line-strong text-ink hover:bg-inner flex items-center justify-center font-bold"
                           >
                             -
                           </button>
@@ -650,22 +650,22 @@ export const SalesView: React.FC<SalesViewProps> = ({
                                 handleUpdateQuantity(item.product.id, 1);
                               }
                             }}
-                            className="w-14 text-center bg-slate-900 border border-slate-700 rounded-lg py-1 text-xs text-white font-mono"
+                            className="w-14 text-center bg-card border border-line-strong rounded-lg py-1 text-xs text-ink font-mono"
                           />
                           <button
                             type="button"
                             onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
-                            className="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center font-bold"
+                            className="w-7 h-7 rounded-lg bg-card border border-line-strong text-ink hover:bg-inner flex items-center justify-center font-bold"
                           >
                             +
                           </button>
-                          <span className="text-[11px] text-slate-400 ml-1">{item.product.unit}</span>
+                          <span className="text-[11px] text-muted ml-1">{item.product.unit}</span>
                         </div>
 
                         <button
                           type="button"
                           onClick={() => handleRemoveItem(item.product.id)}
-                          className="p-1.5 text-slate-500 hover:text-rose-400"
+                          className="p-1.5 text-muted hover:text-badge-red-text"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -678,17 +678,17 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
             {/* Calculations Breakdown */}
             {cart.length > 0 && (
-              <div className="border-t border-slate-800 pt-3 space-y-2 text-xs">
+              <div className="border-t border-line pt-3 space-y-2 text-xs">
                 {/* Total Bill */}
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-medium">Total Bill Amount:</span>
-                  <span className="text-lg font-bold font-mono text-white">
+                  <span className="text-ink font-medium">Total Bill Amount:</span>
+                  <span className="text-lg font-bold font-mono text-ink">
                     {formatCurrency(totalBill, settings.currencySymbol)}
                   </span>
                 </div>
 
                 {/* Owner Confidential Gross Profit calculation */}
-                <div className="flex items-center justify-between text-[11px] text-emerald-400 font-mono bg-emerald-950/20 px-2 py-1 rounded-lg border border-emerald-500/20">
+                <div className="flex items-center justify-between text-[11px] text-badge-green-text font-mono bg-badge-green-bg px-2 py-1 rounded-lg border border-badge-green-text/35">
                   <span>Gross Profit Calculation:</span>
                   <span className="font-bold">+{formatCurrency(grossProfit, settings.currencySymbol)}</span>
                 </div>
@@ -696,26 +696,26 @@ export const SalesView: React.FC<SalesViewProps> = ({
                 {/* Payment Amount Input & Quick Chips */}
                 <div className="space-y-1.5 pt-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-slate-300 font-medium">Amount Received Now:</label>
+                    <label className="text-ink font-medium">Amount Received Now:</label>
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
                         onClick={() => handleSetAmountPaidPreset('full')}
-                        className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold"
+                        className="px-2 py-0.5 rounded text-[10px] bg-inner hover:bg-inner text-badge-green-text border border-line-strong font-semibold"
                       >
                         Full
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSetAmountPaidPreset('half')}
-                        className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300"
+                        className="px-2 py-0.5 rounded text-[10px] bg-inner hover:bg-inner text-ink border border-line-strong"
                       >
                         50%
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSetAmountPaidPreset('zero')}
-                        className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-rose-400 font-semibold"
+                        className="px-2 py-0.5 rounded text-[10px] bg-inner hover:bg-inner text-badge-red-text border border-line-strong font-semibold"
                       >
                         Credit (₹0)
                       </button>
@@ -723,7 +723,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
                   </div>
 
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-slate-400 text-xs">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-muted text-xs">
                       {settings.currencySymbol}
                     </span>
                     <input
@@ -745,7 +745,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
                         setIsManualPaidEdited(true);
                         setAmountPaidInput(e.target.value);
                       }}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-7 pr-3 py-2 text-xs font-mono font-bold text-white focus:outline-none focus:ring-1 focus:ring-emerald-400 text-left"
+                      className="w-full bg-card border border-line-strong rounded-xl pl-7 pr-3 py-2 text-xs font-mono font-bold text-ink focus:outline-none focus:ring-1 focus:ring-primary text-left"
                       placeholder="Enter amount paid"
                     />
                   </div>
@@ -753,10 +753,10 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
                 {/* Remaining Balance Due */}
                 <div className="flex items-center justify-between text-xs pt-1 font-semibold">
-                  <span className="text-slate-300">Remaining Balance:</span>
+                  <span className="text-ink">Remaining Balance:</span>
                   <span
                     className={`font-mono ${
-                      remainingBalance > 0 ? 'text-rose-400' : 'text-emerald-400'
+                      remainingBalance > 0 ? 'text-badge-red-text' : 'text-badge-green-text'
                     }`}
                   >
                     {formatCurrency(remainingBalance, settings.currencySymbol)}
@@ -765,7 +765,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
                 {/* Payment Method */}
                 <div className="pt-1">
-                  <label className="text-[11px] text-slate-400 block mb-1">Payment Method</label>
+                  <label className="text-[11px] text-muted block mb-1">Payment Method</label>
                   <div className="grid grid-cols-3 gap-1.5 text-xs">
                     {(['Cash', 'UPI', 'Bank Transfer', 'Cheque', 'Credit'] as const).map((method) => (
                       <button
@@ -774,8 +774,8 @@ export const SalesView: React.FC<SalesViewProps> = ({
                         onClick={() => setPaymentMethod(method)}
                         className={`py-1.5 px-2 rounded-lg text-center font-medium transition-colors ${
                           paymentMethod === method
-                            ? 'bg-emerald-500 text-slate-950 font-bold'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-750'
+                            ? 'bg-primary text-white font-bold shadow-sm'
+                            : 'bg-inner text-muted hover:bg-inner hover:text-ink'
                         }`}
                       >
                         {method}
@@ -796,7 +796,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
                     value={saleNotes}
                     onChange={(e) => setSaleNotes(e.target.value)}
                     placeholder="Optional memo (e.g. site delivery, cheque details)"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 text-left"
+                    className="w-full bg-card border border-line-strong rounded-lg px-2.5 py-1.5 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
                   />
                 </div>
 
@@ -804,7 +804,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
                 <button
                   type="button"
                   onClick={handleCompleteSaleSubmit}
-                  className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all mt-2"
+                  className="w-full py-3 rounded-xl bg-primary hover:bg-primary-hover active:scale-[0.98] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all mt-2"
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   <span>Complete Sale & Generate Bill</span>
@@ -817,17 +817,17 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
       {/* Quick Add Customer Modal */}
       {showQuickCustomerModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-emerald-400" />
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card border border-line rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-card">
+            <div className="flex items-center justify-between border-b border-line pb-2">
+              <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-primary" />
                 <span>Quick Add Customer</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowQuickCustomerModal(false)}
-                className="text-slate-400 hover:text-white text-xs"
+                className="text-muted hover:text-ink text-xs"
               >
                 ✕
               </button>
@@ -835,7 +835,7 @@ export const SalesView: React.FC<SalesViewProps> = ({
 
             <form onSubmit={handleQuickAddCustomerSubmit} className="space-y-3 text-xs">
               <div>
-                <label className="text-slate-300 block mb-1">Customer / Firm Name *</label>
+                <label className="text-ink font-medium block mb-1">Customer / Firm Name *</label>
                 <input
                   type="text"
                   dir="ltr"
@@ -847,12 +847,12 @@ export const SalesView: React.FC<SalesViewProps> = ({
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
                   placeholder="e.g. Ramesh Kumar (Contractor)"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-left"
+                  className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               <div>
-                <label className="text-slate-300 block mb-1">Mobile Number</label>
+                <label className="text-ink font-medium block mb-1">Mobile Number</label>
                 <input
                   type="tel"
                   dir="ltr"
@@ -862,12 +862,12 @@ export const SalesView: React.FC<SalesViewProps> = ({
                   value={newCustPhone}
                   onChange={(e) => setNewCustPhone(e.target.value)}
                   placeholder="e.g. +91 98234 11223"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-left"
+                  className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-ink font-mono text-left focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               <div>
-                <label className="text-slate-300 block mb-1">Address / Site</label>
+                <label className="text-ink font-medium block mb-1">Address / Site</label>
                 <input
                   type="text"
                   dir="ltr"
@@ -878,21 +878,21 @@ export const SalesView: React.FC<SalesViewProps> = ({
                   value={newCustAddress}
                   onChange={(e) => setNewCustAddress(e.target.value)}
                   placeholder="e.g. Sector 18, House 42"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-left"
+                  className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
+              <div className="flex items-center gap-2 pt-2 border-t border-line">
                 <button
                   type="button"
                   onClick={() => setShowQuickCustomerModal(false)}
-                  className="flex-1 py-2 rounded-xl bg-slate-800 text-slate-300"
+                  className="flex-1 py-2 rounded-xl bg-inner text-muted hover:bg-inner font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 rounded-xl bg-emerald-500 font-bold text-slate-950"
+                  className="flex-1 py-2 rounded-xl bg-primary hover:bg-primary-hover font-bold text-white shadow-sm"
                 >
                   Create & Select
                 </button>

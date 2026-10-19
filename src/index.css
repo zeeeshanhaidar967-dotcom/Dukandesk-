@@ -1,5 +1,110 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-page: var(--page);
+  --color-card: var(--card);
+  --color-inner: var(--inner);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-placeholder: var(--placeholder);
+  --color-input-bg: var(--input-bg);
+  --color-header: var(--header);
+  --color-header-btn: var(--header-btn);
+  --color-header-btn-hover: var(--header-btn-hover);
+  --color-nav-bg: var(--nav-bg);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-nav-active-text: var(--nav-active-text);
+  --color-nav-active-pill: var(--nav-active-pill);
+
+  --color-badge-green-bg: var(--badge-green-bg);
+  --color-badge-green-text: var(--badge-green-text);
+  --color-badge-yellow-bg: var(--badge-yellow-bg);
+  --color-badge-yellow-text: var(--badge-yellow-text);
+  --color-badge-red-bg: var(--badge-red-bg);
+  --color-badge-red-text: var(--badge-red-text);
+  --color-badge-blue-bg: var(--badge-blue-bg);
+  --color-badge-blue-text: var(--badge-blue-text);
+  --color-badge-violet-bg: var(--badge-violet-bg);
+  --color-badge-violet-text: var(--badge-violet-text);
+
+  --shadow-card: var(--shadow-card);
+}
+
+:root {
+  --page: #E6DAC3;
+  --card: #FFFCF5;
+  --inner: #EFE4CD;
+  --line: #B8A98C;
+  --line-strong: #9A8B6F;
+  --ink: #2A2118;
+  --muted: #5E5445;
+  --placeholder: #6F6452;
+  --input-bg: #FFFEFA;
+  --header: #8A5A1C;
+  --header-btn: #9D6924;
+  --header-btn-hover: #B0772B;
+  --nav-bg: #FFFCF5;
+  --primary: #0F5C4D;
+  --primary-hover: #0B4A3E;
+  --accent: #F2A31B;
+  --accent-text: #3A2500;
+  --nav-active-text: #0F5C4D;
+  --nav-active-pill: #F3E2B5;
+
+  --badge-green-bg: #CDEFE0;
+  --badge-green-text: #075C3A;
+  --badge-yellow-bg: #FFE6B3;
+  --badge-yellow-text: #7A4A00;
+  --badge-red-bg: #FFD3DB;
+  --badge-red-text: #8F1233;
+  --badge-blue-bg: #CBE9F7;
+  --badge-blue-text: #094F70;
+  --badge-violet-bg: #D9DEFF;
+  --badge-violet-text: #2C37A3;
+
+  --shadow-card: 0 1px 3px rgba(60,42,20,.22), 0 1px 2px rgba(60,42,20,.14);
+}
+
+.dark {
+  --page: #070D1D;
+  --card: #1F2B41;
+  --inner: #0A1426;
+  --line: #3A475C;
+  --line-strong: #5A6A82;
+  --ink: #F8FAFC;
+  --muted: #94A3B8;
+  --placeholder: #7C8BA3;
+  --input-bg: #0A1426;
+  --header: #324D6A;
+  --header-btn: #3E5E80;
+  --header-btn-hover: #4A6E96;
+  --nav-bg: #121E34;
+  --primary: #2F7F92;
+  --primary-hover: #266B7C;
+  --accent: #F2A31B;
+  --accent-text: #3A2500;
+  --nav-active-text: #A9CDEE;
+  --nav-active-pill: #283E56;
+
+  --badge-green-bg: #1A4A39;
+  --badge-green-text: #7BE8BC;
+  --badge-yellow-bg: #4A3A12;
+  --badge-yellow-text: #FFD580;
+  --badge-red-bg: #55202D;
+  --badge-red-text: #FFA3B5;
+  --badge-blue-bg: #174559;
+  --badge-blue-text: #8DD3F5;
+  --badge-violet-bg: #30386E;
+  --badge-violet-text: #C0C8FF;
+
+  --shadow-card: none;
+}
+
 /* ==========================================================================
    CANONICAL GLOBAL LTR POLICY - DukanDesk
    Enforces strict Left-To-Right text progression, natural left-to-right caret
@@ -17,6 +122,24 @@ body,
   unicode-bidi: normal !important;
   text-align: left;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--page);
+  color: var(--ink);
+}
+
+/* Custom scrollbars adapted to theme variables: thumb = line-strong, track = page */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--page);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }
 
 /* Universal Form Controls LTR Base Rule */
@@ -31,27 +154,6 @@ button,
   text-align: left;
 }
 
-/* Explicit Form Input Types */
-input[type="text"],
-input[type="search"],
-input[type="email"],
-input[type="tel"],
-input[type="password"],
-input[type="url"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"],
-input[type="month"],
-input[type="week"],
-textarea,
-select {
-  direction: ltr !important;
-  writing-mode: horizontal-tb !important;
-  unicode-bidi: normal !important;
-  text-align: left;
-}
-
 /* Placeholder LTR Consistency */
 ::placeholder,
 input::placeholder,
@@ -60,6 +162,7 @@ textarea::placeholder {
   writing-mode: horizontal-tb !important;
   unicode-bidi: normal !important;
   text-align: left;
+  color: var(--placeholder);
 }
 
 /* Deliberate Centered Inputs (PIN codes, counter quantities) */

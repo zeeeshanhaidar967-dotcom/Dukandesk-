@@ -22,8 +22,8 @@ const DB_STORAGE_KEY = 'dukanmaster_sqlite_room_db_v1';
 const SAFETY_ROLLBACK_KEY = 'dukanmaster_sqlite_room_db_safety_rollback_v1';
 
 export const DEFAULT_SETTINGS: OwnerSettingsEntity = {
-  pin: '847203',
-  isPinSet: true,
+  pin: '',
+  isPinSet: false,
   shopName: 'MAHARAJA MARBLE',
   ownerName: 'HAIDAR ALI',
   phone: '9931683424',

@@ -316,17 +316,17 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
   return (
     <div className="space-y-4">
       {/* Top Header Card */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-850 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-card p-4 sm:p-5 rounded-2xl border border-line shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-bold text-[10px] rounded-full uppercase tracking-wider inline-flex items-center gap-1">
+            <span className="px-2.5 py-0.5 bg-badge-green-bg border border-badge-green-text/35 text-badge-green-text font-bold text-[10px] rounded-full uppercase tracking-wider inline-flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" />
               Admin Panel
             </span>
-            <span className="text-xs text-slate-400">• Role-Based Access Control</span>
+            <span className="text-xs text-muted">• Role-Based Access Control</span>
           </div>
-          <h2 className="text-xl font-black text-white mt-1">Users & Access Management</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <h2 className="text-xl font-black text-ink mt-1">Users & Access Management</h2>
+          <p className="text-xs text-muted mt-0.5">
             Manage multi-user accounts, permissions, and device access in Firebase.
           </p>
         </div>
@@ -337,9 +337,9 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             onClick={handleReloadUsers}
             disabled={isLoading}
             title="Refresh users from Firestore"
-            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+            className="px-3 py-2 bg-inner hover:bg-inner text-ink border border-line-strong text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-emerald-400' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-primary' : ''}`} />
             <span>Reload</span>
           </button>
 
@@ -349,7 +349,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
               setCreateError(null);
               setIsCreateOpen(true);
             }}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/60 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>Create User</span>
@@ -359,15 +359,15 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
 
       {/* Action Notifications */}
       {actionSuccess && (
-        <div className="p-3.5 bg-emerald-950/80 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs flex items-center gap-2.5 animate-fadeIn">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="p-3.5 bg-badge-green-bg border border-badge-green-text/35 rounded-xl text-badge-green-text text-xs flex items-center gap-2.5 animate-fadeIn">
+          <CheckCircle2 className="w-4 h-4 text-badge-green-text shrink-0" />
           <span>{actionSuccess}</span>
         </div>
       )}
 
       {actionError && (
-        <div className="p-3.5 bg-rose-950/80 border border-rose-500/40 rounded-xl text-rose-300 text-xs flex items-start gap-2.5 animate-fadeIn">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-3.5 bg-badge-red-bg border border-badge-red-text/35 rounded-xl text-badge-red-text text-xs flex items-start gap-2.5 animate-fadeIn">
+          <AlertCircle className="w-4 h-4 text-badge-red-text shrink-0 mt-0.5" />
           <div>
             <span className="font-bold block">Security Notice</span>
             <span>{actionError}</span>
@@ -377,25 +377,25 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
 
       {/* Distinct Firestore Read Error Banner */}
       {firestoreReadError && (
-        <div className="p-4 bg-rose-950/90 border border-rose-500/50 rounded-2xl text-rose-200 text-xs space-y-2 animate-fadeIn shadow-lg shadow-rose-950/40">
+        <div className="p-4 bg-badge-red-bg border border-badge-red-text/35 rounded-2xl text-badge-red-text text-xs space-y-2 animate-fadeIn shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2.5">
-              <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+              <ShieldAlert className="w-5 h-5 text-badge-red-text shrink-0 mt-0.5" />
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-sm text-white">Firestore Read Error</span>
-                  <span className="px-2 py-0.5 bg-rose-900 border border-rose-600/60 text-rose-200 text-[10px] font-mono rounded font-bold uppercase">
+                  <span className="font-bold text-sm text-ink">Firestore Read Error</span>
+                  <span className="px-2 py-0.5 bg-card border border-badge-red-text/35 text-badge-red-text text-[10px] font-mono rounded font-bold uppercase">
                     [{firestoreReadError.code}]
                   </span>
                 </div>
-                <p className="mt-1 text-slate-300 text-xs">{firestoreReadError.message}</p>
+                <p className="mt-1 text-muted text-xs">{firestoreReadError.message}</p>
                 {firestoreReadError.code === 'permission-denied' && (
-                  <p className="text-[11px] text-rose-300/80 mt-1.5 bg-rose-900/40 p-2 rounded-lg border border-rose-800/40">
+                  <p className="text-[11px] text-badge-red-text mt-1.5 bg-card/60 p-2 rounded-lg border border-badge-red-text/35">
                     Your authenticated account does not currently have permission to read the users collection in Firestore. In DukanDesk, only active Admin accounts are authorized to manage team users.
                   </p>
                 )}
                 {firestoreReadError.code === 'unavailable' && (
-                  <p className="text-[11px] text-rose-300/80 mt-1.5 bg-rose-900/40 p-2 rounded-lg border border-rose-800/40">
+                  <p className="text-[11px] text-badge-red-text mt-1.5 bg-card/60 p-2 rounded-lg border border-badge-red-text/35">
                     Firestore service is currently unreachable or your device is offline. Existing cached data will remain intact.
                   </p>
                 )}
@@ -405,7 +405,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             <button
               type="button"
               onClick={handleReloadUsers}
-              className="px-3 py-1.5 bg-rose-800 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Retry</span>
@@ -416,15 +416,15 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
 
       {/* User Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-        <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <Users className="w-3 h-3 text-slate-400" />
+        <div className="bg-card p-3 rounded-xl border border-line shadow-card">
+          <div className="text-[10px] font-semibold text-muted uppercase tracking-wider mb-1 flex items-center gap-1">
+            <Users className="w-3 h-3 text-muted" />
             Total Accounts
           </div>
-          <div className="text-xl font-black text-white">
+          <div className="text-xl font-black text-ink">
             {isLoading ? '...' : firestoreReadError ? '—' : users.length}
           </div>
-          <div className="text-[10px] text-slate-500">
+          <div className="text-[10px] text-muted">
             {isLoading
               ? 'Loading...'
               : firestoreReadError
@@ -435,33 +435,33 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
           </div>
         </div>
 
-        <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <div className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+        <div className="bg-card p-3 rounded-xl border border-line shadow-card">
+          <div className="text-[10px] font-semibold text-badge-green-text uppercase tracking-wider mb-1 flex items-center gap-1">
             <Shield className="w-3 h-3" />
             Admins
           </div>
-          <div className="text-xl font-black text-emerald-300">
+          <div className="text-xl font-black text-badge-green-text">
             {isLoading ? '...' : firestoreReadError ? '—' : adminCount}
           </div>
-          <div className="text-[10px] text-emerald-500/80">Full Access</div>
+          <div className="text-[10px] text-badge-green-text/80">Full Access</div>
         </div>
 
-        <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <div className="text-[10px] font-semibold text-cyan-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+        <div className="bg-card p-3 rounded-xl border border-line shadow-card">
+          <div className="text-[10px] font-semibold text-badge-blue-text uppercase tracking-wider mb-1 flex items-center gap-1">
             <Eye className="w-3 h-3" />
             Viewers
           </div>
-          <div className="text-xl font-black text-cyan-300">
+          <div className="text-xl font-black text-badge-blue-text">
             {isLoading ? '...' : firestoreReadError ? '—' : viewerCount}
           </div>
-          <div className="text-[10px] text-cyan-500/80">Stock-Only Access</div>
+          <div className="text-[10px] text-badge-blue-text/80">Stock-Only Access</div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center gap-2">
+      <div className="bg-card p-3 rounded-xl border border-line flex flex-col sm:flex-row items-center gap-2 shadow-card">
         <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-muted absolute left-3 top-2.5" />
           <input
             type="text"
             dir="ltr"
@@ -473,7 +473,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search registered users by name or Google email..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-left"
+            className="w-full bg-card border border-line-strong rounded-lg pl-9 pr-3 py-1.5 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
           />
         </div>
 
@@ -483,8 +483,8 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             onClick={() => setRoleFilter('ALL')}
             className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
               roleFilter === 'ALL'
-                ? 'bg-slate-800 text-white'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-primary text-white'
+                : 'text-muted hover:text-ink'
             }`}
           >
             All ({firestoreReadError ? '—' : users.length})
@@ -494,8 +494,8 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             onClick={() => setRoleFilter('admin')}
             className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
               roleFilter === 'admin'
-                ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40'
-                : 'text-slate-400 hover:text-emerald-400'
+                ? 'bg-badge-green-bg text-badge-green-text border border-badge-green-text/35'
+                : 'text-muted hover:text-badge-green-text'
             }`}
           >
             Admins ({firestoreReadError ? '—' : adminCount})
@@ -505,8 +505,8 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             onClick={() => setRoleFilter('viewer')}
             className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
               roleFilter === 'viewer'
-                ? 'bg-cyan-950 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-cyan-400'
+                ? 'bg-badge-blue-bg text-badge-blue-text border border-badge-blue-text/35'
+                : 'text-muted hover:text-badge-blue-text'
             }`}
           >
             Viewers ({firestoreReadError ? '—' : viewerCount})
@@ -517,16 +517,16 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
       {/* Users List with required fields: Name, Google email, Role, Sign-up date, Last login */}
       <div className="space-y-2.5">
         {isLoading ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400 text-xs flex items-center justify-center gap-2">
-            <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+          <div className="bg-card border border-line rounded-xl p-8 text-center text-muted text-xs flex items-center justify-center gap-2 shadow-card">
+            <RefreshCw className="w-4 h-4 animate-spin text-primary" />
             <span>Loading user accounts from Firestore...</span>
           </div>
         ) : firestoreReadError ? (
-          <div className="bg-slate-900 border border-rose-500/40 rounded-xl p-8 text-center text-slate-400 text-xs space-y-3">
-            <ShieldAlert className="w-8 h-8 text-rose-400 mx-auto" />
-            <p className="text-slate-100 font-bold text-sm">Unable to load registered accounts from Firestore.</p>
-            <p className="text-rose-400 font-mono text-xs">Error: [{firestoreReadError.code}] {firestoreReadError.message}</p>
-            <div className="bg-slate-950 p-3 rounded-xl max-w-lg mx-auto text-left font-mono text-[11px] text-slate-400 border border-slate-800 space-y-1">
+          <div className="bg-card border border-badge-red-text/35 rounded-xl p-8 text-center text-muted text-xs space-y-3 shadow-card">
+            <ShieldAlert className="w-8 h-8 text-badge-red-text mx-auto" />
+            <p className="text-ink font-bold text-sm">Unable to load registered accounts from Firestore.</p>
+            <p className="text-badge-red-text font-mono text-xs">Error: [{firestoreReadError.code}] {firestoreReadError.message}</p>
+            <div className="bg-inner p-3 rounded-xl max-w-lg mx-auto text-left font-mono text-[11px] text-muted border border-line-strong space-y-1">
               <div>• Collection: /users</div>
               <div>• Status: Read failed [{firestoreReadError.code}]</div>
               <div>• Database: {(firebaseConfig as any).firestoreDatabaseId || '(default)'}</div>
@@ -534,22 +534,22 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             <button
               type="button"
               onClick={handleReloadUsers}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 cursor-pointer inline-flex items-center gap-1.5"
+              className="px-4 py-2 bg-inner hover:bg-inner text-ink text-xs font-bold rounded-xl border border-line-strong cursor-pointer inline-flex items-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Retry Query</span>
             </button>
           </div>
         ) : users.length === 0 ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400 text-xs space-y-4">
-            <Users className="w-10 h-10 text-slate-600 mx-auto" />
+          <div className="bg-card border border-line rounded-xl p-8 text-center text-muted text-xs space-y-4 shadow-card">
+            <Users className="w-10 h-10 text-line-strong mx-auto" />
             <div>
-              <p className="text-slate-100 font-bold text-sm">0 registered accounts in Firestore</p>
-              <p className="text-slate-400 text-xs mt-1 max-w-md mx-auto">
-                No user profiles have been stored in the Firestore <code className="text-emerald-400 font-mono">users</code> collection yet.
+              <p className="text-ink font-bold text-sm">0 registered accounts in Firestore</p>
+              <p className="text-muted text-xs mt-1 max-w-md mx-auto">
+                No user profiles have been stored in the Firestore <code className="text-primary font-mono font-semibold">users</code> collection yet.
                 {auth.currentUser?.email && (
-                  <span className="block mt-1 text-slate-300">
-                    You are logged in as <span className="text-emerald-400 font-semibold">{auth.currentUser.email}</span>. Click below to register your admin profile to Firestore:
+                  <span className="block mt-1 text-ink">
+                    You are logged in as <span className="text-primary font-semibold">{auth.currentUser.email}</span>. Click below to register your admin profile to Firestore:
                   </span>
                 )}
               </p>
@@ -570,7 +570,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                   }
                 }}
                 disabled={isLoading}
-                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/60 inline-flex items-center gap-2 cursor-pointer transition-colors"
+                className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white font-bold text-xs rounded-xl shadow-sm inline-flex items-center gap-2 cursor-pointer transition-colors"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Save Admin Account to Firestore</span>
@@ -578,7 +578,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             )}
           </div>
         ) : filteredUsers.length === 0 ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400 text-xs">
+          <div className="bg-card border border-line rounded-xl p-8 text-center text-muted text-xs shadow-card">
             No users match the search criteria.
           </div>
         ) : (
@@ -593,7 +593,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
             return (
               <div
                 key={user.uid || user.userId}
-                className="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-4 transition-colors space-y-3"
+                className="bg-card border border-line hover:border-line-strong rounded-2xl p-4 transition-colors space-y-3 shadow-card"
               >
                 {/* Header row: Avatar, Name, Email, Status Badge */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -601,8 +601,8 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                     <div
                       className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm shrink-0 border ${
                         isAdmin
-                          ? 'bg-emerald-950 border-emerald-500/50 text-emerald-300 shadow-sm shadow-emerald-500/10'
-                          : 'bg-cyan-950 border-cyan-500/50 text-cyan-300'
+                          ? 'bg-badge-green-bg border-badge-green-text/35 text-badge-green-text'
+                          : 'bg-badge-blue-bg border-badge-blue-text/35 text-badge-blue-text'
                       }`}
                     >
                       {userName.slice(0, 2).toUpperCase()}
@@ -610,31 +610,31 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-sm text-white truncate">{userName}</span>
+                        <span className="font-bold text-sm text-ink truncate">{userName}</span>
                         {isCurrentUser && (
-                          <span className="px-1.5 py-0.2 bg-slate-800 text-[10px] text-slate-300 rounded font-semibold">
+                          <span className="px-1.5 py-0.2 bg-inner text-[10px] text-muted border border-line-strong rounded font-semibold">
                             You
                           </span>
                         )}
                         {isOwner && (
-                          <span className="px-2 py-0.5 bg-amber-950 border border-amber-500/40 text-amber-300 text-[10px] font-bold rounded-full inline-flex items-center gap-1">
+                          <span className="px-2 py-0.5 bg-badge-yellow-bg border border-badge-yellow-text/35 text-badge-yellow-text text-[10px] font-bold rounded-full inline-flex items-center gap-1">
                             <Lock className="w-2.5 h-2.5" />
                             Primary Admin
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2 text-xs text-slate-400 truncate mt-0.5">
-                        <span className="font-mono text-slate-300 truncate">{user.email}</span>
+                      <div className="flex items-center gap-2 text-xs text-muted truncate mt-0.5">
+                        <span className="font-mono text-ink truncate">{user.email}</span>
                         <span>•</span>
                         <span
                           className={`inline-flex items-center gap-1 font-semibold text-[11px] ${
-                            isActive ? 'text-emerald-400' : 'text-rose-400'
+                            isActive ? 'text-badge-green-text' : 'text-badge-red-text'
                           }`}
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              isActive ? 'bg-emerald-400' : 'bg-rose-400'
+                              isActive ? 'bg-badge-green-text' : 'bg-badge-red-text'
                             }`}
                           />
                           {isActive ? 'Active' : 'Suspended'}
@@ -647,9 +647,9 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                   <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
                     {/* Role Display Dropdown */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] text-slate-400 font-semibold">Role:</span>
+                      <span className="text-[11px] text-muted font-semibold">Role:</span>
                       {isOwner ? (
-                        <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-bold text-xs rounded-xl inline-flex items-center gap-1">
+                        <span className="px-3 py-1 bg-badge-green-bg border border-badge-green-text/35 text-badge-green-text font-bold text-xs rounded-xl inline-flex items-center gap-1">
                           <ShieldCheck className="w-3.5 h-3.5" />
                           admin (Protected)
                         </span>
@@ -660,19 +660,19 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                           onChange={(e) => handleRoleChange(user, e.target.value as AppUserRole)}
                           className={`px-3 py-1.5 text-xs font-bold rounded-xl border cursor-pointer focus:outline-none transition-colors ${
                             isAdmin
-                              ? 'bg-emerald-950 border-emerald-500/40 text-emerald-300'
-                              : 'bg-cyan-950 border-cyan-500/40 text-cyan-300'
+                              ? 'bg-badge-green-bg border-badge-green-text/35 text-badge-green-text'
+                              : 'bg-badge-blue-bg border-badge-blue-text/35 text-badge-blue-text'
                           }`}
                         >
-                          <option value="viewer" className="bg-slate-900 text-white">viewer (Stock-Only)</option>
-                          <option value="admin" className="bg-slate-900 text-white">admin (Full Access)</option>
+                          <option value="viewer" className="bg-card text-ink">viewer (Stock-Only)</option>
+                          <option value="admin" className="bg-card text-ink">admin (Full Access)</option>
                         </select>
                       )}
                     </div>
 
                     {/* Non-owner actions */}
                     {!isOwner && (
-                      <div className="flex items-center gap-1 pl-1 border-l border-slate-800">
+                      <div className="flex items-center gap-1 pl-1 border-l border-line">
                         {/* Status Toggle */}
                         <button
                           type="button"
@@ -680,8 +680,8 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                           title={isActive ? 'Deactivate access' : 'Activate access'}
                           className={`px-2 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                             isActive
-                              ? 'bg-rose-950/40 hover:bg-rose-900/40 text-rose-300 border border-rose-500/20'
-                              : 'bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 border border-emerald-500/20'
+                              ? 'bg-badge-red-bg hover:bg-badge-red-bg/80 text-badge-red-text border border-badge-red-text/35'
+                              : 'bg-badge-green-bg hover:bg-badge-green-bg/80 text-badge-green-text border border-badge-green-text/35'
                           }`}
                         >
                           {isActive ? 'Suspend' : 'Activate'}
@@ -692,7 +692,7 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                           type="button"
                           onClick={() => handleDeleteUser(user)}
                           title="Delete user document"
-                          className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-muted hover:text-badge-red-text hover:bg-badge-red-bg rounded-lg transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -702,22 +702,22 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                 </div>
 
                 {/* Metadata Row: Sign-up date, Last login, UID */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2.5 border-t border-slate-800/80 text-[11px] text-slate-400">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2.5 border-t border-line text-[11px] text-muted">
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <Calendar className="w-3.5 h-3.5 text-muted shrink-0" />
                     <span>
-                      Sign-up: <strong className="text-slate-300 font-mono">{formatDate(user.signUpDate)}</strong>
+                      Sign-up: <strong className="text-ink font-mono">{formatDate(user.signUpDate)}</strong>
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <Clock className="w-3.5 h-3.5 text-muted shrink-0" />
                     <span>
-                      Last Login: <strong className="text-slate-300 font-mono">{formatDate(user.lastLogin)}</strong>
+                      Last Login: <strong className="text-ink font-mono">{formatDate(user.lastLogin)}</strong>
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 text-slate-500 font-mono text-[10px] truncate">
+                  <div className="flex items-center gap-1.5 text-muted font-mono text-[10px] truncate">
                     <span>UID:</span>
                     <span className="truncate" title={user.uid || user.userId}>
                       {user.uid || user.userId}
@@ -733,39 +733,39 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
       {/* CREATE USER MODAL */}
       {/* AUTHORIZE GOOGLE USER MODAL */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-card border border-line rounded-3xl w-full max-w-md p-6 shadow-card relative animate-fadeIn">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-emerald-950 border border-emerald-500/30 rounded-xl text-emerald-400">
+                <div className="p-2 bg-badge-green-bg border border-badge-green-text/35 rounded-xl text-badge-green-text">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Authorize Google Account</h3>
-                  <p className="text-[11px] text-slate-400">Grant permissions for a team member's Google account</p>
+                  <h3 className="text-base font-bold text-ink">Authorize Google Account</h3>
+                  <p className="text-[11px] text-muted">Grant permissions for a team member's Google account</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsCreateOpen(false)}
-                className="text-slate-500 hover:text-white text-sm"
+                className="text-muted hover:text-ink text-sm"
               >
                 ✕
               </button>
             </div>
 
             {createError && (
-              <div className="mb-4 p-3 bg-rose-950/80 border border-rose-500/40 rounded-xl text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+              <div className="mb-4 p-3 bg-badge-red-bg border border-badge-red-text/35 rounded-xl text-badge-red-text text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-badge-red-text" />
                 <span>{createError}</span>
               </div>
             )}
 
             <form onSubmit={handleCreateSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">User's Full Name</label>
+                <label className="block text-xs font-semibold text-ink mb-1">User's Full Name</label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                  <User className="w-4 h-4 text-muted absolute left-3 top-2.5" />
                   <input
                     type="text"
                     dir="ltr"
@@ -776,16 +776,16 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                     value={createName}
                     onChange={(e) => setCreateName(e.target.value)}
                     placeholder="e.g. Ramesh Kumar / Stock Viewer"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-left"
+                    className="w-full bg-card border border-line-strong rounded-xl pl-9 pr-3 py-2 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Google Email Address</label>
+                <label className="block text-xs font-semibold text-ink mb-1">Google Email Address</label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                  <Mail className="w-4 h-4 text-muted absolute left-3 top-2.5" />
                   <input
                     type="email"
                     dir="ltr"
@@ -796,32 +796,32 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                     value={createEmail}
                     onChange={(e) => setCreateEmail(e.target.value)}
                     placeholder="team.member@gmail.com"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-left"
+                    className="w-full bg-card border border-line-strong rounded-xl pl-9 pr-3 py-2 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
                     required
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">
+                <p className="text-[10px] text-muted mt-1">
                   The user will log in with this Google account using the "Sign in with Google" button.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Assigned Role</label>
+                <label className="block text-xs font-semibold text-ink mb-1">Assigned Role</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setCreateRole('viewer')}
                     className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
                       createRole === 'viewer'
-                        ? 'bg-cyan-950/80 border-cyan-500/60 text-white'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                        ? 'bg-badge-blue-bg border-badge-blue-text/35 text-badge-blue-text'
+                        : 'bg-card border-line-strong text-muted hover:border-line-strong'
                     }`}
                   >
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-cyan-400 mb-0.5">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-badge-blue-text mb-0.5">
                       <Eye className="w-3.5 h-3.5" />
                       Viewer
                     </div>
-                    <div className="text-[10px] text-slate-400 leading-tight">
+                    <div className="text-[10px] text-muted leading-tight">
                       Stock-only read access. No billing, financial, or customer data.
                     </div>
                   </button>
@@ -831,38 +831,38 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
                     onClick={() => setCreateRole('admin')}
                     className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
                       createRole === 'admin'
-                        ? 'bg-emerald-950/80 border-emerald-500/60 text-white'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                        ? 'bg-badge-green-bg border-badge-green-text/35 text-badge-green-text'
+                        : 'bg-card border-line-strong text-muted hover:border-line-strong'
                     }`}
                   >
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-400 mb-0.5">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-badge-green-text mb-0.5">
                       <Shield className="w-3.5 h-3.5" />
                       Admin
                     </div>
-                    <div className="text-[10px] text-slate-400 leading-tight">
+                    <div className="text-[10px] text-muted leading-tight">
                       Full access to all shop records, sales, stock adjustments, & reports.
                     </div>
                   </button>
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl text-[11px] text-slate-400 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="p-3 bg-inner border border-line-strong rounded-xl text-[11px] text-muted flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-badge-green-text shrink-0" />
                 <span>Passwordless access: No passwords needed. Cloud Firestore will recognize this Google account instantly on sign in.</span>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl"
+                  className="px-3 py-1.5 bg-inner hover:bg-inner text-muted text-xs font-semibold rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl shadow-sm disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
                 >
                   {isCreating ? (
                     <>
@@ -880,34 +880,34 @@ export function UserManagementView({ currentUserEmail, currentUserUid }: UserMan
       )}
       {/* CONFIRMATION ACTION MODAL (Replaces window.confirm) */}
       {confirmModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl relative animate-fadeIn space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-card border border-line rounded-3xl w-full max-w-sm p-6 shadow-card relative animate-fadeIn space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-badge-yellow-bg border border-badge-yellow-text/35 text-badge-yellow-text flex items-center justify-center shrink-0">
                 <ShieldAlert className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">{confirmModal.title}</h3>
-                <p className="text-[11px] text-slate-400">Security confirmation</p>
+                <h3 className="text-sm font-bold text-ink">{confirmModal.title}</h3>
+                <p className="text-[11px] text-muted">Security confirmation</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed bg-slate-950 p-3 rounded-xl border border-slate-800">
+            <p className="text-xs text-ink leading-relaxed bg-inner p-3 rounded-xl border border-line-strong">
               {confirmModal.description}
             </p>
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-line">
               <button
                 type="button"
                 onClick={() => setConfirmModal(null)}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl cursor-pointer"
+                className="px-3 py-1.5 bg-inner hover:bg-inner text-muted text-xs font-semibold rounded-xl cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={executeConfirmedAction}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer transition-colors"
+                className="px-4 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl shadow-sm cursor-pointer transition-colors"
               >
                 Confirm Action
               </button>

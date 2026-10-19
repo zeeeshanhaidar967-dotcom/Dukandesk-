@@ -67,26 +67,26 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-4 selection:bg-emerald-500/30 selection:text-emerald-300">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/80 relative overflow-hidden">
+    <div className="min-h-screen bg-page text-ink flex flex-col justify-center items-center p-4 selection:bg-header/20 selection:text-header">
+      <div className="w-full max-w-md bg-card border border-line rounded-3xl p-6 sm:p-8 shadow-card relative overflow-hidden">
         {/* Subtle background glow */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Header Branding */}
         <div className="text-center mb-7">
-          <div className="inline-flex p-3.5 bg-gradient-to-tr from-emerald-600 to-teal-500 rounded-2xl shadow-lg shadow-emerald-500/20 mb-3.5 text-white">
+          <div className="inline-flex p-3.5 bg-primary rounded-2xl shadow-lg shadow-primary/20 mb-3.5 text-white">
             <Building2 className="w-9 h-9" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">{shopName || 'MAHARAJA MARBLE'}</h1>
-          <p className="text-xs text-slate-300 font-semibold mt-1">
-            HAIDAR ALI <span className="text-slate-400 font-mono font-normal">(hmotor786@gmail.com)</span>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-ink uppercase">{shopName || 'MAHARAJA MARBLE'}</h1>
+          <p className="text-xs text-ink font-semibold mt-1">
+            HAIDAR ALI <span className="text-muted font-mono font-normal">(hmotor786@gmail.com)</span>
           </p>
-          <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+          <p className="text-[11px] text-muted font-medium mt-0.5">
             Enterprise Cloud Management & Real-Time Sync
           </p>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-950/80 border border-emerald-500/30 rounded-full text-[11px] font-semibold text-emerald-400 mt-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-badge-green-bg border border-line-strong rounded-full text-[11px] font-semibold text-badge-green-text mt-3">
             <ShieldCheck className="w-3.5 h-3.5" />
             Authorized Google Workspace Access
           </div>
@@ -94,12 +94,12 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
 
         {/* Error Notification */}
         {errorInfo && (
-          <div className="mb-5 p-3.5 bg-rose-950/80 border border-rose-500/40 rounded-xl text-rose-300 text-xs flex items-center gap-2.5 animate-fadeIn">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+          <div className="mb-5 p-3.5 bg-badge-red-bg border border-badge-red-text/35 rounded-xl text-badge-red-text text-xs flex items-center gap-2.5 animate-fadeIn">
+            <AlertCircle className="w-4 h-4 shrink-0 text-badge-red-text" />
             <div className="font-medium text-xs leading-normal">
               {errorInfo.message}
               {errorInfo.code && (
-                <span className="text-slate-400 font-mono text-[11px] ml-1.5 font-normal">
+                <span className="text-muted font-mono text-[11px] ml-1.5 font-normal">
                   (code {errorInfo.code})
                 </span>
               )}
@@ -113,7 +113,7 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-5 bg-white hover:bg-slate-100 text-slate-900 rounded-2xl font-bold text-sm shadow-xl shadow-black/40 transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer group"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-5 bg-card hover:bg-inner text-ink border border-line-strong rounded-2xl font-bold text-sm shadow-card transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer group"
           >
             <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
               <path
@@ -133,35 +133,35 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span className="text-slate-900 font-semibold text-sm">
+            <span className="text-ink font-semibold text-sm">
               {isLoading ? 'Signing in...' : 'Sign in with Google'}
             </span>
-            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-4 h-4 text-muted group-hover:translate-x-0.5 transition-transform" />
           </button>
 
-          <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 text-center">
-            <p className="text-[11px] text-slate-400 leading-relaxed">
+          <div className="bg-inner border border-line-strong rounded-xl p-3 text-center">
+            <p className="text-[11px] text-muted leading-relaxed">
               Fast, one-click access using your authorized Google Account. No passwords required.
             </p>
           </div>
         </div>
 
         {/* Role Permissions Information Box */}
-        <div className="mt-7 pt-5 border-t border-slate-800/80">
-          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="mt-7 pt-5 border-t border-line">
+          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
             Multi-User Roles & Permissions
           </div>
           <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
-              <span className="font-bold text-emerald-400 block mb-0.5">Admin Account</span>
-              <p className="text-slate-400 text-[10px] leading-tight">
+            <div className="bg-inner p-2.5 rounded-xl border border-line-strong">
+              <span className="font-bold text-badge-green-text block mb-0.5">Admin Account</span>
+              <p className="text-muted text-[10px] leading-tight">
                 Full authority: Sales, inventory editing, customer khata, profit metrics, and user management.
               </p>
             </div>
-            <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
-              <span className="font-bold text-cyan-400 block mb-0.5">Stock Viewer</span>
-              <p className="text-slate-400 text-[10px] leading-tight">
+            <div className="bg-inner p-2.5 rounded-xl border border-line-strong">
+              <span className="font-bold text-badge-blue-text block mb-0.5">Stock Viewer</span>
+              <p className="text-muted text-[10px] leading-tight">
                 Stock-only access: View live quantities, marble categories, and search without financial data.
               </p>
             </div>
@@ -169,8 +169,8 @@ export function LoginScreen({ onLoginSuccess, shopName }: LoginScreenProps) {
         </div>
 
         <div className="mt-5 text-center">
-          <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-mono">
-            <Lock className="w-3 h-3 text-emerald-500/80" />
+          <span className="inline-flex items-center gap-1 text-[11px] text-muted font-mono">
+            <Lock className="w-3 h-3 text-badge-green-text" />
             Protected by Cloud Firestore Security Rules
           </span>
         </div>

@@ -142,14 +142,14 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
     <div className="space-y-4 pb-24">
       {/* View Switcher: Inventory List vs Stock Movement Audit History */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-xl">
+        <div className="flex items-center gap-1.5 p-1 bg-inner border border-line-strong rounded-xl">
           <button
             type="button"
             onClick={() => setSubTab('inventory')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               subTab === 'inventory'
-                ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-muted hover:text-ink'
             }`}
           >
             {isStockViewer ? `Catalogue (${products.length})` : `Inventory (${products.length})`}
@@ -160,8 +160,8 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
               onClick={() => setSubTab('history')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 subTab === 'history'
-                  ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               <History className="w-3.5 h-3.5" />
@@ -175,7 +175,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
             <button
               type="button"
               onClick={() => onOpenStockIn()}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition-all"
+              className="px-3 py-1.5 rounded-xl bg-inner hover:bg-inner text-primary border border-line-strong text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition-all"
             >
               <PackagePlus className="w-4 h-4" />
               <span>+ Add Stock</span>
@@ -184,7 +184,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
             <button
               type="button"
               onClick={onOpenAddProduct}
-              className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-500/20 active:scale-95 transition-all"
+              className="px-3 py-1.5 rounded-xl bg-accent hover:bg-accent/90 text-accent-text text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>New Product</span>
@@ -195,15 +195,15 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
       {/* Success Notification Banner */}
       {toastMessage && (
-        <div className="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-between shadow-sm animate-in fade-in duration-200">
+        <div className="p-3 rounded-2xl bg-badge-green-bg border border-badge-green-text/35 text-badge-green-text text-xs font-semibold flex items-center justify-between shadow-sm animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-badge-green-text animate-pulse" />
             <span>{toastMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => setToastMessage('')}
-            className="text-slate-400 hover:text-white text-xs px-1"
+            className="text-muted hover:text-ink text-xs px-1"
           >
             ✕
           </button>
@@ -214,23 +214,23 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
         <div className="space-y-3">
           {/* Inventory Aggregate Header Card - Admin only */}
           {!isStockViewer && (
-            <div className="p-3.5 bg-slate-900/90 border border-slate-800 rounded-2xl flex items-center justify-between text-xs">
+            <div className="p-3.5 bg-card border border-line rounded-2xl flex items-center justify-between text-xs shadow-card">
               <div>
-                <span className="text-slate-400 block text-[11px]">Total Stock Cost Value</span>
-                <strong className="text-base font-bold font-mono text-emerald-400">
+                <span className="text-muted block text-[11px]">Total Stock Cost Value</span>
+                <strong className="text-base font-bold font-mono text-badge-green-text">
                   {formatCurrency(totalStockPurchaseValue, settings.currencySymbol)}
                 </strong>
               </div>
               <div className="text-right">
-                <span className="text-slate-400 block text-[11px]">
+                <span className="text-muted block text-[11px]">
                   Retail Realization Value
                   {unpricedProductsCount > 0 && (
-                    <span className="text-amber-400 text-[10px] ml-1">
+                    <span className="text-badge-yellow-text text-[10px] ml-1">
                       ({unpricedProductsCount} unpriced)
                     </span>
                   )}
                 </span>
-                <strong className="text-base font-bold font-mono text-white">
+                <strong className="text-base font-bold font-mono text-ink">
                   {formatCurrency(totalStockRetailValue, settings.currencySymbol)}
                 </strong>
               </div>
@@ -238,9 +238,9 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
           )}
 
           {/* Search & Filter Controls */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 space-y-2.5">
+          <div className="bg-card border border-line rounded-2xl p-3 space-y-2.5 shadow-card">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 dir="ltr"
@@ -256,7 +256,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                     ? "Search catalogue by name, category, or brand..."
                     : "Search products by name, brand, producer, supplier..."
                 }
-                className="w-full bg-slate-950 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 text-left"
+                className="w-full bg-card border border-line-strong rounded-xl pl-9 pr-3 py-2 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
               />
             </div>
 
@@ -269,12 +269,12 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
               }`}
             >
               <div>
-                <label className="text-[10px] text-slate-400 block mb-0.5">Category</label>
+                <label className="text-[10px] text-muted block mb-0.5">Category</label>
                 <select
                   value={categoryFilter}
                   style={{ direction: 'ltr', textAlign: 'left' }}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-white text-[11px]"
+                  className="w-full bg-card border border-line-strong rounded-lg px-2 py-1.5 text-ink text-[11px] focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {categories.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -283,12 +283,12 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
               </div>
 
               <div>
-                <label className="text-[10px] text-slate-400 block mb-0.5">Brand</label>
+                <label className="text-[10px] text-muted block mb-0.5">Brand</label>
                 <select
                   value={brandFilter}
                   style={{ direction: 'ltr', textAlign: 'left' }}
                   onChange={(e) => setBrandFilter(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-white text-[11px]"
+                  className="w-full bg-card border border-line-strong rounded-lg px-2 py-1.5 text-ink text-[11px] focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {brands.map((b) => (
                     <option key={b} value={b}>{b}</option>
@@ -298,12 +298,12 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
               {!isStockViewer && (
                 <div>
-                  <label className="text-[10px] text-slate-400 block mb-0.5">Producer</label>
+                  <label className="text-[10px] text-muted block mb-0.5">Producer</label>
                   <select
                     value={producerFilter}
                     style={{ direction: 'ltr', textAlign: 'left' }}
                     onChange={(e) => setProducerFilter(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-white text-[11px]"
+                    className="w-full bg-card border border-line-strong rounded-lg px-2 py-1.5 text-ink text-[11px] focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     {producers.map((p) => (
                       <option key={p} value={p}>{p}</option>
@@ -318,8 +318,8 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                   onClick={() => setOnlyLowStock((prev) => !prev)}
                   className={`w-full py-1.5 px-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 border transition-all ${
                     onlyLowStock
-                      ? 'bg-amber-500 text-slate-950 border-amber-400'
-                      : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                      ? 'bg-badge-yellow-bg text-badge-yellow-text border-badge-yellow-text/35'
+                      : 'bg-card text-muted border-line-strong hover:border-muted'
                   }`}
                 >
                   <AlertTriangle className="w-3.5 h-3.5" />
@@ -332,7 +332,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
           {/* Product Cards List */}
           <div className="space-y-2.5">
             {filteredProducts.length === 0 ? (
-              <div className="text-center py-10 bg-slate-900/60 rounded-2xl border border-slate-800 text-xs text-slate-500">
+              <div className="text-center py-10 bg-card rounded-2xl border border-line text-xs text-muted shadow-card">
                 No products match the selected criteria.
               </div>
             ) : (
@@ -347,11 +347,11 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 return (
                   <div
                     key={p.id}
-                    className="p-3 bg-slate-900/90 border border-slate-800 rounded-2xl space-y-2.5 text-xs hover:border-slate-700 transition-colors"
+                    className="p-3 bg-card border border-line rounded-2xl space-y-2.5 text-xs hover:border-line-strong transition-colors shadow-card"
                   >
                     <div className="flex items-start gap-3">
                       {/* Photo Thumbnail or Fallback Icon */}
-                      <div className="w-14 h-14 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center shrink-0">
+                      <div className="w-14 h-14 rounded-xl bg-inner border border-line-strong overflow-hidden flex items-center justify-center shrink-0">
                         {p.photoUrl ? (
                           <img
                             src={p.photoUrl}
@@ -360,32 +360,32 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <ImageIcon className="w-6 h-6 text-slate-600" />
+                          <ImageIcon className="w-6 h-6 text-muted" />
                         )}
                       </div>
 
                       {/* Product Basic Info */}
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-white text-xs truncate">{p.name}</h4>
+                          <h4 className="font-bold text-ink text-xs truncate">{p.name}</h4>
                           {isLow && (
-                            <span className="px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] font-semibold shrink-0">
+                            <span className="px-1.5 py-0.5 rounded bg-badge-yellow-bg border border-badge-yellow-text/35 text-badge-yellow-text text-[10px] font-semibold shrink-0">
                               Low Stock
                             </span>
                           )}
                           {isOutOfStock && (
-                            <span className="px-1.5 py-0.5 rounded bg-rose-500/20 border border-rose-500/30 text-rose-400 text-[10px] font-bold shrink-0">
+                            <span className="px-1.5 py-0.5 rounded bg-badge-red-bg border border-badge-red-text/35 text-badge-red-text text-[10px] font-bold shrink-0">
                               Out of Stock
                             </span>
                           )}
                         </div>
 
-                        <div className="text-[11px] text-slate-400 mt-0.5">
-                          {p.category} · Brand: <strong className="text-slate-300">{p.brand}</strong>
+                        <div className="text-[11px] text-muted mt-0.5">
+                          {p.category} · Brand: <strong className="text-ink">{p.brand}</strong>
                         </div>
 
                         {!isStockViewer && (
-                          <div className="text-[10px] text-slate-500 truncate mt-0.5">
+                          <div className="text-[10px] text-muted truncate mt-0.5">
                             Producer: {p.producer} | Supplier: {p.supplier}
                           </div>
                         )}
@@ -394,28 +394,28 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
                     {/* Stock & Metric Bar */}
                     {isStockViewer ? (
-                      <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex items-center justify-between text-xs">
+                      <div className="p-2.5 rounded-xl bg-inner border border-line-strong flex items-center justify-between text-xs">
                         <div>
-                          <span className="text-slate-400 block text-[10px]">Selling Price:</span>
+                          <span className="text-muted block text-[10px]">Selling Price:</span>
                           {p.sellingPrice !== null && p.sellingPrice !== undefined && (typeof p.sellingPrice !== 'string' || (p.sellingPrice as string).trim() !== '') && !isNaN(Number(p.sellingPrice)) ? (
-                            <strong className="font-mono text-emerald-400 text-xs font-bold">
+                            <strong className="font-mono text-badge-green-text text-xs font-bold">
                               {formatCurrency(Number(p.sellingPrice), settings.currencySymbol)} per {p.unit}
                             </strong>
                           ) : (
-                            <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
+                            <span className="text-badge-yellow-text font-semibold text-[10px] bg-badge-yellow-bg px-1.5 py-0.5 rounded border border-badge-yellow-text/35 inline-block mt-0.5">
                               Not Decided
                             </span>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className="text-slate-400 block text-[10px]">Available Stock:</span>
+                          <span className="text-muted block text-[10px]">Available Stock:</span>
                           <strong
                             className={`font-mono text-sm ${
                               isOutOfStock
-                                ? 'text-rose-400'
+                                ? 'text-badge-red-text'
                                 : isLow
-                                ? 'text-amber-400'
-                                : 'text-emerald-400'
+                                ? 'text-badge-yellow-text'
+                                : 'text-badge-green-text'
                             }`}
                           >
                             {p.currentStock} {p.unit}
@@ -423,16 +423,16 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                         </div>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-slate-950/70 border border-slate-800/80 text-[11px]">
+                      <div className="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-inner border border-line-strong text-[11px]">
                         <div>
-                          <span className="text-slate-500 text-[10px] block">Stock:</span>
+                          <span className="text-muted text-[10px] block">Stock:</span>
                           <strong
                             className={`font-mono text-xs ${
                               isOutOfStock
-                                ? 'text-rose-400'
+                                ? 'text-badge-red-text'
                                 : isLow
-                                ? 'text-amber-400'
-                                : 'text-white'
+                                ? 'text-badge-yellow-text'
+                                : 'text-ink'
                             }`}
                           >
                             {p.currentStock} {p.unit}
@@ -440,28 +440,28 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                         </div>
 
                         <div>
-                          <span className="text-slate-500 text-[10px] block">Cost:</span>
-                          <span className="font-mono text-slate-300">
+                          <span className="text-muted text-[10px] block">Cost:</span>
+                          <span className="font-mono text-muted">
                             {formatCurrency(p.purchasePrice, settings.currencySymbol)}
                           </span>
                         </div>
 
                         <div>
-                          <span className="text-slate-500 text-[10px] block">Selling:</span>
+                          <span className="text-muted text-[10px] block">Selling:</span>
                           {p.sellingPrice != null && !isNaN(Number(p.sellingPrice)) ? (
-                            <span className="font-mono text-emerald-400 font-semibold">
+                            <span className="font-mono text-badge-green-text font-semibold">
                               {formatCurrency(Number(p.sellingPrice), settings.currencySymbol)}
                             </span>
                           ) : (
-                            <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
+                            <span className="text-badge-yellow-text font-semibold text-[10px] bg-badge-yellow-bg px-1.5 py-0.5 rounded border border-badge-yellow-text/35 inline-block mt-0.5">
                               Not Decided
                             </span>
                           )}
                         </div>
 
                         <div>
-                          <span className="text-slate-500 text-[10px] block">Stock Val:</span>
-                          <span className="font-mono text-white font-semibold">
+                          <span className="text-muted text-[10px] block">Stock Val:</span>
+                          <span className="font-mono text-ink font-semibold">
                             {formatCurrency(stockVal, settings.currencySymbol)}
                           </span>
                         </div>
@@ -469,18 +469,18 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                     )}
 
                     {/* Action Bar */}
-                    <div className="flex items-center justify-between pt-1 border-t border-slate-800/60">
+                    <div className="flex items-center justify-between pt-1 border-t border-line">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-slate-500">
+                        <span className="text-[10px] text-muted">
                           Min alert: {p.minStockLevel} {p.unit}
                         </span>
                         <button
                           type="button"
                           onClick={() => setInspectProduct(p)}
-                          className="text-[11px] text-slate-400 hover:text-emerald-400 flex items-center gap-1 font-medium transition-colors"
+                          className="text-[11px] text-muted hover:text-primary flex items-center gap-1 font-medium transition-colors"
                           title="View Product Details"
                         >
-                          <Eye className="w-3 h-3 text-emerald-400" />
+                          <Eye className="w-3 h-3 text-primary" />
                           <span>Details</span>
                         </button>
                       </div>
@@ -490,7 +490,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onOpenStockIn(p.id)}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-all"
+                            className="px-2.5 py-1 rounded-lg bg-badge-green-bg hover:bg-badge-green-bg/80 text-badge-green-text border border-badge-green-text/35 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-all"
                           >
                             <PackagePlus className="w-3.5 h-3.5" />
                             <span>Stock In</span>
@@ -499,17 +499,17 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onEditProduct(p)}
-                            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-all"
+                            className="px-2.5 py-1 rounded-lg bg-inner hover:bg-inner text-ink border border-line-strong text-xs font-semibold flex items-center gap-1 active:scale-95 transition-all"
                             title="Edit Product Details"
                           >
-                            <Edit2 className="w-3.5 h-3.5 text-cyan-400" />
+                            <Edit2 className="w-3.5 h-3.5 text-badge-blue-text" />
                             <span>Edit</span>
                           </button>
 
                           <button
                             type="button"
                             onClick={() => setProductToDelete(p)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/20"
+                            className="p-1.5 rounded-lg bg-badge-red-bg hover:bg-badge-red-bg/80 text-badge-red-text border border-badge-red-text/35"
                             title="Delete Product"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -526,13 +526,13 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
       ) : (
         /* SubTab 2: Stock History Audit Trail (Section 11) */
         <div className="space-y-3">
-          <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-2xl flex items-center justify-between text-xs">
+          <div className="p-3 bg-card border border-line rounded-2xl flex items-center justify-between text-xs shadow-card">
             <div>
-              <h3 className="font-bold text-white flex items-center gap-1.5">
-                <History className="w-4 h-4 text-emerald-400" />
+              <h3 className="font-bold text-ink flex items-center gap-1.5">
+                <History className="w-4 h-4 text-primary" />
                 <span>Stock Movement Audit Trail</span>
               </h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-muted mt-0.5">
                 Every stock arrival, sale deduction, and adjustment is permanently logged
               </p>
             </div>
@@ -540,7 +540,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
           <div className="space-y-2">
             {sortedStockMovements.length === 0 ? (
-              <div className="text-center py-10 text-xs text-slate-500">
+              <div className="text-center py-10 text-xs text-muted">
                 No stock movement transactions recorded yet.
               </div>
             ) : (
@@ -549,48 +549,48 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 return (
                   <div
                     key={sm.id}
-                    className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs space-y-1.5"
+                    className="p-3 rounded-2xl bg-card border border-line text-xs space-y-1.5 shadow-card"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span
                           className={`px-2 py-0.5 rounded font-mono font-bold text-[10px] ${
                             sm.type === 'STOCK_IN'
-                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              ? 'bg-badge-green-bg text-badge-green-text border border-badge-green-text/35'
                               : sm.type === 'SALE'
-                              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                              : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                              ? 'bg-badge-red-bg text-badge-red-text border border-badge-red-text/35'
+                              : 'bg-badge-blue-bg text-badge-blue-text border border-badge-blue-text/35'
                           }`}
                         >
                           {sm.type}
                         </span>
-                        <strong className="text-white font-medium truncate max-w-[200px]">
+                        <strong className="text-ink font-medium truncate max-w-[200px]">
                           {sm.productName}
                         </strong>
                       </div>
 
                       <span
                         className={`font-mono font-bold text-xs ${
-                          isAddition ? 'text-emerald-400' : 'text-rose-400'
+                          isAddition ? 'text-badge-green-text' : 'text-badge-red-text'
                         }`}
                       >
                         {isAddition ? `+${sm.quantity}` : sm.quantity}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
+                    <div className="flex items-center justify-between text-[11px] text-muted">
                       <span>
-                        Previous: <strong className="text-slate-300 font-mono">{sm.previousStock}</strong> ➔ New:{' '}
-                        <strong className="text-white font-mono">{sm.newStock}</strong>
+                        Previous: <strong className="text-ink font-mono">{sm.previousStock}</strong> ➔ New:{' '}
+                        <strong className="text-ink font-mono">{sm.newStock}</strong>
                       </span>
-                      <span className="font-mono text-[10px] text-slate-500">
+                      <span className="font-mono text-[10px] text-muted">
                         {new Date(sm.createdAt).toLocaleDateString()}{' '}
                         {new Date(sm.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
 
                     {sm.reference && (
-                      <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-800/80 flex items-center justify-between">
+                      <div className="text-[10px] text-muted pt-1 border-t border-line flex items-center justify-between">
                         <span>Ref: {sm.reference}</span>
                         {sm.notes && <span className="italic">{sm.notes}</span>}
                       </div>
@@ -605,27 +605,27 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
       {/* In-App Delete Product Confirmation Modal (No window.confirm) */}
       {productToDelete && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card border border-line rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-card">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-badge-red-bg border border-badge-red-text/35 text-badge-red-text flex items-center justify-center shrink-0">
                 <Trash2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Delete Product</h3>
-                <p className="text-[11px] text-slate-400">Remove from MAHARAJA MARBLE catalogue</p>
+                <h3 className="text-sm font-bold text-ink">Delete Product</h3>
+                <p className="text-[11px] text-muted">Remove from MAHARAJA MARBLE catalogue</p>
               </div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1.5 text-xs">
-              <div className="font-bold text-white truncate">{productToDelete.name}</div>
-              <div className="flex items-center justify-between text-[11px] text-slate-400">
-                <span>Category: <strong className="text-slate-300">{productToDelete.category}</strong></span>
-                <span>Stock: <strong className="text-white">{productToDelete.currentStock} {productToDelete.unit}</strong></span>
+            <div className="p-3 rounded-2xl bg-inner border border-line-strong space-y-1.5 text-xs">
+              <div className="font-bold text-ink truncate">{productToDelete.name}</div>
+              <div className="flex items-center justify-between text-[11px] text-muted">
+                <span>Category: <strong className="text-ink">{productToDelete.category}</strong></span>
+                <span>Stock: <strong className="text-ink">{productToDelete.currentStock} {productToDelete.unit}</strong></span>
               </div>
             </div>
 
-            <p className="text-[11px] text-rose-300 bg-rose-950/30 border border-rose-500/30 p-2.5 rounded-xl">
+            <p className="text-[11px] text-badge-red-text bg-badge-red-bg border border-badge-red-text/35 p-2.5 rounded-xl">
               Are you sure you want to permanently remove this product? This action cannot be undone.
             </p>
 
@@ -633,7 +633,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
               <button
                 type="button"
                 onClick={() => setProductToDelete(null)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-inner hover:bg-inner text-muted font-semibold text-xs transition-colors"
               >
                 Cancel
               </button>
@@ -647,7 +647,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                   setToastMessage(`Product "${targetName}" deleted successfully.`);
                   setTimeout(() => setToastMessage(''), 3500);
                 }}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-rose-600/30 active:scale-95 transition-all"
+                className="flex-1 py-2.5 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>Yes, Delete</span>
@@ -659,29 +659,29 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
       {/* Product Details Inspection Modal with Edit Product Action */}
       {inspectProduct && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-card border border-line rounded-3xl max-w-md w-full p-5 space-y-4 shadow-card">
+            <div className="flex items-center justify-between border-b border-line pb-3">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-badge-green-bg text-badge-green-text flex items-center justify-center shrink-0">
                   <Package className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm font-bold text-white truncate">{inspectProduct.name}</h3>
-                  <span className="text-[11px] font-mono text-slate-400">{inspectProduct.id}</span>
+                  <h3 className="text-sm font-bold text-ink truncate">{inspectProduct.name}</h3>
+                  <span className="text-[11px] font-mono text-muted">{inspectProduct.id}</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectProduct(null)}
-                className="text-slate-400 hover:text-white text-sm p-1 rounded-lg hover:bg-slate-800 transition-colors"
+                className="text-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-inner transition-colors"
               >
                 ✕
               </button>
             </div>
 
             {inspectProduct.photoUrl && (
-              <div className="w-full h-44 rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">
+              <div className="w-full h-44 rounded-2xl bg-inner border border-line-strong overflow-hidden flex items-center justify-center">
                 <img
                   src={inspectProduct.photoUrl}
                   alt={inspectProduct.name}
@@ -692,69 +692,69 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
             )}
 
             <div className="space-y-2 text-xs">
-              <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
+              <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-inner border border-line-strong">
                 <div>
-                  <span className="text-slate-500 text-[10px] block">Category</span>
-                  <span className="text-white font-medium">{inspectProduct.category}</span>
+                  <span className="text-muted text-[10px] block">Category</span>
+                  <span className="text-ink font-medium">{inspectProduct.category}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 text-[10px] block">Brand</span>
-                  <span className="text-white font-medium">{inspectProduct.brand || 'Standard'}</span>
+                  <span className="text-muted text-[10px] block">Brand</span>
+                  <span className="text-ink font-medium">{inspectProduct.brand || 'Standard'}</span>
                 </div>
                 {!isStockViewer && (
                   <>
                     <div>
-                      <span className="text-slate-500 text-[10px] block">Producer / Mfr</span>
-                      <span className="text-slate-300 truncate block">{inspectProduct.producer || '—'}</span>
+                      <span className="text-muted text-[10px] block">Producer / Mfr</span>
+                      <span className="text-muted truncate block">{inspectProduct.producer || '—'}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 text-[10px] block">Supplier</span>
-                      <span className="text-slate-300 truncate block">{inspectProduct.supplier || '—'}</span>
+                      <span className="text-muted text-[10px] block">Supplier</span>
+                      <span className="text-muted truncate block">{inspectProduct.supplier || '—'}</span>
                     </div>
                   </>
                 )}
               </div>
 
-              <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
+              <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-inner border border-line-strong">
                 <div>
-                  <span className="text-slate-500 text-[10px] block">Current Stock</span>
-                  <strong className="font-mono text-white text-sm">
+                  <span className="text-muted text-[10px] block">Current Stock</span>
+                  <strong className="font-mono text-ink text-sm">
                     {inspectProduct.currentStock} {inspectProduct.unit}
                   </strong>
                 </div>
                 {!isStockViewer && (
                   <div>
-                    <span className="text-slate-500 text-[10px] block">Cost Price</span>
-                    <span className="font-mono text-slate-300 font-semibold text-xs">
+                    <span className="text-muted text-[10px] block">Cost Price</span>
+                    <span className="font-mono text-muted font-semibold text-xs">
                       {formatCurrency(inspectProduct.purchasePrice, settings.currencySymbol)}
                     </span>
                   </div>
                 )}
                 <div>
-                  <span className="text-slate-500 text-[10px] block">Selling Price</span>
+                  <span className="text-muted text-[10px] block">Selling Price</span>
                   {inspectProduct.sellingPrice !== null && inspectProduct.sellingPrice !== undefined && (typeof inspectProduct.sellingPrice !== 'string' || (inspectProduct.sellingPrice as string).trim() !== '') && !isNaN(Number(inspectProduct.sellingPrice)) ? (
-                    <span className="font-mono text-emerald-400 font-bold text-xs">
+                    <span className="font-mono text-badge-green-text font-bold text-xs">
                       {formatCurrency(Number(inspectProduct.sellingPrice), settings.currencySymbol)} per {inspectProduct.unit}
                     </span>
                   ) : (
-                    <span className="text-amber-400 font-semibold text-[10px] bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 inline-block mt-0.5">
+                    <span className="text-badge-yellow-text font-semibold text-[10px] bg-badge-yellow-bg px-1.5 py-0.5 rounded border border-badge-yellow-text/35 inline-block mt-0.5">
                       Not Decided
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between px-1 text-[11px] text-slate-500">
+              <div className="flex items-center justify-between px-1 text-[11px] text-muted">
                 <span>Min alert level: {inspectProduct.minStockLevel} {inspectProduct.unit}</span>
                 <span>Updated: {new Date(inspectProduct.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+            <div className="flex items-center gap-2 pt-2 border-t border-line">
               <button
                 type="button"
                 onClick={() => setInspectProduct(null)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-inner hover:bg-inner text-muted font-semibold text-xs transition-colors"
               >
                 Close
               </button>
@@ -767,7 +767,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                       setInspectProduct(null);
                       onOpenStockIn(p.id);
                     }}
-                    className="py-2.5 px-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 font-semibold text-xs flex items-center gap-1.5 active:scale-95 transition-all"
+                    className="py-2.5 px-3 rounded-xl bg-badge-green-bg hover:bg-badge-green-bg/80 text-badge-green-text border border-badge-green-text/35 font-semibold text-xs flex items-center gap-1.5 active:scale-95 transition-all"
                   >
                     <PackagePlus className="w-3.5 h-3.5" />
                     <span>Stock In</span>
@@ -780,7 +780,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                       setInspectProduct(null);
                       onEditProduct(p);
                     }}
-                    className="flex-1 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-cyan-600/20 active:scale-95 transition-all"
+                    className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>Edit Product</span>

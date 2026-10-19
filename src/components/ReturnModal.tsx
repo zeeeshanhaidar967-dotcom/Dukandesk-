@@ -489,22 +489,22 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-card border border-line rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-card max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
+        <div className="flex items-center justify-between border-b border-line-strong pb-3 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-badge-red-bg border border-line-strong text-badge-red-text flex items-center justify-center">
               <RotateCcw className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-ink flex items-center gap-2">
                 <span>Customer Sale Return</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-inner text-ink">
                   Bill Linked
                 </span>
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted">
                 Return sold products, restock inventory & adjust customer dues automatically
               </p>
             </div>
@@ -513,7 +513,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
           <button
             type="button"
             onClick={handleClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-muted hover:text-ink hover:bg-inner transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -537,7 +537,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         />
 
         {/* TWO-MODE ENTRY SELECTOR (Manual Entry vs Add from Bill Photo) */}
-        <div className="grid grid-cols-2 gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 shrink-0">
+        <div className="grid grid-cols-2 gap-2 bg-inner p-1.5 rounded-2xl border border-line-strong shrink-0">
           <button
             type="button"
             onClick={() => {
@@ -546,11 +546,11 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
             }}
             className={`py-2.5 px-3 sm:px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
               entryMode === 'MANUAL'
-                ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/60'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-badge-red-text text-white shadow-card'
+                : 'text-muted hover:text-ink hover:bg-card/60'
             }`}
           >
-            <RotateCcw className="w-4 h-4 text-rose-200" />
+            <RotateCcw className="w-4 h-4 text-white" />
             <span>Manual Entry</span>
           </button>
 
@@ -562,19 +562,19 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
             }}
             className={`py-2.5 px-3 sm:px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
               entryMode === 'PHOTO'
-                ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-lg shadow-rose-950/60'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-primary text-white shadow-card'
+                : 'text-muted hover:text-ink hover:bg-card/60'
             }`}
           >
-            <Camera className="w-4 h-4 text-amber-300" />
+            <Camera className="w-4 h-4 text-accent" />
             <span>Add from Bill Photo</span>
           </button>
         </div>
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300 flex items-center gap-2 shrink-0">
-            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+          <div className="p-3 rounded-xl bg-badge-red-bg border border-badge-red-text/35 text-xs text-badge-red-text flex items-center gap-2 shrink-0">
+            <AlertTriangle className="w-4 h-4 text-badge-red-text shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -588,13 +588,13 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                 <div className="space-y-3">
                   {!photoFile ? (
                     /* Initial Upload / Camera Prompt */
-                    <div className="p-4 rounded-2xl bg-slate-950/90 border border-amber-500/30 text-center space-y-3">
-                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+                    <div className="p-4 rounded-2xl bg-inner border border-line-strong text-center space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-badge-yellow-bg border border-line-strong text-badge-yellow-text flex items-center justify-center mx-auto">
                         <Camera className="w-6 h-6" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-white">Scan Original Sale Bill Photo</h4>
-                        <p className="text-xs text-slate-400 max-w-md mx-auto mt-0.5">
+                        <h4 className="text-sm font-bold text-ink">Scan Original Sale Bill Photo</h4>
+                        <p className="text-xs text-muted max-w-md mx-auto mt-0.5">
                           Take a photo or upload an existing bill receipt. DukanDesk AI will read the bill number, items and quantities, and match the original sale.
                         </p>
                       </div>
@@ -603,7 +603,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                         <button
                           type="button"
                           onClick={() => cameraInputRef.current?.click()}
-                          className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-950/60 cursor-pointer active:scale-95 transition-all"
+                          className="px-4 py-2.5 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs flex items-center gap-2 shadow cursor-pointer active:scale-95 transition-all"
                         >
                           <Camera className="w-4 h-4" />
                           <span>Take Photo (Camera)</span>
@@ -612,31 +612,31 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                         <button
                           type="button"
                           onClick={() => galleryInputRef.current?.click()}
-                          className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-2 border border-slate-700 cursor-pointer active:scale-95 transition-all"
+                          className="px-4 py-2.5 rounded-xl bg-card hover:bg-inner text-ink font-semibold text-xs flex items-center gap-2 border border-line-strong cursor-pointer active:scale-95 transition-all"
                         >
-                          <Upload className="w-4 h-4 text-emerald-400" />
+                          <Upload className="w-4 h-4 text-badge-green-text" />
                           <span>Upload from Gallery</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={handleUseDemoBill}
-                          className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-amber-300 font-semibold text-xs flex items-center gap-1.5 border border-amber-500/30 cursor-pointer active:scale-95 transition-all"
+                          className="px-3.5 py-2.5 rounded-xl bg-card hover:bg-inner text-badge-yellow-text font-semibold text-xs flex items-center gap-1.5 border border-line-strong cursor-pointer active:scale-95 transition-all"
                         >
-                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <Sparkles className="w-3.5 h-3.5 text-badge-yellow-text" />
                           <span>Try Sample Bill</span>
                         </button>
                       </div>
                     </div>
                   ) : isAnalyzingPhoto ? (
                     /* Analyzing State */
-                    <div className="p-6 rounded-2xl bg-slate-950 border border-amber-500/40 text-center space-y-3">
-                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto animate-pulse">
-                        <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+                    <div className="p-6 rounded-2xl bg-inner border border-line-strong text-center space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-badge-yellow-bg text-badge-yellow-text flex items-center justify-center mx-auto animate-pulse">
+                        <Loader2 className="w-6 h-6 animate-spin text-badge-yellow-text" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-white">Analyzing Original Bill Photo...</h4>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <h4 className="text-sm font-bold text-ink">Analyzing Original Bill Photo...</h4>
+                        <p className="text-xs text-muted mt-0.5">
                           Reading bill number, customer details, product lines, and return quantities.
                         </p>
                       </div>
@@ -645,24 +645,24 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                     /* Photo Analyzed & Match Review */
                     <div className="space-y-3">
                       {/* Photo Header Summary */}
-                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3 text-xs">
+                      <div className="p-3 rounded-2xl bg-inner border border-line-strong flex items-center justify-between gap-3 text-xs">
                         <div className="flex items-center gap-2.5 min-w-0">
                           {photoFile && (
                             <img
                               src={photoFile}
                               alt="Original Bill"
-                              className="w-10 h-10 object-cover rounded-lg border border-slate-700 shrink-0"
+                              className="w-10 h-10 object-cover rounded-lg border border-line-strong shrink-0"
                             />
                           )}
                           <div className="min-w-0">
-                            <div className="font-bold text-white truncate flex items-center gap-1.5">
+                            <div className="font-bold text-ink truncate flex items-center gap-1.5">
                               <span>Photo: {photoFileName || 'Bill Receipt'}</span>
-                              <span className="px-1.5 py-0.2 rounded text-[10px] bg-emerald-500/10 text-emerald-400 font-mono">
+                              <span className="px-1.5 py-0.2 rounded text-[10px] bg-badge-green-bg text-badge-green-text font-mono">
                                 Extracted
                               </span>
                             </div>
-                            <div className="text-[11px] text-slate-400 truncate">
-                              Detected Bill: <strong className="text-slate-200 font-mono">{photoDraft?.billNumber || 'Unspecified'}</strong> · Cust: <strong className="text-slate-200">{photoDraft?.detectedCustomerName || 'Unspecified'}</strong>
+                            <div className="text-[11px] text-muted truncate">
+                              Detected Bill: <strong className="text-ink font-mono">{photoDraft?.billNumber || 'Unspecified'}</strong> · Cust: <strong className="text-ink">{photoDraft?.detectedCustomerName || 'Unspecified'}</strong>
                             </div>
                           </div>
                         </div>
@@ -671,7 +671,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                           <button
                             type="button"
                             onClick={() => galleryInputRef.current?.click()}
-                            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium"
+                            className="px-2.5 py-1.5 rounded-lg bg-card hover:bg-inner text-ink border border-line-strong text-[11px] font-medium"
                           >
                             Retake Photo
                           </button>
@@ -679,14 +679,14 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                       </div>
 
                       {/* MATCHED SALE NOTIFICATION / SELECTION */}
-                      <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5">
+                      <div className="p-3.5 rounded-2xl bg-card border border-line-strong space-y-2.5">
                         <div className="flex items-center justify-between">
-                          <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                            <Receipt className="w-3.5 h-3.5 text-emerald-400" />
+                          <label className="text-xs font-bold text-ink flex items-center gap-1.5">
+                            <Receipt className="w-3.5 h-3.5 text-badge-green-text" />
                             <span>Matched Original Sale in DukanDesk</span>
                           </label>
                           {candidateSaleMatches.length > 1 && (
-                            <span className="text-[10px] text-amber-400 font-medium">
+                            <span className="text-[10px] text-badge-yellow-text font-medium">
                               {candidateSaleMatches.length} candidate bills found
                             </span>
                           )}
@@ -694,17 +694,17 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
                         {selectedSale ? (
                           /* Highlighted Matched Sale Card */
-                          <div className="p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/40 text-xs space-y-1.5">
+                          <div className="p-3 rounded-xl bg-badge-green-bg/50 border border-line-strong text-xs space-y-1.5">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <span className="font-mono font-bold text-emerald-400 text-xs">
+                                <span className="font-mono font-bold text-badge-green-text text-xs">
                                   BILL #{selectedSale.billNumber}
                                 </span>
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300">
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-badge-green-bg text-badge-green-text">
                                   Matched
                                 </span>
                               </div>
-                              <span className="text-[10px] text-slate-400 font-mono">
+                              <span className="text-[10px] text-muted font-mono">
                                 {new Date(selectedSale.createdAt).toLocaleDateString('en-IN', {
                                   day: '2-digit',
                                   month: 'short',
@@ -715,18 +715,18 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
                               <div>
-                                <span className="text-slate-400 text-[10px] block">Customer</span>
-                                <strong className="text-white truncate block">{selectedSale.customerName}</strong>
+                                <span className="text-muted text-[10px] block">Customer</span>
+                                <strong className="text-ink truncate block">{selectedSale.customerName}</strong>
                               </div>
                               <div>
-                                <span className="text-slate-400 text-[10px] block">Original Total</span>
-                                <strong className="font-mono text-white">
+                                <span className="text-muted text-[10px] block">Original Total</span>
+                                <strong className="font-mono text-ink">
                                   {formatCurrency(selectedSale.totalBill, settings.currencySymbol)}
                                 </strong>
                               </div>
                               <div>
-                                <span className="text-slate-400 text-[10px] block">Balance Due</span>
-                                <strong className={selectedSale.balanceDue > 0 ? 'text-rose-400 font-mono' : 'text-emerald-400 font-mono'}>
+                                <span className="text-muted text-[10px] block">Balance Due</span>
+                                <strong className={selectedSale.balanceDue > 0 ? 'text-badge-red-text font-mono' : 'text-badge-green-text font-mono'}>
                                   {formatCurrency(selectedSale.balanceDue, settings.currencySymbol)}
                                 </strong>
                               </div>
@@ -735,7 +735,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                         ) : (
                           /* No confident match - show candidates or manual selector */
                           <div className="space-y-2">
-                            <div className="p-2.5 rounded-xl bg-amber-950/30 border border-amber-500/30 text-[11px] text-amber-300">
+                            <div className="p-2.5 rounded-xl bg-badge-yellow-bg border border-line-strong text-[11px] text-badge-yellow-text">
                               Please select which original bill corresponds to this return:
                             </div>
 
@@ -745,16 +745,16 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                                   <div
                                     key={sale.id}
                                     onClick={() => handleSelectMatchedSale(sale)}
-                                    className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 cursor-pointer text-xs space-y-1 transition-all"
+                                    className="p-2.5 rounded-xl bg-card border border-line-strong hover:border-badge-green-text cursor-pointer text-xs space-y-1 transition-all"
                                   >
                                     <div className="flex items-center justify-between">
-                                      <span className="font-mono font-bold text-white">BILL #{sale.billNumber}</span>
-                                      <span className="font-mono font-bold text-emerald-400">
+                                      <span className="font-mono font-bold text-ink">BILL #{sale.billNumber}</span>
+                                      <span className="font-mono font-bold text-badge-green-text">
                                         {formatCurrency(sale.totalBill, settings.currencySymbol)}
                                       </span>
                                     </div>
-                                    <div className="text-[11px] text-slate-300">{sale.customerName}</div>
-                                    <div className="text-[10px] text-slate-400">{matchReasons.join(' · ')}</div>
+                                    <div className="text-[11px] text-muted">{sale.customerName}</div>
+                                    <div className="text-[10px] text-muted">{matchReasons.join(' · ')}</div>
                                   </div>
                                 ))}
                               </div>
@@ -766,7 +766,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                                   const s = sales.find((x) => x.id === e.target.value);
                                   if (s) handleSelectMatchedSale(s);
                                 }}
-                                className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium"
+                                className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-xs text-ink font-medium"
                               >
                                 <option value="">-- Choose Original Bill ({sales.length} available) --</option>
                                 {sales.map((s) => (
@@ -790,20 +790,20 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               {entryMode === 'MANUAL' && (
                 <>
                   {/* STEP 1: SELECT CUSTOMER */}
-                  <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <div className="p-3.5 rounded-2xl bg-card border border-line-strong space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <User className="w-3.5 h-3.5 text-emerald-400" />
+                      <label className="text-xs font-bold text-ink flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-badge-green-text" />
                         <span>1. Select Customer</span>
                       </label>
                       {selectedCustomer && (
-                        <span className="text-[11px] text-slate-400 font-mono">
+                        <span className="text-[11px] text-muted font-mono">
                           Current Due:{' '}
                           <strong
                             className={
                               selectedCustomer.outstandingBalance > 0
-                                ? 'text-rose-400 font-bold'
-                                : 'text-emerald-400'
+                                ? 'text-badge-red-text font-bold'
+                                : 'text-badge-green-text'
                             }
                           >
                             {formatCurrency(selectedCustomer.outstandingBalance, settings.currencySymbol)}
@@ -815,7 +815,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                     {/* Customer search & select */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div className="relative">
-                        <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
                         <input
                           type="text"
                           dir="ltr"
@@ -823,7 +823,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                           value={customerSearchQuery}
                           onChange={(e) => setCustomerSearchQuery(e.target.value)}
                           placeholder="Type name e.g. Vivek..."
-                          className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 text-left"
+                          className="w-full bg-card border border-line-strong rounded-xl pl-8 pr-3 py-2 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
                         />
                       </div>
 
@@ -831,7 +831,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                         value={selectedCustomerId}
                         style={{ direction: 'ltr', textAlign: 'left' }}
                         onChange={(e) => handleSelectCustomer(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                        className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-xs text-ink font-medium focus:outline-none focus:ring-1 focus:ring-primary"
                       >
                         <option value="">-- Choose Customer ({filteredCustomers.length}) --</option>
                         {filteredCustomers.map((c) => (
@@ -846,19 +846,19 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
                   {/* STEP 2: SELECT ORIGINAL SALE / BILL */}
                   {selectedCustomerId && (
-                    <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
-                      <label className="text-xs font-bold text-white flex items-center justify-between">
+                    <div className="p-3.5 rounded-2xl bg-card border border-line-strong space-y-2.5">
+                      <label className="text-xs font-bold text-ink flex items-center justify-between">
                         <span className="flex items-center gap-1.5">
-                          <Receipt className="w-3.5 h-3.5 text-blue-400" />
+                          <Receipt className="w-3.5 h-3.5 text-badge-blue-text" />
                           <span>2. Select Original Sale / Bill</span>
                         </span>
-                        <span className="text-[11px] text-slate-400 font-normal">
+                        <span className="text-[11px] text-muted font-normal">
                           {customerSales.length} bill(s) found
                         </span>
                       </label>
 
                       {customerSales.length === 0 ? (
-                        <div className="p-3 rounded-xl bg-slate-900 text-center text-xs text-slate-400">
+                        <div className="p-3 rounded-xl bg-inner text-center text-xs text-muted">
                           No previous sales recorded for {selectedCustomer?.name}.
                         </div>
                       ) : (
@@ -880,36 +880,36 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                                 }}
                                 className={`p-2.5 rounded-xl border cursor-pointer transition-all text-xs space-y-1 ${
                                   isSelected
-                                    ? 'bg-blue-950/40 border-blue-500 shadow-sm'
-                                    : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+                                    ? 'bg-badge-blue-bg border-badge-blue-text shadow-sm'
+                                    : 'bg-inner border-line-strong hover:border-line'
                                 }`}
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className="font-mono font-bold text-white text-[11px]">
+                                  <span className="font-mono font-bold text-ink text-[11px]">
                                     BILL #{sale.billNumber}
                                   </span>
-                                  <span className="text-[10px] text-slate-400 font-mono">
+                                  <span className="text-[10px] text-muted font-mono">
                                     {dateFormatted}
                                   </span>
                                 </div>
 
                                 <div className="flex items-center justify-between text-[11px]">
-                                  <span className="text-slate-400">Total Bill:</span>
-                                  <span className="font-mono font-bold text-white">
+                                  <span className="text-muted">Total Bill:</span>
+                                  <span className="font-mono font-bold text-ink">
                                     {formatCurrency(sale.totalBill, settings.currencySymbol)}
                                   </span>
                                 </div>
 
-                                <div className="flex items-center justify-between text-[10px] text-slate-400">
+                                <div className="flex items-center justify-between text-[10px] text-muted">
                                   <span>
-                                    Paid: <strong className="text-emerald-400 font-mono">{formatCurrency(sale.amountPaid, settings.currencySymbol)}</strong>
+                                    Paid: <strong className="text-badge-green-text font-mono">{formatCurrency(sale.amountPaid, settings.currencySymbol)}</strong>
                                   </span>
                                   <span>
-                                    Due: <strong className="text-rose-400 font-mono">{formatCurrency(sale.balanceDue, settings.currencySymbol)}</strong>
+                                    Due: <strong className="text-badge-red-text font-mono">{formatCurrency(sale.balanceDue, settings.currencySymbol)}</strong>
                                   </span>
                                 </div>
 
-                                <div className="text-[10px] text-slate-500 truncate pt-0.5">
+                                <div className="text-[10px] text-muted truncate pt-0.5">
                                   {sale.items.map((i) => `${i.productName} (${i.quantity} ${i.unit})`).join(', ')}
                                 </div>
                               </div>
@@ -926,15 +926,15 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               {/* STEP 3: SHOW PRODUCTS & ENTER RETURN QUANTITIES           */}
               {/* ========================================================== */}
               {selectedSale && (
-                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
+                <div className="p-3.5 rounded-2xl bg-card border border-line-strong space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <Package className="w-3.5 h-3.5 text-amber-400" />
+                    <label className="text-xs font-bold text-ink flex items-center gap-1.5">
+                      <Package className="w-3.5 h-3.5 text-badge-yellow-text" />
                       <span>
                         {entryMode === 'PHOTO' ? '3. Verify Return Quantities' : '3. Products in Bill #' + selectedSale.billNumber}
                       </span>
                     </label>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-muted">
                       {entryMode === 'PHOTO' ? 'Pre-filled from bill photo' : 'Enter quantity to return'}
                     </span>
                   </div>
@@ -960,41 +960,41 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                           key={item.id}
                           className={`p-3 rounded-xl border text-xs space-y-2 transition-colors ${
                             returnQty > 0
-                              ? 'bg-rose-950/20 border-rose-500/40'
-                              : 'bg-slate-900/90 border-slate-800'
+                              ? 'bg-badge-red-bg/30 border-badge-red-text/35'
+                              : 'bg-inner border-line-strong'
                           }`}
                         >
                           {/* Header row */}
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <div className="font-bold text-white text-xs flex items-center gap-1.5 flex-wrap">
+                              <div className="font-bold text-ink text-xs flex items-center gap-1.5 flex-wrap">
                                 <span>{item.productName}</span>
                                 {photoMatchedItem && (
-                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-badge-yellow-bg text-badge-yellow-text border border-line-strong">
                                     Detected in Photo ({photoMatchedItem.quantity} {item.unit})
                                   </span>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
-                                <span>Selling Rate: <strong className="font-mono text-white">{formatCurrency(item.sellingPrice, settings.currencySymbol)} / {item.unit}</strong></span>
+                              <div className="flex items-center gap-2 text-[10px] text-muted mt-0.5">
+                                <span>Selling Rate: <strong className="font-mono text-ink">{formatCurrency(item.sellingPrice, settings.currencySymbol)} / {item.unit}</strong></span>
                                 <span>·</span>
-                                <span>Sold: <strong className="font-mono text-slate-200">{item.quantity} {item.unit}</strong></span>
+                                <span>Sold: <strong className="font-mono text-ink">{item.quantity} {item.unit}</strong></span>
                               </div>
                             </div>
 
                             {/* Eligibility badge */}
                             <div className="text-right shrink-0">
                               {eligibleQty === 0 ? (
-                                <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] font-bold">
+                                <span className="px-2 py-0.5 rounded bg-inner text-muted text-[10px] font-bold">
                                   Fully Returned
                                 </span>
                               ) : (
-                                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                                <span className="px-2 py-0.5 rounded bg-badge-green-bg text-badge-green-text border border-line-strong text-[10px] font-bold">
                                   Eligible: {eligibleQty} {item.unit}
                                 </span>
                               )}
                               {alreadyReturned > 0 && (
-                                <span className="block text-[9px] text-slate-500 mt-0.5">
+                                <span className="block text-[9px] text-muted mt-0.5">
                                   Prev returned: {alreadyReturned} {item.unit}
                                 </span>
                               )}
@@ -1003,12 +1003,12 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
                           {/* Stepper & return quantity row */}
                           {eligibleQty > 0 && (
-                            <div className="flex items-center justify-between pt-1.5 border-t border-slate-800/60">
+                            <div className="flex items-center justify-between pt-1.5 border-t border-line-strong">
                               <div className="flex items-center gap-2">
-                                <span className="text-[11px] text-slate-300 font-semibold">
+                                <span className="text-[11px] text-ink font-semibold">
                                   Return Qty ({item.unit}):
                                 </span>
-                                <div className="flex items-center gap-1 bg-slate-950 border border-slate-700 rounded-lg p-0.5">
+                                <div className="flex items-center gap-1 bg-card border border-line-strong rounded-lg p-0.5">
                                   <button
                                     type="button"
                                     onClick={() =>
@@ -1018,7 +1018,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                                         Math.max(0, returnQty - 1)
                                       )
                                     }
-                                    className="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center text-xs"
+                                    className="w-6 h-6 rounded bg-inner hover:bg-line text-ink font-bold flex items-center justify-center text-xs"
                                   >
                                     -
                                   </button>
@@ -1034,7 +1034,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                                       const val = parseFloat(e.target.value) || 0;
                                       handleQuantityChange(item.id, eligibleQty, val);
                                     }}
-                                    className="w-12 text-center bg-transparent text-white font-mono font-bold text-xs focus:outline-none"
+                                    className="w-12 text-center bg-transparent text-ink font-mono font-bold text-xs focus:outline-none"
                                   />
                                   <button
                                     type="button"
@@ -1045,7 +1045,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                                         Math.min(eligibleQty, returnQty + 1)
                                       )
                                     }
-                                    className="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center text-xs"
+                                    className="w-6 h-6 rounded bg-inner hover:bg-line text-ink font-bold flex items-center justify-center text-xs"
                                   >
                                     +
                                   </button>
@@ -1053,8 +1053,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                               </div>
 
                               <div className="text-right">
-                                <span className="text-[10px] text-slate-400 block">Item Return Value:</span>
-                                <strong className="font-mono text-rose-400 text-xs font-bold">
+                                <span className="text-[10px] text-muted block">Item Return Value:</span>
+                                <strong className="font-mono text-badge-red-text text-xs font-bold">
                                   {formatCurrency(itemCalcTotal, settings.currencySymbol)}
                                 </strong>
                               </div>
@@ -1071,45 +1071,45 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               {/* STEP 4: FINANCIAL SUMMARY & EXCESS DUE SETTLEMENT          */}
               {/* ========================================================== */}
               {itemsToReturn.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-rose-950/20 border border-rose-500/30 space-y-3">
-                  <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
-                    <span className="font-bold text-white flex items-center gap-1.5">
-                      <TrendingDown className="w-4 h-4 text-rose-400" />
+                <div className="p-3.5 rounded-2xl bg-card border border-line-strong space-y-3">
+                  <div className="flex items-center justify-between text-xs border-b border-line-strong pb-2">
+                    <span className="font-bold text-ink flex items-center gap-1.5">
+                      <TrendingDown className="w-4 h-4 text-badge-red-text" />
                       <span>Financial Adjustment Summary</span>
                     </span>
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className="text-[10px] font-mono text-muted">
                       {itemsToReturn.length} item(s) selected
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                      <div className="text-slate-400 text-[10px]">Total Return Value:</div>
-                      <div className="font-mono font-bold text-base text-rose-400">
+                    <div className="p-2.5 rounded-xl bg-inner border border-line-strong space-y-1">
+                      <div className="text-muted text-[10px]">Total Return Value:</div>
+                      <div className="font-mono font-bold text-base text-badge-red-text">
                         {formatCurrency(totalReturnValue, settings.currencySymbol)}
                       </div>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-muted">
                         ({itemsToReturn.map((i) => `${i.returnQty} ${i.saleItem.unit}`).join(' + ')})
                       </div>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                      <div className="text-slate-400 text-[10px]">Customer Current Due:</div>
-                      <div className="font-mono font-bold text-base text-white">
+                    <div className="p-2.5 rounded-xl bg-inner border border-line-strong space-y-1">
+                      <div className="text-muted text-[10px]">Customer Current Due:</div>
+                      <div className="font-mono font-bold text-base text-ink">
                         {formatCurrency(currentCustomerDue, settings.currencySymbol)}
                       </div>
-                      <div className="text-[10px] text-emerald-400 font-semibold">
+                      <div className="text-[10px] text-badge-green-text font-semibold">
                         Due reduction: -{formatCurrency(dueAdjustment, settings.currencySymbol)}
                       </div>
                     </div>
                   </div>
 
                   {/* Resulting balance line */}
-                  <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-200">Resulting Customer Due:</span>
+                  <div className="p-2.5 rounded-xl bg-inner border border-line-strong flex items-center justify-between text-xs">
+                    <span className="font-bold text-ink">Resulting Customer Due:</span>
                     <strong
                       className={`font-mono text-sm font-bold ${
-                        newDue > 0 ? 'text-amber-400' : 'text-emerald-400'
+                        newDue > 0 ? 'text-badge-yellow-text' : 'text-badge-green-text'
                       }`}
                     >
                       {formatCurrency(newDue, settings.currencySymbol)}{' '}
@@ -1119,14 +1119,14 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
                   {/* Handling excess amount */}
                   {excessAmount > 0 && (
-                    <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-500/30 text-xs space-y-2">
-                      <div className="flex items-center justify-between text-amber-300 font-bold text-[11px]">
+                    <div className="p-3 rounded-xl bg-badge-yellow-bg border border-line-strong text-xs space-y-2">
+                      <div className="flex items-center justify-between text-badge-yellow-text font-bold text-[11px]">
                         <span>Return Value Exceeds Due by:</span>
                         <span className="font-mono text-sm">
                           {formatCurrency(excessAmount, settings.currencySymbol)}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">
+                      <p className="text-[11px] text-muted leading-relaxed">
                         The entire due of {formatCurrency(currentCustomerDue, settings.currencySymbol)} is cleared. How should the remaining {formatCurrency(excessAmount, settings.currencySymbol)} be settled with the customer?
                       </p>
 
@@ -1134,8 +1134,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                         <label
                           className={`p-2 rounded-xl border cursor-pointer text-center font-semibold text-xs transition-all ${
                             settlementType === 'REFUND'
-                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                              : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                              ? 'bg-badge-green-bg text-badge-green-text border-badge-green-text'
+                              : 'bg-card text-muted border-line-strong hover:text-ink'
                           }`}
                         >
                           <input
@@ -1152,8 +1152,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                         <label
                           className={`p-2 rounded-xl border cursor-pointer text-center font-semibold text-xs transition-all ${
                             settlementType === 'STORE_CREDIT'
-                              ? 'bg-blue-500/20 text-blue-300 border-blue-500/50'
-                              : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                              ? 'bg-badge-blue-bg text-badge-blue-text border-badge-blue-text'
+                              : 'bg-card text-muted border-line-strong hover:text-ink'
                           }`}
                         >
                           <input
@@ -1179,7 +1179,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
                       value={returnNotes}
                       onChange={(e) => setReturnNotes(e.target.value)}
                       placeholder="Optional return reason (e.g. Excess tiles after renovation)..."
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-rose-400 text-left"
+                      className="w-full bg-card border border-line-strong rounded-xl px-3 py-2 text-xs text-ink placeholder-placeholder focus:outline-none focus:ring-1 focus:ring-primary text-left"
                     />
                   </div>
                 </div>
@@ -1187,11 +1187,11 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3 shrink-0">
+        <div className="pt-3 border-t border-line-strong flex items-center justify-between gap-3 shrink-0">
           <button
             type="button"
             onClick={handleClose}
-            className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+            className="py-2.5 px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-semibold transition-colors"
           >
             Cancel
           </button>
@@ -1200,7 +1200,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
             type="button"
             disabled={itemsToReturn.length === 0}
             onClick={handleReviewReturn}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-rose-500 hover:bg-rose-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-500/20 active:scale-95 transition-all"
+            className="flex-1 py-2.5 px-4 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-all"
           >
             <RotateCcw className="w-4 h-4" />
             <span>Review & Confirm Return</span>
@@ -1210,73 +1210,73 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
       {/* CONFIRMATION SUMMARY DIALOG */}
       {showConfirmDialog && selectedCustomer && selectedSale && (
-        <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-card border border-line rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-card">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-badge-red-bg border border-line-strong text-badge-red-text flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">Confirm Product Return</h4>
-                <p className="text-[11px] text-slate-400">Review final return breakdown</p>
+                <h4 className="text-sm font-bold text-ink">Confirm Product Return</h4>
+                <p className="text-[11px] text-muted">Review final return breakdown</p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2 text-xs">
+            <div className="p-3.5 rounded-2xl bg-inner border border-line-strong space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Customer:</span>
-                <strong className="text-white">{selectedCustomer.name}</strong>
+                <span className="text-muted">Customer:</span>
+                <strong className="text-ink">{selectedCustomer.name}</strong>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-400">Original Bill:</span>
-                <strong className="text-white font-mono">BILL #{selectedSale.billNumber}</strong>
+                <span className="text-muted">Original Bill:</span>
+                <strong className="text-ink font-mono">BILL #{selectedSale.billNumber}</strong>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-400">Product:</span>
-                <strong className="text-white truncate max-w-[180px]">
+                <span className="text-muted">Product:</span>
+                <strong className="text-ink truncate max-w-[180px]">
                   {itemsToReturn.map((i) => i.saleItem.productName).join(', ')}
                 </strong>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-400">Return Quantity:</span>
-                <strong className="text-rose-400 font-mono">
+                <span className="text-muted">Return Quantity:</span>
+                <strong className="text-badge-red-text font-mono">
                   {itemsToReturn.map((i) => `${i.returnQty} ${i.saleItem.unit}`).join(', ')}
                 </strong>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-400">Return Value:</span>
-                <strong className="font-mono text-rose-400 font-bold">
+                <span className="text-muted">Return Value:</span>
+                <strong className="font-mono text-badge-red-text font-bold">
                   {formatCurrency(totalReturnValue, settings.currencySymbol)}
                 </strong>
               </div>
 
-              <div className="border-t border-slate-800/80 pt-1.5 flex justify-between">
-                <span className="text-slate-400">Stock Update:</span>
-                <strong className="font-mono text-emerald-400 font-bold">
+              <div className="border-t border-line-strong pt-1.5 flex justify-between">
+                <span className="text-muted">Stock Update:</span>
+                <strong className="font-mono text-badge-green-text font-bold">
                   +{itemsToReturn.map((i) => `${i.returnQty} ${i.saleItem.unit}`).join(', ')} (Restocked)
                 </strong>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-400">Due Adjustment:</span>
-                <strong className="font-mono text-emerald-400 font-bold">
+                <span className="text-muted">Due Adjustment:</span>
+                <strong className="font-mono text-badge-green-text font-bold">
                   -{formatCurrency(dueAdjustment, settings.currencySymbol)}
                 </strong>
               </div>
 
-              <div className="border-t border-slate-800/80 pt-1.5 flex justify-between font-bold text-slate-200">
+              <div className="border-t border-line-strong pt-1.5 flex justify-between font-bold text-ink">
                 <span>New Customer Due:</span>
-                <strong className="font-mono text-emerald-400 text-sm">
+                <strong className="font-mono text-badge-green-text text-sm">
                   {formatCurrency(newDue, settings.currencySymbol)}
                 </strong>
               </div>
 
               {excessAmount > 0 && (
-                <div className="flex justify-between text-amber-300 font-bold pt-1 border-t border-slate-800/80">
+                <div className="flex justify-between text-badge-yellow-text font-bold pt-1 border-t border-line-strong">
                   <span>{settlementType === 'REFUND' ? 'Cash/UPI Refund:' : 'Store Credit:'}</span>
                   <span className="font-mono">{formatCurrency(excessAmount, settings.currencySymbol)}</span>
                 </div>
@@ -1287,14 +1287,14 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               <button
                 type="button"
                 onClick={() => setShowConfirmDialog(false)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong font-semibold text-xs transition-colors"
               >
                 Back
               </button>
               <button
                 type="button"
                 onClick={handleExecuteReturn}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-600/30 active:scale-95 transition-all"
+                className="flex-1 py-2.5 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-all"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Confirm Return</span>

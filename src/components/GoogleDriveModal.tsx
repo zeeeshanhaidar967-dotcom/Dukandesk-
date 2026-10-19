@@ -609,22 +609,22 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-2xl max-h-[94vh] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-card border border-line rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-card max-h-[94vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
+        <div className="flex items-center justify-between border-b border-line-strong pb-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-500/20 to-emerald-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+            <div className="w-10 h-10 rounded-2xl bg-badge-blue-bg text-badge-blue-text border border-badge-blue-text/35 flex items-center justify-center">
               <HardDrive className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-ink flex items-center gap-2">
                 <span>{shopName} — Cloud Backup & Restore</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-nav-active-pill text-primary border border-badge-green-text/35">
                   Google Drive My Drive
                 </span>
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted">
                 Independent disaster-recovery backup in normal visible Google Drive folder
               </p>
             </div>
@@ -633,7 +633,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-xl bg-card hover:bg-inner text-muted hover:text-ink border border-line-strong transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -644,26 +644,26 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
           <div
             className={`p-3 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-sm animate-in fade-in shrink-0 ${
               statusMessage.type === 'success'
-                ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
+                ? 'bg-badge-green-bg border border-badge-green-text/35 text-badge-green-text'
                 : statusMessage.type === 'error'
-                ? 'bg-rose-500/15 border border-rose-500/30 text-rose-300'
-                : 'bg-blue-500/15 border border-blue-500/30 text-blue-300'
+                ? 'bg-badge-red-bg border border-badge-red-text/35 text-badge-red-text'
+                : 'bg-badge-blue-bg border border-badge-blue-text/35 text-badge-blue-text'
             }`}
           >
             <div className="flex items-center gap-2">
               {statusMessage.type === 'success' ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-badge-green-text shrink-0" />
               ) : statusMessage.type === 'error' ? (
-                <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                <AlertTriangle className="w-4 h-4 text-badge-red-text shrink-0" />
               ) : (
-                <Info className="w-4 h-4 text-blue-400 shrink-0" />
+                <Info className="w-4 h-4 text-badge-blue-text shrink-0" />
               )}
               <span className="leading-relaxed">{statusMessage.text}</span>
             </div>
             <button
               type="button"
               onClick={() => setStatusMessage(null)}
-              className="text-slate-400 hover:text-white text-xs px-1"
+              className="text-muted hover:text-ink text-xs px-1"
             >
               ✕
             </button>
@@ -689,28 +689,28 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 : null);
 
             return (
-              <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3">
+              <div className="p-4 rounded-2xl bg-inner border border-line-strong space-y-3">
                 {isCheckingAuth && !isDriveConnected ? (
-                  <div className="flex items-center gap-3 py-4 px-2 text-xs text-slate-300">
-                    <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
+                  <div className="flex items-center gap-3 py-4 px-2 text-xs text-muted">
+                    <RefreshCw className="w-4 h-4 animate-spin text-primary" />
                     <span>Checking Google Drive connection...</span>
                   </div>
                 ) : !isDriveConnected ? (
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-9 h-9 rounded-xl bg-badge-blue-bg border border-badge-blue-text/35 text-badge-blue-text flex items-center justify-center shrink-0 mt-0.5">
                         <Cloud className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-white">Connect Google Drive</h4>
-                        <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                        <h4 className="text-xs font-bold text-ink">Connect Google Drive</h4>
+                        <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
                           Sign in with your Google account to back up {shopName} database records directly to your personal Google Drive storage in a normal visible folder.
                         </p>
                       </div>
                     </div>
 
                     {authError && (
-                      <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300">
+                      <div className="p-2.5 rounded-xl bg-badge-red-bg border border-badge-red-text/35 text-xs text-badge-red-text">
                         {authError}
                       </div>
                     )}
@@ -720,7 +720,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                       type="button"
                       onClick={handleSignIn}
                       disabled={isSigningIn}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-semibold text-xs flex items-center justify-center gap-3 shadow-md active:scale-95 transition-all disabled:opacity-50"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong font-semibold text-xs flex items-center justify-center gap-3 shadow-card active:scale-95 transition-all disabled:opacity-50"
                     >
                       <svg className="w-4 h-4" viewBox="0 0 48 48">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
@@ -734,29 +734,29 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 ) : (
                   <div className="space-y-3">
                     {/* Account Header Row */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line-strong pb-3">
                       <div className="flex items-center gap-3">
                         {displayUser?.photoURL ? (
                           <img
                             src={displayUser.photoURL}
                             alt="Google Avatar"
-                            className="w-10 h-10 rounded-full border border-emerald-500/40"
+                            className="w-10 h-10 rounded-full border border-badge-green-text/35"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold">
+                          <div className="w-10 h-10 rounded-full bg-nav-active-pill border border-badge-green-text/35 text-primary flex items-center justify-center font-bold">
                             {displayUser?.displayName?.[0] || displayUser?.email?.[0] || 'G'}
                           </div>
                         )}
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-white">
+                            <span className="text-xs font-bold text-ink">
                               {displayUser?.displayName || 'Google Account'}
                             </span>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-badge-green-bg text-badge-green-text border border-badge-green-text/35">
                               ✓ Connected
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-400 font-mono truncate max-w-[220px]">
+                          <p className="text-[11px] text-muted font-mono truncate max-w-[220px]">
                             {displayUser?.email || 'Active Google Session'}
                           </p>
                         </div>
@@ -767,7 +767,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                       type="button"
                       onClick={handleRefresh}
                       disabled={isLoadingBackups}
-                      className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                      className="p-2 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
                       title="Refresh backups list"
                     >
                       <RefreshCw className={`w-3.5 h-3.5 ${isLoadingBackups ? 'animate-spin' : ''}`} />
@@ -777,7 +777,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs flex items-center gap-1.5 transition-colors"
+                      className="p-2 rounded-xl bg-badge-red-bg hover:bg-badge-red-bg/80 text-badge-red-text border border-badge-red-text/35 text-xs flex items-center gap-1.5 transition-colors"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Disconnect</span>
@@ -787,10 +787,10 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
                 {/* Section 12 Status Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                    <div className="text-[10px] text-slate-400">Google Drive Backup Location</div>
-                    <div className="font-semibold text-white flex items-center gap-1.5 truncate">
-                      <Folder className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <div className="p-2.5 rounded-xl bg-card border border-line-strong space-y-1">
+                    <div className="text-[10px] text-muted">Google Drive Backup Location</div>
+                    <div className="font-semibold text-ink flex items-center gap-1.5 truncate">
+                      <Folder className="w-3.5 h-3.5 text-accent shrink-0" />
                       <span className="truncate">My Drive / {BACKUP_FOLDER_NAME}</span>
                     </div>
                     {backupFolder?.webViewLink && (
@@ -798,7 +798,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                         href={backupFolder.webViewLink}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[10px] text-blue-400 hover:underline flex items-center gap-1 pt-0.5"
+                        className="text-[10px] text-badge-blue-text hover:underline flex items-center gap-1 pt-0.5"
                       >
                         <span>Open Folder in Google Drive</span>
                         <ExternalLink className="w-2.5 h-2.5" />
@@ -806,46 +806,46 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                     )}
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                    <div className="text-[10px] text-slate-400">Last Successful Backup</div>
-                    <div className="font-semibold text-emerald-400 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <div className="p-2.5 rounded-xl bg-card border border-line-strong space-y-1">
+                    <div className="text-[10px] text-muted">Last Successful Backup</div>
+                    <div className="font-semibold text-badge-green-text flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-badge-green-text shrink-0" />
                       <span>{formatBackupDate(settings.lastBackupDate)}</span>
                     </div>
-                    <div className="text-[10px] text-slate-400">
-                      Size: <span className="text-slate-300 font-mono">{settings.lastBackupFileSize || '—'}</span>
+                    <div className="text-[10px] text-muted">
+                      Size: <span className="text-ink font-mono">{settings.lastBackupFileSize || '—'}</span>
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                  <div className="p-2.5 rounded-xl bg-card border border-line-strong space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-slate-400">Automatic 24h Backup</span>
+                      <span className="text-[10px] text-muted">Automatic 24h Backup</span>
                       <button
                         type="button"
                         onClick={handleToggleAutoBackup}
                         className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
                           settings.automaticBackupEnabled !== false
-                            ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                            : 'bg-slate-800 text-slate-400'
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'bg-inner text-muted border border-line-strong'
                         }`}
                       >
                         {settings.automaticBackupEnabled !== false ? 'ON' : 'OFF'}
                       </button>
                     </div>
-                    <div className="text-[11px] text-slate-300">
+                    <div className="text-[11px] text-muted">
                       {settings.automaticBackupEnabled !== false
                         ? 'Automated daily snapshot when connected'
                         : 'Automatic cloud backup is disabled'}
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                    <div className="text-[10px] text-slate-400">Available Cloud Backups</div>
-                    <div className="font-semibold text-white font-mono flex items-center gap-1.5">
-                      <Database className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                  <div className="p-2.5 rounded-xl bg-card border border-line-strong space-y-1">
+                    <div className="text-[10px] text-muted">Available Cloud Backups</div>
+                    <div className="font-semibold text-ink font-mono flex items-center gap-1.5">
+                      <Database className="w-3.5 h-3.5 text-primary shrink-0" />
                       <span>{backups.length} version(s) in Drive</span>
                     </div>
-                    <div className="text-[10px] text-slate-400">
+                    <div className="text-[10px] text-muted">
                       Includes latest + dated snapshots
                     </div>
                   </div>
@@ -853,17 +853,17 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
                 {/* Scope error prompt */}
                 {scopeError && (
-                  <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200 flex items-start gap-2.5">
-                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <div className="p-3 rounded-xl bg-badge-yellow-bg border border-[#F2A31B]/40 text-xs text-badge-yellow-text flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-badge-yellow-text shrink-0 mt-0.5" />
                     <div className="space-y-1">
                       <div className="font-bold">Google Drive Permissions Required</div>
-                      <p className="text-[11px] text-slate-300">
+                      <p className="text-[11px] text-muted">
                         Please re-authenticate with Google and ensure the Drive permissions are granted.
                       </p>
                       <button
                         type="button"
                         onClick={handleSignIn}
-                        className="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs"
+                        className="px-3 py-1.5 rounded-lg bg-accent text-accent-text font-bold text-xs"
                       >
                         Grant Permissions
                       </button>
@@ -872,12 +872,12 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 )}
 
                 {/* Section 12 Buttons Row */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 border-t border-slate-800/80">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 border-t border-line-strong">
                   <button
                     type="button"
                     onClick={handleBackupNow}
                     disabled={isBackingUp}
-                    className="py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20 active:scale-95 transition-all disabled:opacity-50"
+                    className="py-2.5 px-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
                   >
                     <CloudUpload className="w-4 h-4" />
                     <span>{isBackingUp ? 'Backing Up...' : '☁ Backup Now'}</span>
@@ -886,26 +886,26 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setActiveTab('restore')}
-                    className={`py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all ${
+                    className={`py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'restore'
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-                        : 'bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700/60'
+                        ? 'bg-primary text-white shadow-card'
+                        : 'bg-card hover:bg-inner text-ink border border-line-strong'
                     }`}
                   >
-                    <CloudDownload className="w-4 h-4 text-blue-400" />
+                    <CloudDownload className="w-4 h-4" />
                     <span>☁ Restore from Drive</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setActiveTab('history')}
-                    className={`col-span-2 sm:col-span-1 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all ${
+                    className={`col-span-2 sm:col-span-1 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'history'
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-                        : 'bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700/60'
+                        ? 'bg-primary text-white shadow-card'
+                        : 'bg-card hover:bg-inner text-ink border border-line-strong'
                     }`}
                   >
-                    <History className="w-4 h-4 text-cyan-400" />
+                    <History className="w-4 h-4" />
                     <span>📋 Backup History</span>
                   </button>
                 </div>
@@ -920,14 +920,14 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
             <>
               {/* RESTORE FROM GOOGLE DRIVE VIEW (Requirements 8, 9, 10) */}
               {activeTab === 'restore' && (
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <div className="p-4 rounded-2xl bg-inner border border-line-strong space-y-3">
+                  <div className="flex items-center justify-between border-b border-line-strong pb-2.5">
                     <div>
-                      <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <CloudDownload className="w-4 h-4 text-blue-400" />
+                      <h4 className="text-xs font-bold text-ink flex items-center gap-1.5">
+                        <CloudDownload className="w-4 h-4 text-primary" />
                         <span>Available Cloud Backups in Google Drive</span>
                       </h4>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-[11px] text-muted">
                         Discovered from "{BACKUP_FOLDER_NAME}". Select a backup to safely restore your shop database.
                       </p>
                     </div>
@@ -935,7 +935,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                       type="button"
                       onClick={handleRefresh}
                       disabled={isLoadingBackups}
-                      className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs flex items-center gap-1"
+                      className="p-1.5 rounded-lg bg-card hover:bg-inner text-ink border border-line-strong text-xs flex items-center gap-1"
                     >
                       <RefreshCw className={`w-3 h-3 ${isLoadingBackups ? 'animate-spin' : ''}`} />
                       <span className="hidden sm:inline">Refresh</span>
@@ -943,15 +943,15 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                   </div>
 
                   {isLoadingBackups ? (
-                    <div className="text-center py-8 text-xs text-slate-400 flex items-center justify-center gap-2">
-                      <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
+                    <div className="text-center py-8 text-xs text-muted flex items-center justify-center gap-2">
+                      <RefreshCw className="w-4 h-4 animate-spin text-primary" />
                       <span>Loading backups from Google Drive...</span>
                     </div>
                   ) : backups.length === 0 ? (
-                    <div className="text-center py-8 text-xs text-slate-400 space-y-2">
-                      <Folder className="w-8 h-8 text-slate-600 mx-auto" />
-                      <div className="font-semibold text-slate-300">No cloud backups found yet</div>
-                      <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+                    <div className="text-center py-8 text-xs text-muted space-y-2">
+                      <Folder className="w-8 h-8 text-muted mx-auto" />
+                      <div className="font-semibold text-ink">No cloud backups found yet</div>
+                      <p className="text-[11px] text-muted max-w-sm mx-auto">
                         Press "☁ Backup Now" above to create your first secure snapshot in Google Drive.
                       </p>
                     </div>
@@ -964,25 +964,25 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                             key={b.id}
                             className={`p-3 rounded-2xl border transition-all text-xs space-y-2 ${
                               isLatest
-                                ? 'bg-gradient-to-r from-blue-950/30 to-slate-900 border-blue-500/40'
-                                : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'
+                                ? 'bg-card border-2 border-line'
+                                : 'bg-card border border-line-strong hover:border-line'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-white truncate max-w-[240px] sm:max-w-xs">
+                                  <span className="font-bold text-ink truncate max-w-[240px] sm:max-w-xs">
                                     {b.name}
                                   </span>
                                   {isLatest && (
-                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-nav-active-pill text-primary border border-badge-green-text/35">
                                       Latest Version
                                     </span>
                                   )}
                                 </div>
-                                <div className="flex items-center gap-3 text-[10px] text-slate-400 mt-1 font-mono">
+                                <div className="flex items-center gap-3 text-[10px] text-muted mt-1 font-mono">
                                   <span className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3 text-slate-500" />
+                                    <Clock className="w-3 h-3 text-muted" />
                                     {formatBackupDate(b.modifiedTime || b.createdTime)}
                                   </span>
                                   <span>·</span>
@@ -993,7 +993,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                               <button
                                 type="button"
                                 onClick={() => handleSelectBackupForRestore(b)}
-                                className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95 transition-all shrink-0"
+                                className="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all shrink-0 cursor-pointer"
                               >
                                 <CloudDownload className="w-3.5 h-3.5" />
                                 <span>Restore This Backup</span>
@@ -1009,14 +1009,14 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
               {/* BACKUP HISTORY VIEW */}
               {activeTab === 'history' && (
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <div className="p-4 rounded-2xl bg-inner border border-line-strong space-y-3">
+                  <div className="flex items-center justify-between border-b border-line-strong pb-2.5">
                     <div>
-                      <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <History className="w-4 h-4 text-cyan-400" />
+                      <h4 className="text-xs font-bold text-ink flex items-center gap-1.5">
+                        <History className="w-4 h-4 text-primary" />
                         <span>Dated Backup History ({backups.length})</span>
                       </h4>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-[11px] text-muted">
                         Permanent snapshots stored in Google Drive. Stored independently of the device.
                       </p>
                     </div>
@@ -1026,11 +1026,11 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                     {backups.map((b) => (
                       <div
                         key={b.id}
-                        className="p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3 text-xs"
+                        className="p-3 rounded-2xl bg-card border border-line-strong flex items-center justify-between gap-3 text-xs"
                       >
                         <div className="min-w-0">
-                          <div className="font-mono text-white text-[11px] truncate">{b.name}</div>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5">
+                          <div className="font-mono text-ink text-[11px] truncate">{b.name}</div>
+                          <div className="text-[10px] text-muted flex items-center gap-2 mt-0.5">
                             <span>{formatBackupDate(b.modifiedTime || b.createdTime)}</span>
                             <span>·</span>
                             <span>{formatFileSize(b.size)}</span>
@@ -1043,7 +1043,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                               href={b.webViewLink}
                               target="_blank"
                               rel="noreferrer"
-                              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300"
+                              className="p-2 rounded-xl bg-inner hover:bg-inner text-ink border border-line-strong"
                               title="View in Google Drive"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
@@ -1052,7 +1052,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                           <button
                             type="button"
                             onClick={() => setFileToDelete(b)}
-                            className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20"
+                            className="p-2 rounded-xl bg-badge-red-bg hover:bg-badge-red-bg/80 text-badge-red-text border border-badge-red-text/35"
                             title="Delete backup"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1066,29 +1066,29 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
               {/* OVERVIEW DISASTER RECOVERY GUIDANCE */}
               {activeTab === 'overview' && (
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
-                  <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <div className="p-4 rounded-2xl bg-inner border border-line-strong space-y-3">
+                  <h4 className="text-xs font-bold text-ink flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
                     <span>Disaster Recovery & Phone Replacement Guarantee</span>
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-300">
-                    <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
-                      <strong className="text-white block text-[11px]">1. Visible Google Drive</strong>
-                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-ink">
+                    <div className="p-3 rounded-xl bg-card border border-line-strong space-y-1">
+                      <strong className="text-ink block text-[11px]">1. Visible Google Drive</strong>
+                      <p className="text-[10px] text-muted leading-relaxed">
                         Backups live in your normal visible "My Drive" folder. They are not tied to app cache or phone memory.
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
-                      <strong className="text-white block text-[11px]">2. New Phone Ready</strong>
-                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                    <div className="p-3 rounded-xl bg-card border border-line-strong space-y-1">
+                      <strong className="text-ink block text-[11px]">2. New Phone Ready</strong>
+                      <p className="text-[10px] text-muted leading-relaxed">
                         If your phone is lost or reset, just install the app, sign in with {currentUser?.email || 'your Google Account'}, and restore your shop in 1 click.
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
-                      <strong className="text-white block text-[11px]">3. Safe Rollback</strong>
-                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                    <div className="p-3 rounded-xl bg-card border border-line-strong space-y-1">
+                      <strong className="text-ink block text-[11px]">3. Safe Rollback</strong>
+                      <p className="text-[10px] text-muted leading-relaxed">
                         Restores are atomic. An emergency safety copy is automatically taken before applying any changes.
                       </p>
                     </div>
@@ -1100,14 +1100,14 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 shrink-0">
+        <div className="pt-3 border-t border-line-strong flex items-center justify-between text-xs text-muted shrink-0">
           <span className="font-mono text-[10px]">
             {shopName} · {settings.ownerName} ({settings.phone})
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold transition-colors"
+            className="px-4 py-2 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong font-semibold transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -1116,62 +1116,62 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
       {/* SAFE RESTORE CONFIRMATION DIALOG (Requirements 9 & 10) */}
       {selectedBackupForRestore && (
-        <div className="fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-5 space-y-4 shadow-2xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-card border border-line rounded-3xl max-w-md w-full p-5 space-y-4 shadow-card animate-in zoom-in-95">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-badge-yellow-bg border border-[#F2A31B]/30 text-badge-yellow-text flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">Restore Shop Data from Cloud?</h4>
-                <p className="text-[11px] text-amber-300">
+                <h4 className="text-sm font-bold text-ink">Restore Shop Data from Cloud?</h4>
+                <p className="text-[11px] text-badge-yellow-text">
                   Restoring this backup will replace the current local shop data.
                 </p>
               </div>
             </div>
 
             {isLoadingPreview ? (
-              <div className="py-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
+              <div className="py-8 text-center text-xs text-muted flex items-center justify-center gap-2">
+                <RefreshCw className="w-4 h-4 animate-spin text-primary" />
                 <span>Downloading and validating backup structure...</span>
               </div>
             ) : previewBackupData ? (
               <div className="space-y-3">
-                <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2 text-xs">
-                  <div className="flex justify-between border-b border-slate-800 pb-1.5">
-                    <span className="text-slate-400">File Name:</span>
-                    <strong className="text-white font-mono text-[11px] truncate max-w-[200px]">
+                <div className="p-3.5 rounded-2xl bg-inner border border-line-strong space-y-2 text-xs">
+                  <div className="flex justify-between border-b border-line-strong pb-1.5">
+                    <span className="text-muted">File Name:</span>
+                    <strong className="text-ink font-mono text-[11px] truncate max-w-[200px]">
                       {selectedBackupForRestore.name}
                     </strong>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Shop Identity:</span>
-                    <strong className="text-white">{previewBackupData.shopName || shopName}</strong>
+                    <span className="text-muted">Shop Identity:</span>
+                    <strong className="text-ink">{previewBackupData.shopName || shopName}</strong>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Export Timestamp:</span>
-                    <strong className="text-slate-300">{formatBackupDate(previewBackupData.exportedAt)}</strong>
+                    <span className="text-muted">Export Timestamp:</span>
+                    <strong className="text-ink">{formatBackupDate(previewBackupData.exportedAt)}</strong>
                   </div>
 
                   {previewBackupData.summary && (
-                    <div className="pt-2 border-t border-slate-800/80 space-y-1 text-[11px]">
-                      <span className="text-slate-400 font-bold block">Records in this Backup:</span>
-                      <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-slate-300 font-mono">
-                        <div>📦 Products: <strong className="text-white">{previewBackupData.summary.totalProducts}</strong></div>
-                        <div>👥 Customers: <strong className="text-white">{previewBackupData.summary.totalCustomers}</strong></div>
-                        <div>🧾 Sales/Bills: <strong className="text-white">{previewBackupData.summary.totalSales}</strong></div>
-                        <div>💳 Payments: <strong className="text-white">{previewBackupData.summary.totalPayments}</strong></div>
-                        <div>↩ Returns: <strong className="text-white">{previewBackupData.summary.totalReturns}</strong></div>
-                        <div>🚚 Movements: <strong className="text-white">{previewBackupData.summary.totalStockMovements}</strong></div>
+                    <div className="pt-2 border-t border-line-strong space-y-1 text-[11px]">
+                      <span className="text-muted font-bold block">Records in this Backup:</span>
+                      <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-ink font-mono">
+                        <div>📦 Products: <strong>{previewBackupData.summary.totalProducts}</strong></div>
+                        <div>👥 Customers: <strong>{previewBackupData.summary.totalCustomers}</strong></div>
+                        <div>🧾 Sales/Bills: <strong>{previewBackupData.summary.totalSales}</strong></div>
+                        <div>💳 Payments: <strong>{previewBackupData.summary.totalPayments}</strong></div>
+                        <div>↩ Returns: <strong>{previewBackupData.summary.totalReturns}</strong></div>
+                        <div>🚚 Movements: <strong>{previewBackupData.summary.totalStockMovements}</strong></div>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-[11px] text-emerald-300 flex items-start gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="p-2.5 rounded-xl bg-badge-green-bg border border-badge-green-text/35 text-[11px] text-badge-green-text flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-badge-green-text shrink-0 mt-0.5" />
                   <span>
                     A local safety rollback copy of your current database will be saved automatically. If any issue occurs, your data is restored instantly.
                   </span>
@@ -1187,7 +1187,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                   setPreviewBackupData(null);
                 }}
                 disabled={isRestoring}
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 font-semibold text-xs transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong font-semibold text-xs transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -1196,7 +1196,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 type="button"
                 onClick={handleConfirmExecuteRestore}
                 disabled={isRestoring || !previewBackupData}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-600/30 active:scale-95 transition-all disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
               >
                 <CloudDownload className="w-4 h-4" />
                 <span>{isRestoring ? 'Restoring Database...' : 'Confirm & Restore'}</span>
@@ -1208,32 +1208,32 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
       {/* RESTORE SUCCESS RECEIPT MODAL */}
       {restoreReceipt && (
-        <div className="fixed inset-0 z-70 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-emerald-500/40 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl text-center">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto">
+        <div className="fixed inset-0 z-70 bg-black/50 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-card border border-badge-green-text/35 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-card text-center">
+            <div className="w-12 h-12 rounded-2xl bg-badge-green-bg text-badge-green-text border border-badge-green-text/35 flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-6 h-6" />
             </div>
 
             <div>
-              <h4 className="text-base font-bold text-white">Database Restored Successfully!</h4>
-              <p className="text-xs text-slate-400 mt-1">
-                Restored from <strong className="text-emerald-300 font-mono">{restoreReceipt.backupName}</strong>
+              <h4 className="text-base font-bold text-ink">Database Restored Successfully!</h4>
+              <p className="text-xs text-muted mt-1">
+                Restored from <strong className="text-badge-green-text font-mono">{restoreReceipt.backupName}</strong>
               </p>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-left text-xs font-mono space-y-1.5">
-              <div className="flex justify-between"><span>Products:</span> <strong className="text-white">{restoreReceipt.counts.totalProducts}</strong></div>
-              <div className="flex justify-between"><span>Customers:</span> <strong className="text-white">{restoreReceipt.counts.totalCustomers}</strong></div>
-              <div className="flex justify-between"><span>Sales/Bills:</span> <strong className="text-white">{restoreReceipt.counts.totalSales}</strong></div>
-              <div className="flex justify-between"><span>Payments:</span> <strong className="text-white">{restoreReceipt.counts.totalPayments}</strong></div>
-              <div className="flex justify-between"><span>Returns:</span> <strong className="text-white">{restoreReceipt.counts.totalReturns}</strong></div>
-              <div className="flex justify-between"><span>Stock Movements:</span> <strong className="text-white">{restoreReceipt.counts.totalStockMovements}</strong></div>
+            <div className="p-3 rounded-2xl bg-inner border border-line-strong text-left text-xs font-mono space-y-1.5 text-ink">
+              <div className="flex justify-between"><span>Products:</span> <strong className="text-ink">{restoreReceipt.counts.totalProducts}</strong></div>
+              <div className="flex justify-between"><span>Customers:</span> <strong className="text-ink">{restoreReceipt.counts.totalCustomers}</strong></div>
+              <div className="flex justify-between"><span>Sales/Bills:</span> <strong className="text-ink">{restoreReceipt.counts.totalSales}</strong></div>
+              <div className="flex justify-between"><span>Payments:</span> <strong className="text-ink">{restoreReceipt.counts.totalPayments}</strong></div>
+              <div className="flex justify-between"><span>Returns:</span> <strong className="text-ink">{restoreReceipt.counts.totalReturns}</strong></div>
+              <div className="flex justify-between"><span>Stock Movements:</span> <strong className="text-ink">{restoreReceipt.counts.totalStockMovements}</strong></div>
             </div>
 
             <button
               type="button"
               onClick={() => setRestoreReceipt(null)}
-              className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/20"
+              className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs shadow-md cursor-pointer"
             >
               Done & Return to App
             </button>
@@ -1243,21 +1243,21 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
       {/* DELETE CONFIRMATION MODAL */}
       {fileToDelete && (
-        <div className="fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <Trash2 className="w-4 h-4 text-rose-400" />
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-card border border-line rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-card">
+            <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+              <Trash2 className="w-4 h-4 text-badge-red-text" />
               <span>Delete Backup from Google Drive?</span>
             </h4>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Are you sure you want to permanently delete backup <strong className="font-mono text-white">{fileToDelete.name}</strong> from your Google Drive folder?
+            <p className="text-xs text-muted leading-relaxed">
+              Are you sure you want to permanently delete backup <strong className="font-mono text-ink">{fileToDelete.name}</strong> from your Google Drive folder?
             </p>
             <div className="flex items-center gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => setFileToDelete(null)}
                 disabled={isDeleting}
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs"
+                className="flex-1 py-2.5 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong font-semibold text-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -1265,7 +1265,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 type="button"
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md"
+                className="flex-1 py-2.5 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs shadow-md cursor-pointer"
               >
                 {isDeleting ? 'Deleting...' : 'Delete Backup'}
               </button>

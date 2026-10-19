@@ -146,19 +146,19 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-5 space-y-4 shadow-2xl max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-card border border-line rounded-3xl max-w-lg w-full p-5 space-y-4 shadow-card max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="flex items-center justify-between border-b border-line-strong pb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-nav-active-pill text-primary flex items-center justify-center">
               <Layers className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">
+              <h3 className="text-sm font-bold text-ink">
                 {productToEdit ? 'Edit Product Details' : 'Create New Product'}
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted">
                 Saved to local SQLite database permanently
               </p>
             </div>
@@ -166,22 +166,22 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white"
+            className="p-1 rounded-lg text-muted hover:text-ink"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {error && (
-          <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300">
+          <div className="p-2.5 rounded-xl bg-badge-red-bg border border-badge-red-text/35 text-xs text-badge-red-text">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-3.5 text-xs overflow-y-auto pr-1 flex-1">
           {/* Photo Upload Area (Visual Reference Only - strictly NO scanner) */}
-          <div className="flex items-center gap-3 p-3 bg-slate-950/60 border border-slate-800 rounded-2xl">
-            <div className="w-20 h-20 rounded-xl bg-slate-900 border border-slate-800 overflow-hidden flex items-center justify-center relative shrink-0">
+          <div className="flex items-center gap-3 p-3 bg-inner border border-line-strong rounded-2xl">
+            <div className="w-20 h-20 rounded-xl bg-card border border-line-strong overflow-hidden flex items-center justify-center relative shrink-0">
               {photoUrl ? (
                 <img
                   src={photoUrl}
@@ -190,20 +190,20 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <ImageIcon className="w-8 h-8 text-slate-600" />
+                <ImageIcon className="w-8 h-8 text-muted" />
               )}
             </div>
 
             <div className="flex-1 space-y-1.5">
-              <span className="text-[11px] font-semibold text-slate-300 block">
+              <span className="text-[11px] font-semibold text-ink block">
                 Product Photo (Visual Reference Only)
               </span>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-muted">
                 Take photo with Android camera or select image file.
               </p>
               <div className="flex items-center gap-2 pt-1">
-                <label className="cursor-pointer px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium flex items-center gap-1.5 border border-slate-700">
-                  <Upload className="w-3.5 h-3.5 text-emerald-400" />
+                <label className="cursor-pointer px-2.5 py-1.5 rounded-lg bg-card hover:bg-inner text-ink text-[11px] font-medium flex items-center gap-1.5 border border-line-strong transition-colors">
+                  <Upload className="w-3.5 h-3.5 text-primary" />
                   <span>Choose Photo</span>
                   <input
                     type="file"
@@ -217,7 +217,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setPhotoUrl('')}
-                    className="text-xs text-rose-400 hover:text-rose-300"
+                    className="text-xs text-badge-red-text hover:underline"
                   >
                     Remove
                   </button>
@@ -228,7 +228,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
           {/* Product Name */}
           <div>
-            <label className="text-slate-300 font-semibold block mb-1">
+            <label className="text-ink font-semibold block mb-1">
               Product Name *
             </label>
             <input
@@ -242,19 +242,19 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Kajaria 600x600mm Glazed Vitrified Tiles"
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-medium text-left"
+              className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink font-medium text-left focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Category & Brand */}
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">Category *</label>
+              <label className="text-ink font-semibold block mb-1">Category *</label>
               <select
                 value={category}
                 style={{ direction: 'ltr', textAlign: 'left' }}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white text-left"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-2.5 py-2 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 {existingCategories.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -273,13 +273,13 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   value={customCategory}
                   onChange={(e) => setCustomCategory(e.target.value)}
                   placeholder="Enter new category"
-                  className="w-full mt-1.5 bg-slate-950 border border-emerald-500/50 rounded-xl px-2.5 py-1.5 text-white text-left"
+                  className="w-full mt-1.5 bg-card border border-line rounded-xl px-2.5 py-1.5 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               )}
             </div>
 
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">Brand *</label>
+              <label className="text-ink font-semibold block mb-1">Brand *</label>
               <input
                 type="text"
                 dir="ltr"
@@ -291,7 +291,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
                 placeholder="e.g. Kajaria, Jaquar"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-left"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
           </div>
@@ -299,7 +299,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           {/* Producer / Manufacturer & Supplier */}
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">Producer / Manufacturer</label>
+              <label className="text-ink font-semibold block mb-1">Producer / Manufacturer</label>
               <input
                 type="text"
                 dir="ltr"
@@ -310,12 +310,12 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={producer}
                 onChange={(e) => setProducer(e.target.value)}
                 placeholder="e.g. Kajaria Ceramics Ltd"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-left"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">Supplier</label>
+              <label className="text-ink font-semibold block mb-1">Supplier</label>
               <input
                 type="text"
                 dir="ltr"
@@ -326,14 +326,14 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
                 placeholder="e.g. Metro Tiles Depot"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-left"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
           </div>
 
           {/* Unit of Measurement (Exact Section 2 options) */}
           <div className="space-y-1">
-            <label className="text-slate-300 font-semibold block">
+            <label className="text-ink font-semibold block">
               Unit of Measurement *
             </label>
             <div className="grid grid-cols-4 gap-1.5">
@@ -344,8 +344,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   onClick={() => setUnit(u)}
                   className={`py-1.5 rounded-lg font-medium text-center transition-all ${
                     unit === u
-                      ? 'bg-emerald-500 text-slate-950 font-bold'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      ? 'bg-primary text-white font-bold'
+                      : 'bg-inner text-muted hover:bg-inner border border-line-strong'
                   }`}
                 >
                   {u}
@@ -363,7 +363,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={customUnit}
                 onChange={(e) => setCustomUnit(e.target.value)}
                 placeholder="Specify custom unit (e.g. Bundle, Roll)"
-                className="w-full mt-1.5 bg-slate-950 border border-emerald-500/50 rounded-xl px-2.5 py-1.5 text-white text-left"
+                className="w-full mt-1.5 bg-card border border-line rounded-xl px-2.5 py-1.5 text-ink text-left focus:outline-none focus:ring-1 focus:ring-primary"
               />
             )}
           </div>
@@ -371,7 +371,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           {/* Purchase Price & Selling Price */}
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">
+              <label className="text-ink font-semibold block mb-1">
                 Purchase Price ({settings.currencySymbol}) *
               </label>
               <input
@@ -384,16 +384,16 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
                 placeholder="e.g. 650"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold text-left"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink font-mono font-bold text-left focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-slate-300 font-semibold block">
+                <label className="text-ink font-semibold block">
                   Selling Price ({settings.currencySymbol})
                 </label>
-                <span className="text-[10px] text-amber-400 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                <span className="text-[10px] text-badge-yellow-text font-semibold bg-badge-yellow-bg px-1.5 py-0.5 rounded border border-accent/30">
                   Optional
                 </span>
               </div>
@@ -406,9 +406,9 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={sellingPrice}
                 onChange={(e) => setSellingPrice(e.target.value)}
                 placeholder="Optional (Price not set)"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold text-left placeholder:font-normal placeholder:text-slate-500 placeholder:text-xs"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink font-mono font-bold text-left placeholder:font-normal placeholder:text-muted placeholder:text-xs focus:outline-none focus:ring-1 focus:ring-primary"
               />
-              <p className="text-[10px] text-slate-500 mt-0.5">
+              <p className="text-[10px] text-muted mt-0.5">
                 Leave empty if retail price is not yet decided
               </p>
             </div>
@@ -417,7 +417,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           {/* Current Stock & Minimum Stock Level */}
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">
+              <label className="text-ink font-semibold block mb-1">
                 Current Stock ({unit}) *
               </label>
               <input
@@ -430,12 +430,12 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={currentStock}
                 onChange={(e) => setCurrentStock(e.target.value)}
                 placeholder="e.g. 100"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-left"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink font-mono text-left focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">
+              <label className="text-ink font-semibold block mb-1">
                 Minimum Stock Alert Level *
               </label>
               <input
@@ -448,22 +448,22 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={minStockLevel}
                 onChange={(e) => setMinStockLevel(e.target.value)}
                 placeholder="e.g. 15"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-left"
+                className="w-full bg-card border border-line-strong focus:border-line rounded-xl px-3 py-2 text-ink font-mono text-left focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
           </div>
 
           {/* Action buttons */}
           {confirmingDelete ? (
-            <div className="pt-3 p-3 bg-rose-950/30 border border-rose-500/30 rounded-2xl space-y-2">
-              <p className="text-xs text-rose-300 font-semibold">
+            <div className="pt-3 p-3 bg-badge-red-bg border border-badge-red-text/35 rounded-2xl space-y-2">
+              <p className="text-xs text-badge-red-text font-semibold">
                 Delete "{name}" permanently?
               </p>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setConfirmingDelete(false)}
-                  className="flex-1 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium text-xs"
+                  className="flex-1 py-2 rounded-xl bg-card text-ink border border-line-strong font-medium text-xs hover:bg-inner"
                 >
                   Cancel
                 </button>
@@ -475,7 +475,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                       onClose();
                     }
                   }}
-                  className="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-600/30"
+                  className="flex-1 py-2 rounded-xl bg-badge-red-text hover:bg-badge-red-text/90 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Confirm Delete</span>
@@ -483,12 +483,12 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               </div>
             </div>
           ) : (
-            <div className="pt-3 flex items-center gap-2 border-t border-slate-800">
+            <div className="pt-3 flex items-center gap-2 border-t border-line-strong">
               {productToEdit && onDelete && (
                 <button
                   type="button"
                   onClick={() => setConfirmingDelete(true)}
-                  className="py-2.5 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-semibold text-xs flex items-center gap-1.5 active:scale-95 transition-all"
+                  className="py-2.5 px-3 rounded-xl bg-badge-red-bg hover:bg-badge-red-bg/80 text-badge-red-text border border-badge-red-text/35 font-semibold text-xs flex items-center gap-1.5 active:scale-95 transition-all"
                   title="Delete this product"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -498,13 +498,13 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
+                className="flex-1 py-2.5 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-bold flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20"
+                className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary-hover active:scale-95 text-white font-bold flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
               >
                 <Save className="w-4 h-4" />
                 <span>{productToEdit ? 'Save Changes' : 'Create Product'}</span>

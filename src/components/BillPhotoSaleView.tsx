@@ -378,19 +378,19 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
       {/* --- STEP 1: UPLOAD / CAMERA STATE --- */}
       {step === 'UPLOAD' && (
         <div className="space-y-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-xl text-center relative overflow-hidden">
+          <div className="bg-card border border-line rounded-3xl p-5 sm:p-7 shadow-card text-center relative overflow-hidden">
             {/* Subtle glow */}
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-nav-active-pill/50 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-badge-green-bg/50 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="inline-flex p-3.5 bg-gradient-to-tr from-emerald-600 to-teal-500 text-white rounded-2xl shadow-lg shadow-emerald-500/20 mb-3">
+            <div className="inline-flex p-3.5 bg-primary text-white rounded-2xl shadow mb-3">
               <Camera className="w-7 h-7" />
             </div>
 
-            <h3 className="text-lg font-bold text-white tracking-tight">
+            <h3 className="text-lg font-bold text-ink tracking-tight">
               AI Bill Photo Sale Entry
             </h3>
-            <p className="text-xs text-slate-400 max-w-md mx-auto mt-1.5 leading-relaxed">
+            <p className="text-xs text-muted max-w-md mx-auto mt-1.5 leading-relaxed">
               Capture or upload an offline paper receipt or shop bill. DukanDesk will extract line items, quantities, and rates, and prepare a draft for your review.
             </p>
 
@@ -399,7 +399,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
               <button
                 type="button"
                 onClick={() => cameraInputRef.current?.click()}
-                className="flex items-center justify-center gap-2.5 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white rounded-2xl font-bold text-xs shadow-lg shadow-emerald-950 transition-all cursor-pointer"
+                className="flex items-center justify-center gap-2.5 py-3.5 px-4 bg-primary hover:bg-primary-hover active:scale-[0.98] text-white rounded-2xl font-bold text-xs shadow transition-all cursor-pointer"
               >
                 <Camera className="w-4 h-4" />
                 <span>Take Photo with Camera</span>
@@ -408,24 +408,24 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
               <button
                 type="button"
                 onClick={() => galleryInputRef.current?.click()}
-                className="flex items-center justify-center gap-2.5 py-3.5 px-4 bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-white border border-slate-700 rounded-2xl font-bold text-xs transition-all cursor-pointer"
+                className="flex items-center justify-center gap-2.5 py-3.5 px-4 bg-card hover:bg-inner active:scale-[0.98] text-ink border border-line-strong rounded-2xl font-bold text-xs transition-all cursor-pointer"
               >
-                <Upload className="w-4 h-4 text-emerald-400" />
+                <Upload className="w-4 h-4 text-badge-green-text" />
                 <span>Upload from Gallery</span>
               </button>
             </div>
 
             {/* Drag & drop helper / sample bill */}
-            <div className="mt-5 pt-5 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+            <div className="mt-5 pt-5 border-t border-line-strong flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+                <Sparkles className="w-4 h-4 text-badge-yellow-text" />
                 <span>No paper bill handy right now?</span>
               </span>
 
               <button
                 type="button"
                 onClick={handleLoadSampleBill}
-                className="px-3.5 py-2 bg-slate-800/80 hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded-xl font-semibold text-xs transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-card hover:bg-inner text-badge-yellow-text border border-line-strong rounded-xl font-semibold text-xs transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Test with Sample Marble & Tile Bill</span>
@@ -435,32 +435,32 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
           {/* Quick Safety Explainer Card */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="p-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl space-y-1.5">
-              <div className="text-emerald-400 font-bold text-xs flex items-center gap-1.5">
+            <div className="p-4 bg-inner border border-line-strong rounded-2xl space-y-1.5">
+              <div className="text-badge-green-text font-bold text-xs flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Zero Hallucination</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-muted leading-relaxed">
                 Only readable text on the bill is extracted. Unclear lines are flagged for your review.
               </p>
             </div>
 
-            <div className="p-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl space-y-1.5">
-              <div className="text-cyan-400 font-bold text-xs flex items-center gap-1.5">
+            <div className="p-4 bg-inner border border-line-strong rounded-2xl space-y-1.5">
+              <div className="text-badge-blue-text font-bold text-xs flex items-center gap-1.5">
                 <Eye className="w-3.5 h-3.5" />
                 <span>Full Review Before Saving</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-muted leading-relaxed">
                 Nothing is modified in your inventory until you inspect and tap "Confirm Sale".
               </p>
             </div>
 
-            <div className="p-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl space-y-1.5">
-              <div className="text-amber-400 font-bold text-xs flex items-center gap-1.5">
+            <div className="p-4 bg-inner border border-line-strong rounded-2xl space-y-1.5">
+              <div className="text-badge-yellow-text font-bold text-xs flex items-center gap-1.5">
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Catalogue Matching</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-muted leading-relaxed">
                 Items are matched against your existing DukanDesk products without creating duplicates.
               </p>
             </div>
@@ -470,31 +470,31 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
       {/* --- STEP 2: ANALYZING STATE --- */}
       {step === 'ANALYZING' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl text-center space-y-5">
+        <div className="bg-card border border-line rounded-3xl p-8 shadow-card text-center space-y-5">
           <div className="relative w-16 h-16 mx-auto">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-xl shadow-emerald-500/20 animate-pulse">
+            <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white shadow animate-pulse">
               <Sparkles className="w-8 h-8" />
             </div>
-            <div className="absolute -inset-1 rounded-2xl border-2 border-emerald-400/40 animate-ping pointer-events-none" />
+            <div className="absolute -inset-1 rounded-2xl border-2 border-line/40 animate-ping pointer-events-none" />
           </div>
 
           <div>
-            <h3 className="text-base font-bold text-white">Analyzing Bill Photograph</h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+            <h3 className="text-base font-bold text-ink">Analyzing Bill Photograph</h3>
+            <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
               Scanning lines, reading quantities, and cross-referencing your DukanDesk inventory...
             </p>
           </div>
 
           <div className="max-w-xs mx-auto space-y-2 text-left">
-            <div className="flex items-center gap-2 text-xs text-emerald-400">
+            <div className="flex items-center gap-2 text-xs text-badge-green-text">
               <Check className="w-3.5 h-3.5" />
               <span>Scanning high-resolution image</span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-emerald-400">
+            <div className="flex items-center gap-2 text-xs text-badge-green-text">
               <Check className="w-3.5 h-3.5" />
               <span>Detecting line items and prices</span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-cyan-400 animate-pulse">
+            <div className="flex items-center gap-2 text-xs text-badge-blue-text animate-pulse">
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
               <span>Matching with inventory catalogue...</span>
             </div>
@@ -506,22 +506,22 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
       {step === 'REVIEW' && draft && (
         <div className="space-y-4">
           {/* Review Header Banner */}
-          <div className="p-4 bg-slate-900 border border-slate-800 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+          <div className="p-4 bg-card border border-line rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-card">
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                <span className="px-2.5 py-0.5 bg-badge-green-bg text-badge-green-text border border-line-strong rounded-full text-[10px] font-bold uppercase tracking-wider">
                   Draft For Review
                 </span>
                 {draft.billNumber && (
-                  <span className="text-xs font-mono text-slate-300 font-semibold">
+                  <span className="text-xs font-mono text-ink font-semibold">
                     {draft.billNumber}
                   </span>
                 )}
               </div>
-              <h3 className="text-sm font-bold text-white mt-1">
+              <h3 className="text-sm font-bold text-ink mt-1">
                 Review Extracted Bill Items Before Applying
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted">
                 AI does not touch real inventory until you click "Confirm Sale". You can correct any quantity or product below.
               </p>
             </div>
@@ -531,9 +531,9 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowPhotoPreview(!showPhotoPreview)}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold border border-slate-700 flex items-center gap-1.5 cursor-pointer transition-all"
+                  className="px-3 py-1.5 bg-card hover:bg-inner text-ink rounded-xl text-xs font-semibold border border-line-strong flex items-center gap-1.5 cursor-pointer transition-all"
                 >
-                  <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                  <Eye className="w-3.5 h-3.5 text-badge-blue-text" />
                   <span>{showPhotoPreview ? 'Hide Photo' : 'View Bill Photo'}</span>
                 </button>
               )}
@@ -545,7 +545,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   setSelectedImage(null);
                   setDraft(null);
                 }}
-                className="px-3 py-1.5 bg-slate-800/80 hover:bg-slate-800 text-rose-400 hover:text-rose-300 rounded-xl text-xs font-semibold border border-slate-700 flex items-center gap-1.5 cursor-pointer transition-all"
+                className="px-3 py-1.5 bg-card hover:bg-inner text-badge-red-text rounded-xl text-xs font-semibold border border-line-strong flex items-center gap-1.5 cursor-pointer transition-all"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Retake</span>
@@ -555,21 +555,21 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
           {/* Optional Bill Photo Drawer/Preview */}
           {showPhotoPreview && selectedImage && (
-            <div className="p-3 bg-slate-950 border border-slate-800 rounded-2xl animate-fadeIn">
+            <div className="p-3 bg-inner border border-line-strong rounded-2xl animate-fadeIn">
               <div className="flex items-center justify-between mb-2 px-1">
-                <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-                  <Camera className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-xs font-semibold text-muted flex items-center gap-1.5">
+                  <Camera className="w-3.5 h-3.5 text-badge-green-text" />
                   <span>Captured Bill Photograph</span>
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowPhotoPreview(false)}
-                  className="text-slate-400 hover:text-white cursor-pointer"
+                  className="text-muted hover:text-ink cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="max-h-72 overflow-auto rounded-xl border border-slate-800 bg-slate-900 p-2 flex justify-center">
+              <div className="max-h-72 overflow-auto rounded-xl border border-line-strong bg-card p-2 flex justify-center">
                 <img
                   src={selectedImage}
                   alt="Bill Photograph"
@@ -581,17 +581,17 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
           {/* Warning banner if OCR detected uncertain items */}
           {draft.warningNotice && (
-            <div className="p-3 bg-amber-950/60 border border-amber-500/30 rounded-2xl text-amber-300 text-xs flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+            <div className="p-3 bg-badge-yellow-bg border border-line-strong rounded-2xl text-badge-yellow-text text-xs flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-badge-yellow-text" />
               <span>{draft.warningNotice}</span>
             </div>
           )}
 
           {/* Customer Selection & Meta Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-5 space-y-3">
+          <div className="bg-card border border-line rounded-3xl p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="text-xs font-bold text-ink flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-badge-green-text" />
                 <span>Customer / Account for this Bill</span>
               </label>
 
@@ -602,7 +602,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   setNewCustPhone(draft.detectedCustomerPhone || '');
                   setShowQuickCustomerModal(true);
                 }}
-                className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer"
+                className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>New Client</span>
@@ -615,7 +615,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   value={selectedCustomerId}
                   style={{ direction: 'ltr', textAlign: 'left' }}
                   onChange={(e) => setSelectedCustomerId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3.5 py-2.5 text-xs font-medium focus:ring-1 focus:ring-emerald-500 outline-none cursor-pointer"
+                  className="w-full bg-card border border-line-strong text-ink rounded-xl px-3.5 py-2.5 text-xs font-medium focus:ring-1 focus:ring-primary outline-none cursor-pointer"
                 >
                   <option value="" disabled>
                     -- Select Customer --
@@ -627,7 +627,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   ))}
                 </select>
                 {draft.detectedCustomerName && (
-                  <p className="text-[10px] text-slate-400 mt-1">
+                  <p className="text-[10px] text-muted mt-1">
                     Detected on bill: <strong>{draft.detectedCustomerName}</strong>
                     {draft.detectedCustomerPhone ? ` (${draft.detectedCustomerPhone})` : ''}
                   </p>
@@ -642,20 +642,20 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   placeholder="Bill reference / notes"
                   value={saleNotes}
                   onChange={(e) => setSaleNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3.5 py-2.5 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-left"
+                  className="w-full bg-card border border-line-strong text-ink rounded-xl px-3.5 py-2.5 text-xs focus:ring-1 focus:ring-primary outline-none text-left"
                 />
               </div>
             </div>
           </div>
 
           {/* Line Items Review Table / Cards */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-5 space-y-3">
+          <div className="bg-card border border-line rounded-3xl p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-ink uppercase tracking-wider">
                   Bill Line Items ({draft.items.length})
                 </h4>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-muted">
                   Verify matched product, quantity, and rate for each item.
                 </p>
               </div>
@@ -663,7 +663,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
               <button
                 type="button"
                 onClick={handleAddMissingItem}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl text-xs font-bold border border-slate-700 flex items-center gap-1.5 cursor-pointer transition-all"
+                className="px-3 py-1.5 bg-card hover:bg-inner text-primary rounded-xl text-xs font-bold border border-line-strong flex items-center gap-1.5 cursor-pointer transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Item</span>
@@ -685,36 +685,36 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                     key={item.id}
                     className={`p-3.5 rounded-2xl border transition-all ${
                       isNoMatch
-                        ? 'bg-rose-950/20 border-rose-500/40'
+                        ? 'bg-badge-red-bg/30 border-badge-red-text/35'
                         : isUncertain
-                        ? 'bg-amber-950/20 border-amber-500/40'
-                        : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                        ? 'bg-badge-yellow-bg/40 border-badge-yellow-text/35'
+                        : 'bg-inner border-line-strong'
                     }`}
                   >
                     {/* Item Top: Detected Raw Text + Match Status Badge */}
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                        <span className="w-5 h-5 rounded-full bg-card text-ink border border-line-strong text-[10px] font-bold flex items-center justify-center">
                           {idx + 1}
                         </span>
-                        <span className="text-xs font-semibold text-slate-200">
+                        <span className="text-xs font-semibold text-ink">
                           {item.rawText}
                         </span>
                       </div>
 
                       {/* Confidence Badge */}
                       {isNoMatch ? (
-                        <span className="px-2 py-0.5 rounded-md bg-rose-950/80 border border-rose-500/40 text-rose-400 text-[10px] font-bold flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md bg-badge-red-bg border border-line-strong text-badge-red-text text-[10px] font-bold flex items-center gap-1">
                           <AlertCircle className="w-3 h-3" />
                           <span>No Match — Please Select Product</span>
                         </span>
                       ) : isUncertain ? (
-                        <span className="px-2 py-0.5 rounded-md bg-amber-950/80 border border-amber-500/40 text-amber-400 text-[10px] font-bold flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md bg-badge-yellow-bg border border-line-strong text-badge-yellow-text text-[10px] font-bold flex items-center gap-1">
                           <AlertTriangle className="w-3 h-3" />
                           <span>⚠️ Product Match Uncertain</span>
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md bg-badge-green-bg border border-line-strong text-badge-green-text text-[10px] font-bold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" />
                           <span>✓ Verified Match</span>
                         </span>
@@ -724,19 +724,19 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                     {/* Matched Product Selector */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
                       <div className="lg:col-span-6">
-                        <label className="text-[10px] text-slate-400 font-semibold mb-1 block">
+                        <label className="text-[10px] text-muted font-semibold mb-1 block">
                           Assigned DukanDesk Inventory Product:
                         </label>
                         <select
                           value={item.matchedProductId || ''}
                           style={{ direction: 'ltr', textAlign: 'left' }}
                           onChange={(e) => handleUpdateItem(item.id, { matchedProductId: e.target.value })}
-                          className={`w-full bg-slate-900 border rounded-xl px-3 py-2 text-xs font-semibold outline-none cursor-pointer ${
+                          className={`w-full bg-card border rounded-xl px-3 py-2 text-xs font-semibold outline-none cursor-pointer ${
                             isNoMatch
-                              ? 'border-rose-500/60 text-rose-300'
+                              ? 'border-badge-red-text text-badge-red-text'
                               : isUncertain
-                              ? 'border-amber-500/60 text-amber-200'
-                              : 'border-slate-700 text-white'
+                              ? 'border-badge-yellow-text text-badge-yellow-text'
+                              : 'border-line-strong text-ink'
                           }`}
                         >
                           <option value="">-- Choose Catalogue Product --</option>
@@ -750,11 +750,11 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                         {/* Stock & delta info */}
                         {matched && (
                           <div className="flex items-center gap-2 mt-1 text-[10px]">
-                            <span className="text-slate-400">
-                              Current Stock: <strong>{availableStock} {matched.unit}</strong>
+                            <span className="text-muted">
+                              Current Stock: <strong className="text-ink">{availableStock} {matched.unit}</strong>
                             </span>
-                            <span className="text-slate-500">→</span>
-                            <span className={`font-semibold ${isOverStock ? 'text-rose-400' : 'text-emerald-400'}`}>
+                            <span className="text-muted">→</span>
+                            <span className={`font-semibold ${isOverStock ? 'text-badge-red-text' : 'text-badge-green-text'}`}>
                               After Sale: {stockAfterSale} {matched.unit} (-{item.quantity})
                             </span>
                           </div>
@@ -763,14 +763,14 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
                       {/* Quantity input with +/- buttons */}
                       <div className="lg:col-span-3">
-                        <label className="text-[10px] text-slate-400 font-semibold mb-1 block">
+                        <label className="text-[10px] text-muted font-semibold mb-1 block">
                           Quantity:
                         </label>
-                        <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
+                        <div className="flex items-center bg-card border border-line-strong rounded-xl overflow-hidden">
                           <button
                             type="button"
                             onClick={() => handleUpdateItem(item.id, { quantity: Math.max(1, item.quantity - 1) })}
-                            className="px-2.5 py-1.5 text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-bold cursor-pointer"
+                            className="px-2.5 py-1.5 text-ink hover:bg-inner text-xs font-bold cursor-pointer"
                           >
                             -
                           </button>
@@ -791,12 +791,12 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                                 handleUpdateItem(item.id, { quantity: 1 });
                               }
                             }}
-                            className="w-full text-center bg-transparent text-white text-xs font-bold py-1.5 outline-none"
+                            className="w-full text-center bg-transparent text-ink text-xs font-bold py-1.5 outline-none"
                           />
                           <button
                             type="button"
                             onClick={() => handleUpdateItem(item.id, { quantity: item.quantity + 1 })}
-                            className="px-2.5 py-1.5 text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-bold cursor-pointer"
+                            className="px-2.5 py-1.5 text-ink hover:bg-inner text-xs font-bold cursor-pointer"
                           >
                             +
                           </button>
@@ -805,7 +805,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
                       {/* Unit Price & Subtotal */}
                       <div className="lg:col-span-2">
-                        <label className="text-[10px] text-slate-400 font-semibold mb-1 block">
+                        <label className="text-[10px] text-muted font-semibold mb-1 block">
                           Unit Rate (₹):
                         </label>
                         <input
@@ -820,7 +820,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                               unitPrice: isNaN(val) ? 0 : Math.max(0, val),
                             });
                           }}
-                          className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-2.5 py-1.5 text-xs font-bold outline-none text-left"
+                          className="w-full bg-card border border-line-strong text-ink rounded-xl px-2.5 py-1.5 text-xs font-bold outline-none text-left"
                         />
                       </div>
 
@@ -829,7 +829,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                         <button
                           type="button"
                           onClick={() => handleRemoveItem(item.id)}
-                          className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl transition-all cursor-pointer"
+                          className="p-2 text-muted hover:text-badge-red-text hover:bg-badge-red-bg rounded-xl transition-all cursor-pointer"
                           title="Remove Item"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -843,12 +843,12 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
           </div>
 
           {/* Payment Terms & Confirmation Panel */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <div className="bg-card border border-line rounded-3xl p-5 space-y-4 shadow-card">
+            <div className="flex items-center justify-between pb-3 border-b border-line-strong">
+              <span className="text-xs font-bold text-muted uppercase tracking-wider">
                 Total Bill Amount
               </span>
-              <span className="text-xl font-black text-emerald-400">
+              <span className="text-xl font-black text-badge-green-text">
                 {formatCurrency(totalBill, settings.currencySymbol)}
               </span>
             </div>
@@ -856,14 +856,14 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
             {/* Payment Method & Presets */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
               <div>
-                <label className="text-[10px] text-slate-400 font-semibold block mb-1">
+                <label className="text-[10px] text-muted font-semibold block mb-1">
                   Payment Method:
                 </label>
                 <select
                   value={paymentMethod}
                   style={{ direction: 'ltr', textAlign: 'left' }}
                   onChange={(e) => setPaymentMethod(e.target.value as any)}
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs font-semibold outline-none cursor-pointer"
+                  className="w-full bg-card border border-line-strong text-ink rounded-xl px-3 py-2 text-xs font-semibold outline-none cursor-pointer"
                 >
                   <option value="Cash">Cash</option>
                   <option value="UPI">UPI / Digital</option>
@@ -874,7 +874,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
               </div>
 
               <div>
-                <label className="text-[10px] text-slate-400 font-semibold block mb-1">
+                <label className="text-[10px] text-muted font-semibold block mb-1">
                   Amount Received / Paid Now:
                 </label>
                 <div className="flex items-center gap-1.5">
@@ -895,7 +895,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                       setIsManualPaidEdited(true);
                       setAmountPaidInput(e.target.value);
                     }}
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs font-bold outline-none text-left"
+                    className="w-full bg-card border border-line-strong text-ink rounded-xl px-3 py-2 text-xs font-bold outline-none text-left"
                   />
                   <button
                     type="button"
@@ -904,7 +904,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                       setAmountPaidInput('0');
                       setPaymentMethod('Credit');
                     }}
-                    className="px-2.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-[10px] font-bold whitespace-nowrap cursor-pointer"
+                    className="px-2.5 py-2 bg-card hover:bg-inner text-muted border border-line-strong rounded-xl text-[10px] font-bold whitespace-nowrap cursor-pointer"
                   >
                     Credit (₹0)
                   </button>
@@ -914,7 +914,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
             {/* Remaining balance notice if partial/credit */}
             {remainingBalance > 0 && (
-              <div className="p-2.5 bg-amber-950/40 border border-amber-500/30 rounded-xl text-amber-300 text-xs flex items-center justify-between">
+              <div className="p-2.5 bg-badge-yellow-bg border border-line-strong rounded-xl text-badge-yellow-text text-xs flex items-center justify-between">
                 <span>Remaining Ledger Balance (Due):</span>
                 <span className="font-bold">
                   {formatCurrency(remainingBalance, settings.currencySymbol)}
@@ -927,7 +927,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
               <button
                 type="button"
                 onClick={handleConfirmSaleSubmit}
-                className="w-full sm:flex-1 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white rounded-2xl font-bold text-sm shadow-lg shadow-emerald-950 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:flex-1 py-3.5 px-4 bg-primary hover:bg-primary-hover active:scale-[0.99] text-white rounded-2xl font-bold text-sm shadow transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <CheckCircle2 className="w-5 h-5" />
                 <span>Confirm Sale &amp; Decrement Stock</span>
@@ -936,7 +936,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
               <button
                 type="button"
                 onClick={onSwitchToManual}
-                className="w-full sm:w-auto py-3.5 px-5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl font-semibold text-xs transition-all cursor-pointer"
+                className="w-full sm:w-auto py-3.5 px-5 bg-card hover:bg-inner text-ink border border-line-strong rounded-2xl font-semibold text-xs transition-all cursor-pointer"
               >
                 Switch to Manual Entry
               </button>
@@ -947,17 +947,17 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
       {/* --- Quick Add Customer Modal --- */}
       {showQuickCustomerModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl animate-scaleUp">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card border border-line rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-card animate-scaleUp">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <User className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+                <User className="w-4 h-4 text-primary" />
                 <span>Quick Add Client</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowQuickCustomerModal(false)}
-                className="text-slate-400 hover:text-white cursor-pointer"
+                className="text-muted hover:text-ink cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -965,7 +965,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
 
             <form onSubmit={handleQuickCustomerSubmit} className="space-y-3">
               <div>
-                <label className="text-[11px] text-slate-400 font-semibold block mb-1">
+                <label className="text-[11px] text-muted font-semibold block mb-1">
                   Full Name *
                 </label>
                 <input
@@ -976,12 +976,12 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   placeholder="e.g. Ramesh Kumar"
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:ring-1 focus:ring-emerald-500 text-left"
+                  className="w-full bg-card border border-line-strong rounded-xl px-3.5 py-2 text-xs text-ink outline-none focus:ring-1 focus:ring-primary text-left"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] text-slate-400 font-semibold block mb-1">
+                <label className="text-[11px] text-muted font-semibold block mb-1">
                   Phone Number
                 </label>
                 <input
@@ -991,12 +991,12 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   placeholder="e.g. 9876543210"
                   value={newCustPhone}
                   onChange={(e) => setNewCustPhone(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:ring-1 focus:ring-emerald-500 text-left"
+                  className="w-full bg-card border border-line-strong rounded-xl px-3.5 py-2 text-xs text-ink outline-none focus:ring-1 focus:ring-primary text-left"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] text-slate-400 font-semibold block mb-1">
+                <label className="text-[11px] text-muted font-semibold block mb-1">
                   Address / Site
                 </label>
                 <input
@@ -1006,7 +1006,7 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                   placeholder="e.g. College Road, Biraul"
                   value={newCustAddress}
                   onChange={(e) => setNewCustAddress(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:ring-1 focus:ring-emerald-500 text-left"
+                  className="w-full bg-card border border-line-strong rounded-xl px-3.5 py-2 text-xs text-ink outline-none focus:ring-1 focus:ring-primary text-left"
                 />
               </div>
 
@@ -1014,13 +1014,13 @@ export const BillPhotoSaleView: React.FC<BillPhotoSaleViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowQuickCustomerModal(false)}
-                  className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold cursor-pointer"
+                  className="flex-1 py-2.5 bg-card hover:bg-inner text-ink border border-line-strong rounded-xl text-xs font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"
+                  className="flex-1 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"
                 >
                   Save &amp; Select
                 </button>

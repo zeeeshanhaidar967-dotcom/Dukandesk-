@@ -19,7 +19,6 @@ import {
 } from './types/database';
 import { TopAppBar } from './components/TopAppBar';
 import { BottomNav, NavTabId } from './components/BottomNav';
-import { PinLockScreen } from './components/PinLockScreen';
 import { DashboardView } from './components/DashboardView';
 import { SalesView } from './components/SalesView';
 import { InventoryView } from './components/InventoryView';
@@ -92,8 +91,34 @@ export default function App() {
   // Database State synced with Room SQLite Database & Firestore
   const [dbState, setDbState] = useState(() => roomDb.getState());
 
-  // Security / PIN lock state (For Admin convenience within an unlocked session)
-  const [isLocked, setIsLocked] = useState<boolean>(false);
+  // Theme State: 'light' or 'dark' (Default: 'light')
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const saved = localStorage.getItem('dukandesk_theme');
+      if (saved === 'dark' || saved === 'light') return saved;
+    } catch {}
+    return 'light';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('dukandesk_theme', theme);
+    } catch {}
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    // Update theme-color meta tag
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#324D6A' : '#8A5A1C');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
@@ -278,7 +303,6 @@ export default function App() {
       await logoutAppUser();
       setCurrentUser(null);
       setUserProfile(null);
-      setIsLocked(false);
       setActiveTab('dashboard');
     } catch (err) {
       console.error('Logout error:', err);
@@ -505,10 +529,10 @@ export default function App() {
   // 1. Initial Authentication Check Loader
   if (isAuthChecking) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-300">
-        <RefreshCw className="w-8 h-8 text-emerald-400 animate-spin mb-3" />
-        <p className="text-sm font-semibold tracking-wide">Connecting to MAHARAJA MARBLE Cloud...</p>
-        <span className="text-xs text-slate-500 mt-1">Verifying secure Firebase credentials</span>
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center text-ink">
+        <RefreshCw className="w-8 h-8 text-primary animate-spin mb-3" />
+        <p className="text-sm font-semibold tracking-wide text-ink">Connecting to MAHARAJA MARBLE Cloud...</p>
+        <span className="text-xs text-muted mt-1">Verifying secure Firebase credentials</span>
       </div>
     );
   }
@@ -538,10 +562,10 @@ export default function App() {
   // 2.5 Authenticated but profile loading
   if (!userProfile) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-300">
-        <RefreshCw className="w-8 h-8 text-emerald-400 animate-spin mb-3" />
-        <p className="text-sm font-semibold tracking-wide">Synchronizing profile...</p>
-        <span className="text-xs text-slate-500 mt-1">Verifying user permissions</span>
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center text-ink">
+        <RefreshCw className="w-8 h-8 text-primary animate-spin mb-3" />
+        <p className="text-sm font-semibold tracking-wide text-ink">Synchronizing profile...</p>
+        <span className="text-xs text-muted mt-1">Verifying user permissions</span>
       </div>
     );
   }
@@ -549,24 +573,24 @@ export default function App() {
   // 3. Deactivated / Inactive User Account Gate
   if (userProfile.status === 'inactive') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
-        <div className="bg-slate-900 border border-rose-500/40 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-rose-950 border border-rose-500/40 text-rose-400 mx-auto flex items-center justify-center">
+      <div className="min-h-screen bg-page text-ink flex items-center justify-center p-4">
+        <div className="bg-card border border-line rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-card space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-badge-red-bg border border-badge-red-text/35 text-badge-red-text mx-auto flex items-center justify-center">
             <ShieldAlert className="w-8 h-8" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Account Deactivated</h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Your access for <strong className="text-slate-200">{userProfile.email}</strong> has been deactivated by the store administrator.
+            <h2 className="text-lg font-bold text-ink">Account Deactivated</h2>
+            <p className="text-xs text-muted mt-1">
+              Your access for <strong className="text-ink">{userProfile.email}</strong> has been deactivated by the store administrator.
             </p>
           </div>
-          <p className="text-xs text-slate-500 bg-slate-950 p-3 rounded-xl border border-slate-800">
+          <p className="text-xs text-muted bg-inner p-3 rounded-xl border border-line-strong">
             Please contact the store administrator (HAIDAR ALI, MAHARAJA MARBLE) to reactivate your device or role.
           </p>
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors"
+            className="w-full py-2.5 px-4 bg-primary hover:bg-primary-hover text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out & Switch Account</span>
@@ -576,28 +600,12 @@ export default function App() {
     );
   }
 
-  // 4. Admin PIN Lock Screen (Optional layer within active admin session)
+  // 4. Main Application Viewport
   const isAdmin = userProfile?.role === 'admin';
 
-  if (isAdmin && isLocked) {
-    return (
-      <PinLockScreen
-        correctPin={dbState.settings.pin}
-        isPinSet={dbState.settings.isPinSet}
-        shopName={dbState.settings.shopName}
-        ownerName={dbState.settings.ownerName}
-        onUnlock={() => setIsLocked(false)}
-        onSetNewPin={(newPin) => {
-          handleUpdateSettings({ pin: newPin, isPinSet: true });
-        }}
-      />
-    );
-  }
-
-  // 5. Main Application Viewport
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex justify-center selection:bg-emerald-500/30 selection:text-emerald-300 font-sans">
-      <div className="w-full max-w-4xl min-h-screen bg-slate-900 flex flex-col relative">
+    <div className="min-h-screen bg-page text-ink flex justify-center selection:bg-header/20 selection:text-header font-sans">
+      <div className="w-full max-w-4xl min-h-screen bg-page flex flex-col relative">
         {/* Top App Bar with Role & Real-Time Sync Info */}
         <TopAppBar
           shopName={dbState.settings.shopName}
@@ -605,20 +613,21 @@ export default function App() {
           lowStockCount={lowStockCount}
           userProfile={userProfile}
           syncState={syncState}
-          onLock={() => setIsLocked(true)}
           onLogout={promptLogout}
           onNotificationClick={() => setActiveTab(isAdmin ? 'dashboard' : 'stock_dashboard')}
           onOpenGoogleDrive={() => setIsGoogleDriveOpen(true)}
+          theme={theme}
+          onToggleTheme={toggleTheme}
         />
 
         {/* Scrollable Content Viewport */}
         <main className="flex-1 p-4 overflow-y-auto pb-24">
           {/* Drive status notice if permissions were skipped or failed */}
           {driveNotice && (
-            <div className="mb-3.5 p-3.5 bg-amber-950/80 border border-amber-500/40 rounded-2xl text-amber-200 text-xs flex items-center justify-between gap-2 shadow-lg animate-fadeIn">
+            <div className="mb-3.5 p-3.5 bg-badge-yellow-bg border border-line-strong rounded-2xl text-badge-yellow-text text-xs flex items-center justify-between gap-2 shadow-sm animate-fadeIn">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-amber-300">Notice:</span>
-                <span>{driveNotice}</span>
+                <span className="font-bold text-badge-yellow-text">Notice:</span>
+                <span className="text-badge-yellow-text">{driveNotice}</span>
               </div>
               <button
                 type="button"
@@ -628,7 +637,7 @@ export default function App() {
                     sessionStorage.removeItem('drive_connect_notice');
                   } catch {}
                 }}
-                className="text-amber-400 hover:text-amber-100 font-bold px-2 py-0.5 rounded cursor-pointer"
+                className="text-badge-yellow-text hover:text-accent-text font-bold px-2 py-0.5 rounded cursor-pointer"
               >
                 ✕
               </button>
@@ -663,16 +672,16 @@ export default function App() {
 
               {/* Security Guard: If Viewer attempts unauthorized tab navigation */}
               {activeTab !== 'stock_dashboard' && activeTab !== 'inventory' && (
-                <div className="p-8 text-center bg-slate-950/80 border border-slate-800 rounded-3xl space-y-3">
-                  <ShieldAlert className="w-10 h-10 text-cyan-400 mx-auto" />
-                  <h3 className="text-sm font-bold text-white">Access Restricted to Stock Information</h3>
-                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                <div className="p-8 text-center bg-card border border-line rounded-3xl space-y-3 shadow-card">
+                  <ShieldAlert className="w-10 h-10 text-badge-blue-text mx-auto" />
+                  <h3 className="text-sm font-bold text-ink">Access Restricted to Stock Information</h3>
+                  <p className="text-xs text-muted max-w-sm mx-auto">
                     Your account has the <strong>Viewer</strong> role. The Admin Panel, billing, profit, customer ledgers, and settings are protected.
                   </p>
                   <button
                     type="button"
                     onClick={() => setActiveTab('stock_dashboard')}
-                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-xl cursor-pointer"
+                    className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl cursor-pointer"
                   >
                     Return to Stock Dashboard
                   </button>
@@ -921,41 +930,41 @@ export default function App() {
 
         {/* Sign Out Warning Confirmation Modal (Applies to both Admin and Viewers) */}
         {isLogoutConfirmOpen && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl relative space-y-4">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+            <div className="bg-card border border-line rounded-3xl w-full max-w-sm p-6 shadow-card relative space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-badge-red-bg border border-badge-red-text/35 text-badge-red-text flex items-center justify-center shrink-0">
                   <AlertTriangle className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Sign Out Confirmation</h3>
-                  <p className="text-xs text-slate-400">Security Warning</p>
+                  <h3 className="text-base font-bold text-ink">Sign Out Confirmation</h3>
+                  <p className="text-xs text-muted">Security Warning</p>
                 </div>
               </div>
 
-              <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-2">
-                <p className="font-semibold text-white">
+              <div className="bg-inner p-3.5 rounded-xl border border-line-strong text-xs text-ink space-y-2">
+                <p className="font-semibold text-ink">
                   Are you sure you want to sign out from {dbState.settings.shopName || 'MAHARAJA MARBLE'}?
                 </p>
-                <div className="flex items-center gap-2 pt-1 border-t border-slate-800/80">
-                  <span className="text-slate-400">Account:</span>
-                  <span className="font-mono text-slate-200 truncate">
+                <div className="flex items-center gap-2 pt-1 border-t border-line-strong">
+                  <span className="text-muted">Account:</span>
+                  <span className="font-mono text-ink truncate">
                     {userProfile?.email || currentUser?.email || 'User'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-400">Role:</span>
+                  <span className="text-muted">Role:</span>
                   <span
                     className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                       isAdmin
-                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40'
-                        : 'bg-cyan-950 text-cyan-300 border border-cyan-500/40'
+                        ? 'bg-badge-green-bg text-badge-green-text'
+                        : 'bg-badge-blue-bg text-badge-blue-text'
                     }`}
                   >
                     {userProfile?.role?.toUpperCase() || 'VIEWER'}
                   </span>
                 </div>
-                <p className="text-[11px] text-amber-400/90 pt-1 leading-relaxed">
+                <p className="text-[11px] text-badge-yellow-text pt-1 leading-relaxed">
                   ⚠️ You will need to sign in with your Google account to access this store again.
                 </p>
               </div>
@@ -964,14 +973,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setIsLogoutConfirmOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl cursor-pointer transition-colors"
+                  className="px-4 py-2 bg-inner hover:bg-line text-ink text-xs font-semibold rounded-xl cursor-pointer transition-colors border border-line-strong"
                 >
                   Stay Logged In
                 </button>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-rose-950/60 cursor-pointer transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 bg-badge-red-text hover:bg-badge-red-text/90 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer transition-colors flex items-center gap-1.5"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Yes, Sign Out</span>

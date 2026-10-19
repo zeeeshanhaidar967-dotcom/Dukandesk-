@@ -105,48 +105,48 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-card border border-line rounded-3xl max-w-xl w-full overflow-hidden shadow-card flex flex-col max-h-[92vh]">
         {/* Modal Top Bar (screen-only, omitted on print) */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-slate-950 border-b border-slate-800 no-print shrink-0">
-          <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs sm:text-sm">
+        <div className="flex items-center justify-between px-5 py-3.5 bg-primary border-b border-line no-print shrink-0 text-white">
+          <div className="flex items-center gap-2 font-bold text-xs sm:text-sm">
             <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             <span>Customer Sales Bill</span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-card/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Customer-Facing Printable Bill Container */}
-        <div className="p-4 sm:p-7 overflow-y-auto printable-area bg-white text-slate-900 select-text flex-1">
+        <div className="p-4 sm:p-7 overflow-y-auto printable-area bg-card text-slate-900 select-text flex-1">
           {/* 1. SHOP HEADER & LOGO */}
           <div className="border-b-2 border-slate-900 pb-3 mb-3 text-center">
             {/* Shop Logo & Name */}
             <div className="flex items-center justify-center gap-2.5 mb-1">
-              <div className="w-9 h-9 rounded-lg bg-slate-950 text-amber-400 flex items-center justify-center font-serif font-black text-lg border border-slate-800 shadow-sm shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-primary text-accent flex items-center justify-center font-serif font-black text-lg border border-line-strong shadow-sm shrink-0">
                 MM
               </div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 font-serif">
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-ink font-serif">
                 {shopName}
               </h1>
             </div>
 
-            <p className="text-xs font-semibold text-slate-800">
+            <p className="text-xs font-semibold text-ink">
               Dealer of Premium Quality Marble, Granite, Floor &amp; Wall Tiles, Sanitaryware
             </p>
-            <p className="text-[11px] text-slate-600 mt-0.5">
+            <p className="text-[11px] text-muted mt-0.5">
               {shopAddress}
             </p>
-            <p className="text-[11px] text-slate-700 font-medium">
-              Contact / Mobile: <span className="font-mono font-bold text-slate-900">{shopPhone}</span> | Proprietor: <span className="font-semibold text-slate-900">{proprietor}</span>
+            <p className="text-[11px] text-muted font-medium">
+              Contact / Mobile: <span className="font-mono font-bold text-ink">{shopPhone}</span> | Proprietor: <span className="font-semibold text-ink">{proprietor}</span>
             </p>
 
-            <div className="mt-2.5 inline-block px-4 py-0.5 bg-slate-900 text-white rounded text-[11px] font-bold tracking-widest uppercase">
+            <div className="mt-2.5 inline-block px-4 py-0.5 bg-primary text-white rounded text-[11px] font-bold tracking-widest uppercase">
               RETAIL SALES BILL / INVOICE
             </div>
           </div>
@@ -217,7 +217,7 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {sale.items.map((item, idx) => (
-                  <tr key={item.id || idx} className={idx % 2 === 1 ? 'bg-slate-50/40' : 'bg-white'}>
+                  <tr key={item.id || idx} className={idx % 2 === 1 ? 'bg-slate-50/40' : 'bg-card'}>
                     <td className="py-2 px-2 text-center text-slate-600 border-r border-slate-200 font-mono">
                       {idx + 1}
                     </td>
@@ -333,11 +333,11 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
         </div>
 
         {/* Modal Bottom Action Controls (screen-only, omitted on print) */}
-        <div className="flex items-center justify-between p-3.5 sm:p-4 bg-slate-950 border-t border-slate-800 no-print gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center justify-between p-3.5 sm:p-4 bg-inner border-t border-line-strong no-print gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-center transition-colors cursor-pointer"
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-semibold text-center transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -351,26 +351,26 @@ export const SaleReceiptModal: React.FC<SaleReceiptModalProps> = ({
                 openWhatsAppShare(sale, settings, customerPhone);
               }
             }}
-            className="py-2.5 px-3 sm:px-4 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-badge-green-bg hover:bg-badge-green-bg/80 text-badge-green-text border border-badge-green-text/35 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             title="Send invoice breakdown to customer via WhatsApp"
           >
-            <MessageSquare className="w-4 h-4 text-emerald-400" />
+            <MessageSquare className="w-4 h-4 text-badge-green-text" />
             <span>Send on WhatsApp</span>
           </button>
 
           <button
             type="button"
             onClick={handleShare}
-            className="py-2.5 px-3 sm:px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="py-2.5 px-3 sm:px-4 rounded-xl bg-card hover:bg-inner text-ink border border-line-strong text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
-            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-emerald-400" />}
+            {copiedLink ? <Check className="w-4 h-4 text-badge-green-text" /> : <Share2 className="w-4 h-4 text-primary" />}
             <span>{copiedLink ? 'Copied!' : 'Share Bill'}</span>
           </button>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="flex-1 py-2.5 px-3 sm:px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+            className="flex-1 py-2.5 px-3 sm:px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>Print Bill / PDF</span>
